@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+
+# environment
+.env
+.env.local
+
+# build outputs
+.next/
+dist/
+build/
+
+# data
+uploads/
+storage/
+*.sqlite
+*.db
+
+# system
+.DS_Store
+Thumbs.db
