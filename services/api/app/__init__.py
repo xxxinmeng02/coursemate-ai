@@ -1,0 +1,1 @@
+"""CourseMate AI API package."""

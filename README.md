@@ -126,14 +126,36 @@ coursemate-ai/
     web/
   services/
     api/
-  packages/
-    shared/
   docs/
-    architecture.md
-    roadmap.md
   evals/
   README.md
 ```
+
+## Local Development
+
+Run the frontend and backend in separate terminals.
+
+### Frontend
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+Open <http://localhost:3000>.
+
+### Backend
+
+```bash
+cd services/api
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+The API runs at <http://localhost:8000>, and its Swagger documentation is available at <http://localhost:8000/docs>.
 
 ## Resume Talking Points
 
@@ -141,4 +163,3 @@ coursemate-ai/
 - Implemented document parsing, chunking, embeddings, vector retrieval, and citation-grounded answer generation.
 - Designed evaluation metrics for retrieval quality and answer faithfulness.
 - Collaborated through GitHub issues, pull requests, and milestone planning.
-
