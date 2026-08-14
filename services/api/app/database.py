@@ -1,12 +1,17 @@
 import os
 from collections.abc import Generator
 from functools import lru_cache
+from pathlib import Path
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 DATABASE_URL_ENV_VAR = "DATABASE_URL"
+ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
+
+load_dotenv(ENV_FILE)
 
 
 class Base(DeclarativeBase):

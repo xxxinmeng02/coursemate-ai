@@ -1,9 +1,13 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.document import Document
 
 
 class Course(Base):
@@ -15,4 +19,9 @@ class Course(Base):
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
+    )
+    documents: Mapped[list["Document"]] = relationship(
+        back_populates="course",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )

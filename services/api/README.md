@@ -4,10 +4,23 @@ Minimal FastAPI backend for local CourseMate AI development.
 
 ## Database configuration
 
-Set `DATABASE_URL` to a PostgreSQL connection URL that uses the psycopg driver:
+Copy the local environment template if `.env` does not exist:
 
 ```bash
-export DATABASE_URL="postgresql+psycopg://postgres:postgres@localhost:5432/coursemate"
+cp .env.example .env
+```
+
+The configured `DATABASE_URL` uses the psycopg driver:
+
+```text
+postgresql+psycopg://coursemate:coursemate_dev@localhost:5432/coursemate
+```
+
+Start the local PostgreSQL database with Docker Compose:
+
+```bash
+docker compose up -d postgres
+docker compose ps
 ```
 
 The application creates its SQLAlchemy engine and sessions only when database access is requested. The current root and health endpoints therefore do not require a running database.
