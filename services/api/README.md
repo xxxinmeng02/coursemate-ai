@@ -45,4 +45,5 @@ alembic revision --autogenerate -m "describe schema change"
 alembic upgrade head
 ```
 
-No application models or schema revisions are included yet.
+The initial migration creates the `courses`, `documents`, `contents`, and
+`chunks` tables, including their foreign keys and constraints.
