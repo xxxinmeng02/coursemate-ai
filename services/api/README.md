@@ -36,6 +36,27 @@ uvicorn app.main:app --reload --port 8000
 
 The API runs at <http://localhost:8000>. Swagger documentation is available at <http://localhost:8000/docs>.
 
+## Course API
+
+| Method | Path                 | Description                                                    |
+| ------ | -------------------- | -------------------------------------------------------------- |
+| POST   | `/courses`           | Create a course (`name`); duplicates get a numeric suffix.     |
+| GET    | `/courses`           | List courses.                                                  |
+| GET    | `/courses/{id}`      | Course detail including documents and their processing status. |
+| DELETE | `/courses/{id}`      | Delete a course (its documents are removed via cascade).       |
+
+The response schemas are defined in `app/schemas/course.py`, and the routes
+live in `app/routers/courses.py`.
+
+## Tests
+
+Run the API test suite from `services/api`:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
 ## Database migrations
 
 Run Alembic commands from `services/api` with `DATABASE_URL` set:
@@ -45,4 +66,5 @@ alembic revision --autogenerate -m "describe schema change"
 alembic upgrade head
 ```
 
-No application models or schema revisions are included yet.
+The current models live in `app/models/`, and the schema revisions are under
+`alembic/versions/`.
