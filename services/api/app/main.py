@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.courses import router as courses_router
+from app.routers.documents import router as documents_router
 
 app = FastAPI(title="CourseMate AI API")
 
@@ -14,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(courses_router)
+app.include_router(documents_router)
 
 
 @app.get("/")

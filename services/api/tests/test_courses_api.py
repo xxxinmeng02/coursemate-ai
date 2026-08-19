@@ -1,9 +1,12 @@
+import hashlib
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app import storage
 import app.models  # noqa: F401  # register all models on Base.metadata
 from app.database import Base, get_db
 from app.main import app
@@ -36,7 +39,13 @@ def db_session_factory():
 
 
 @pytest.fixture()
-def client(db_session_factory):
+def storage_dir(tmp_path, monkeypatch):
+    monkeypatch.setattr(storage, "STORAGE_DIR", tmp_path)
+    return tmp_path
+
+
+@pytest.fixture()
+def client(db_session_factory, storage_dir):
     """TestClient whose database dependency uses the SQLite session factory."""
 
     def override_get_db():
@@ -51,6 +60,19 @@ def client(db_session_factory):
 
 def _create_course(client, name):
     return client.post("/courses", json={"name": name})
+
+
+def _upload_pdf(
+    client,
+    course_id,
+    content=b"%PDF-1.7\ncourse notes\n%%EOF",
+    filename="lecture.pdf",
+    content_type="application/pdf",
+):
+    return client.post(
+        f"/courses/{course_id}/documents",
+        files={"file": (filename, content, content_type)},
+    )
 
 
 def test_create_course(client):
@@ -202,3 +224,153 @@ def test_delete_missing_course_returns_404(client):
 def test_root_and_health_endpoints_still_work(client):
     assert client.get("/").json() == {"message": "CourseMate AI API"}
     assert client.get("/health").json() == {"status": "ok"}
+
+
+def test_upload_pdf_creates_document_and_content(client, db_session_factory, storage_dir):
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+    content_bytes = b"%PDF-1.7\ncourse notes\n%%EOF"
+    expected_hash = hashlib.sha256(content_bytes).hexdigest()
+
+    response = _upload_pdf(client, course_id, content_bytes)
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["name"] == "lecture.pdf"
+    assert body["status"] == "uploaded"
+
+    with db_session_factory() as session:
+        document = session.get(Document, body["id"])
+        content = session.get(Content, document.content_id)
+        assert document.course_id == course_id
+        assert content.content_hash == expected_hash
+        assert content.file_type == "application/pdf"
+        assert content.storage_key == f"storage/{expected_hash}.pdf"
+
+    stored_file = storage_dir / f"{expected_hash}.pdf"
+    assert stored_file.exists()
+    assert stored_file.read_bytes() == content_bytes
+
+
+def test_upload_pdf_rejects_missing_course(client):
+    response = _upload_pdf(client, 999999)
+
+    assert response.status_code == 404
+
+
+@pytest.mark.parametrize(
+    ("filename", "content_type", "content"),
+    [
+        ("notes.txt", "application/pdf", b"%PDF-1.7\nvalid-looking"),
+        ("notes.pdf", "text/plain", b"%PDF-1.7\nvalid-looking"),
+        ("notes.pdf", "application/pdf", b"not a PDF"),
+    ],
+)
+def test_upload_pdf_rejects_non_pdf(client, filename, content_type, content):
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+    response = client.post(
+        f"/courses/{course_id}/documents",
+        files={"file": (filename, content, content_type)},
+    )
+
+    assert response.status_code == 400
+
+
+def test_upload_pdf_rejects_oversized_file(client, storage_dir, monkeypatch):
+    monkeypatch.setattr(storage, "MAX_DOCUMENT_SIZE_BYTES", 16)
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+
+    response = _upload_pdf(client, course_id, b"%PDF-1.7\nthis is too large")
+
+    assert response.status_code == 413
+    assert list(storage_dir.iterdir()) == []
+
+
+def test_upload_uses_hash_path_instead_of_original_filename(
+    client,
+    db_session_factory,
+    storage_dir,
+):
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+    content_bytes = b"%PDF-1.7\npath traversal check\n%%EOF"
+    expected_hash = hashlib.sha256(content_bytes).hexdigest()
+
+    response = _upload_pdf(
+        client,
+        course_id,
+        content_bytes,
+        filename="../../escape.pdf",
+    )
+
+    assert response.status_code == 201
+    assert (storage_dir / f"{expected_hash}.pdf").exists()
+    assert not (storage_dir / "escape.pdf").exists()
+    with db_session_factory() as session:
+        content = session.query(Content).one()
+        assert content.storage_key == f"storage/{expected_hash}.pdf"
+
+
+def test_upload_same_pdf_twice_to_course_returns_conflict(
+    client,
+    db_session_factory,
+    storage_dir,
+):
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+    content_bytes = b"%PDF-1.7\nduplicate\n%%EOF"
+
+    first = _upload_pdf(client, course_id, content_bytes)
+    second = _upload_pdf(client, course_id, content_bytes)
+
+    assert first.status_code == 201
+    assert second.status_code == 409
+    with db_session_factory() as session:
+        assert session.query(Document).count() == 1
+        assert session.query(Content).count() == 1
+    assert len(list(storage_dir.glob("*.pdf"))) == 1
+
+
+def test_upload_same_pdf_to_two_courses_reuses_content(
+    client,
+    db_session_factory,
+    storage_dir,
+):
+    first_course_id = _create_course(client, "Operating Systems").json()["id"]
+    second_course_id = _create_course(client, "Databases").json()["id"]
+    content_bytes = b"%PDF-1.7\nshared\n%%EOF"
+
+    first = _upload_pdf(client, first_course_id, content_bytes)
+    second = _upload_pdf(client, second_course_id, content_bytes)
+
+    assert first.status_code == 201
+    assert second.status_code == 201
+    with db_session_factory() as session:
+        documents = session.query(Document).order_by(Document.id).all()
+        contents = session.query(Content).all()
+        assert len(documents) == 2
+        assert len(contents) == 1
+        assert {document.course_id for document in documents} == {
+            first_course_id,
+            second_course_id,
+        }
+        assert {document.content_id for document in documents} == {contents[0].id}
+    assert len(list(storage_dir.glob("*.pdf"))) == 1
+
+
+def test_upload_database_failure_rolls_back_and_cleans_file(
+    client,
+    db_session_factory,
+    storage_dir,
+    monkeypatch,
+):
+    course_id = _create_course(client, "Operating Systems").json()["id"]
+
+    def fail_commit(self):
+        raise RuntimeError("simulated database failure")
+
+    monkeypatch.setattr(Session, "commit", fail_commit)
+    response = _upload_pdf(client, course_id)
+
+    assert response.status_code == 500
+    assert list(storage_dir.iterdir()) == []
+    with db_session_factory() as session:
+        assert session.query(Document).count() == 0
+        assert session.query(Content).count() == 0
