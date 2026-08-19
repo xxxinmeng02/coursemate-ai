@@ -10,10 +10,11 @@ Copy the local environment template if `.env` does not exist:
 cp .env.example .env
 ```
 
-The configured `DATABASE_URL` uses the psycopg driver:
+The configured `DATABASE_URL` uses the psycopg driver and the `ai_course`
+database:
 
 ```text
-postgresql+psycopg://coursemate:coursemate_dev@localhost:5432/coursemate
+postgresql+psycopg://coursemate:coursemate_dev@localhost:5432/ai_course
 ```
 
 Start the local PostgreSQL database with Docker Compose:
