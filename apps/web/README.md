@@ -32,9 +32,12 @@ The Courses workspace uses the real backend API for:
 - listing courses;
 - creating a course;
 - viewing course details, including documents and processing status;
+- uploading PDFs up to 10 MiB;
 - deleting a course after confirmation.
 
-Document upload is intentionally UI-only until the upload API is available.
+FastAPI error details are shown in the interface. Upload errors retain their
+HTTP status so invalid PDFs (`400`), missing courses (`404`), duplicate files
+(`409`), and files over the size limit (`413`) are clear to the user.
 
 ## Verification
 

@@ -226,6 +226,23 @@ def test_root_and_health_endpoints_still_work(client):
     assert client.get("/health").json() == {"status": "ok"}
 
 
+@pytest.mark.parametrize(
+    "origin",
+    ["http://localhost:3000", "http://127.0.0.1:3000"],
+)
+def test_local_frontend_origins_are_allowed_by_cors(client, origin):
+    response = client.options(
+        "/courses",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_upload_pdf_creates_document_and_content(client, db_session_factory, storage_dir):
     course_id = _create_course(client, "Operating Systems").json()["id"]
     content_bytes = b"%PDF-1.7\ncourse notes\n%%EOF"

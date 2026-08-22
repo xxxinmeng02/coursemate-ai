@@ -24,6 +24,12 @@ docker compose up -d postgres
 docker compose ps
 ```
 
+Apply the database migrations before starting the API:
+
+```bash
+alembic upgrade head
+```
+
 The application creates its SQLAlchemy engine and sessions only when database access is requested. The current root and health endpoints therefore do not require a running database.
 
 ## Run locally
@@ -32,7 +38,14 @@ The application creates its SQLAlchemy engine and sessions only when database ac
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+alembic upgrade head
 uvicorn app.main:app --reload --port 8000
+```
+
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
 ```
 
 The API runs at <http://localhost:8000>. Swagger documentation is available at <http://localhost:8000/docs>.
@@ -45,6 +58,7 @@ The API runs at <http://localhost:8000>. Swagger documentation is available at <
 | GET    | `/courses`           | List courses.                                                  |
 | GET    | `/courses/{id}`      | Course detail including documents and their processing status. |
 | DELETE | `/courses/{id}`      | Delete a course (its documents are removed via cascade).       |
+| POST   | `/courses/{id}/documents` | Upload one PDF (maximum 10 MiB).                         |
 
 The response schemas are defined in `app/schemas/course.py`, and the routes
 live in `app/routers/courses.py`.

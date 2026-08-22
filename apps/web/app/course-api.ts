@@ -89,3 +89,13 @@ export function getCourse(courseId: number, signal?: AbortSignal) {
 export function deleteCourse(courseId: number) {
   return request<void>(`/courses/${courseId}`, { method: "DELETE" });
 }
+
+export function uploadDocument(courseId: number, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return request<DocumentSummary>(`/courses/${courseId}/documents`, {
+    method: "POST",
+    body: formData,
+  });
+}

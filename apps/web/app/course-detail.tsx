@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { ApiError, deleteCourse, getCourse, type CourseDetail } from "./course-api";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ApiError, deleteCourse, getCourse, uploadDocument, type CourseDetail } from "./course-api";
 import { BackIcon, BookIcon, CloseIcon, FileIcon, RefreshIcon, TrashIcon, UploadIcon } from "./icons";
 
 type LoadState = "loading" | "ready" | "error";
@@ -21,6 +21,14 @@ function statusLabel(status: string) {
   return status.replaceAll("_", " ").replace(/^./, (letter) => letter.toUpperCase());
 }
 
+function actionError(reason: unknown, fallback: string) {
+  if (reason instanceof ApiError) {
+    return `Error ${reason.status}: ${reason.message}`;
+  }
+
+  return reason instanceof Error ? reason.message : fallback;
+}
+
 export default function CourseDetailView({ courseId }: { courseId: number }) {
   const router = useRouter();
   const [course, setCourse] = useState<CourseDetail | null>(null);
@@ -30,6 +38,10 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -84,8 +96,38 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
       router.push("/");
       router.refresh();
     } catch (reason) {
-      setDeleteError(reason instanceof Error ? reason.message : "Unable to delete course.");
+      setDeleteError(actionError(reason, "Unable to delete course."));
       setDeleting(false);
+    }
+  }
+
+  async function handleUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError("");
+    setUploadSuccess("");
+
+    try {
+      const document = await uploadDocument(courseId, file);
+      setCourse((current) => current ? {
+        ...current,
+        documents: [...current.documents, document],
+      } : current);
+      setUploadSuccess(`${document.name} was uploaded successfully.`);
+    } catch (reason) {
+      if (reason instanceof ApiError && reason.status === 404) {
+        setCourse(null);
+        setNotFound(true);
+        setLoadError(reason.message);
+        setLoadState("error");
+      } else {
+        setUploadError(actionError(reason, "Unable to upload document."));
+      }
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -126,10 +168,32 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
                 </div>
               </div>
               <div className="detail-actions">
-                <button className="button secondary upload-button" type="button" disabled title="Document upload API is not available yet"><UploadIcon width={18} height={18} /> Upload <span className="coming-soon">Soon</span></button>
+                <input
+                  ref={fileInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  aria-label="Choose a PDF to upload"
+                  onChange={(event) => void handleUpload(event)}
+                  disabled={uploading}
+                />
+                <button
+                  className="button secondary upload-button"
+                  type="button"
+                  disabled={uploading}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {uploading ? <><span className="spinner" /> Uploading…</> : <><UploadIcon width={18} height={18} /> Upload PDF</>}
+                </button>
                 <button className="button danger-ghost" type="button" onClick={() => { setDeleteError(""); setShowDelete(true); }}><TrashIcon width={17} height={17} /> Delete course</button>
               </div>
             </section>
+
+            {(uploadError || uploadSuccess) && (
+              <p className={uploadError ? "upload-message upload-error" : "upload-message upload-success"} role={uploadError ? "alert" : "status"}>
+                {uploadError || uploadSuccess}
+              </p>
+            )}
 
             <section className="documents-section">
               <div className="section-heading">
@@ -141,8 +205,8 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
                 <div className="documents-empty">
                   <span className="state-icon"><FileIcon width={27} height={27} /></span>
                   <h3>No documents yet</h3>
-                  <p>Document upload is coming next. This course is ready when the API is.</p>
-                  <button className="button secondary" type="button" disabled><UploadIcon width={17} height={17} /> Upload coming soon</button>
+                  <p>Upload a PDF to add lecture notes, readings, or assignment material to this course.</p>
+                  <button className="button secondary" type="button" disabled={uploading} onClick={() => fileInputRef.current?.click()}><UploadIcon width={17} height={17} /> Choose PDF</button>
                 </div>
               ) : (
                 <div className="document-table-wrap">

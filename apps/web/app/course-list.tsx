@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { createCourse, listCourses, type CourseSummary } from "./course-api";
-import { ArrowIcon, BookIcon, CloseIcon, PlusIcon, RefreshIcon } from "./icons";
+import { ApiError, createCourse, deleteCourse, listCourses, type CourseSummary } from "./course-api";
+import { ArrowIcon, BookIcon, CloseIcon, PlusIcon, RefreshIcon, TrashIcon } from "./icons";
 
 type LoadState = "loading" | "ready" | "error";
 
@@ -32,6 +32,9 @@ export default function CourseList() {
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<CourseSummary | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [announcement, setAnnouncement] = useState("");
 
   const load = useCallback(async (signal?: AbortSignal) => {
@@ -68,13 +71,14 @@ export default function CourseList() {
   }
 
   useEffect(() => {
-    if (!showCreate) return;
+    if (!showCreate && !deleteTarget) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !creating) setShowCreate(false);
+      if (event.key === "Escape" && !deleting) setDeleteTarget(null);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [creating, showCreate]);
+  }, [creating, deleting, deleteTarget, showCreate]);
 
   function openCreate() {
     setName("");
@@ -98,9 +102,26 @@ export default function CourseList() {
       setShowCreate(false);
       setAnnouncement(`${created.name} was created.`);
     } catch (reason) {
-      setCreateError(reason instanceof Error ? reason.message : "Unable to create course.");
+      setCreateError(actionError(reason, "Unable to create course."));
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await deleteCourse(deleteTarget.id);
+      setCourses((current) => current.filter((course) => course.id !== deleteTarget.id));
+      setAnnouncement(`${deleteTarget.name} was deleted.`);
+      setDeleteTarget(null);
+    } catch (reason) {
+      setDeleteError(actionError(reason, "Unable to delete course."));
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -152,7 +173,7 @@ export default function CourseList() {
           <section className="state-card empty-state">
             <span className="state-icon"><BookIcon width={28} height={28} /></span>
             <h2>Create your first course</h2>
-            <p>Start with a course, then add lecture notes and study materials when uploads are available.</p>
+            <p>Start with a course, then add PDF lecture notes, readings, and assignment materials.</p>
             <button className="button primary" type="button" onClick={openCreate}>
               <PlusIcon width={18} height={18} /> New course
             </button>
@@ -162,14 +183,24 @@ export default function CourseList() {
         {loadState === "ready" && courses.length > 0 && (
           <section className="course-grid" aria-label={`${courses.length} courses`}>
             {courses.map((course, index) => (
-              <Link className="course-card" href={`/courses/${course.id}`} key={course.id}>
-                <div className={`course-avatar tone-${(index % 4) + 1}`}>{initials(course.name)}</div>
-                <div className="course-card-body">
-                  <h2>{course.name}</h2>
-                  <p>Created {formatDate(course.created_at)}</p>
-                </div>
-                <span className="course-card-action">Open <ArrowIcon width={17} height={17} /></span>
-              </Link>
+              <article className="course-card" key={course.id}>
+                <Link className="course-card-link" href={`/courses/${course.id}`} aria-label={`Open ${course.name}`}>
+                  <div className={`course-avatar tone-${(index % 4) + 1}`}>{initials(course.name)}</div>
+                  <div className="course-card-body">
+                    <h2>{course.name}</h2>
+                    <p>Created {formatDate(course.created_at)}</p>
+                  </div>
+                  <span className="course-card-action">Open <ArrowIcon width={17} height={17} /></span>
+                </Link>
+                <button
+                  className="icon-button course-delete"
+                  type="button"
+                  aria-label={`Delete ${course.name}`}
+                  onClick={() => { setDeleteError(""); setDeleteTarget(course); }}
+                >
+                  <TrashIcon />
+                </button>
+              </article>
             ))}
           </section>
         )}
@@ -206,6 +237,29 @@ export default function CourseList() {
           </section>
         </div>
       )}
+
+      {deleteTarget && (
+        <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !deleting) setDeleteTarget(null);
+        }}>
+          <section className="modal danger-modal" role="alertdialog" aria-modal="true" aria-labelledby="course-delete-title" aria-describedby="course-delete-description">
+            <button className="icon-button modal-close" type="button" aria-label="Close" disabled={deleting} onClick={() => setDeleteTarget(null)}><CloseIcon /></button>
+            <span className="modal-icon danger-icon"><TrashIcon width={24} height={24} /></span>
+            <h2 id="course-delete-title">Delete {deleteTarget.name}?</h2>
+            <p id="course-delete-description">This permanently removes the course and its document links. This action cannot be undone.</p>
+            {deleteError && <p className="form-error" role="alert">{deleteError}</p>}
+            <div className="modal-actions">
+              <button className="button secondary" type="button" disabled={deleting} onClick={() => setDeleteTarget(null)}>Cancel</button>
+              <button className="button danger" type="button" disabled={deleting} onClick={() => void handleDelete()}>{deleting ? <><span className="spinner light" /> Deleting…</> : "Delete course"}</button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
+}
+
+function actionError(reason: unknown, fallback: string) {
+  if (reason instanceof ApiError) return `Error ${reason.status}: ${reason.message}`;
+  return reason instanceof Error ? reason.message : fallback;
 }
