@@ -133,29 +133,55 @@ coursemate-ai/
 
 ## Local Development
 
-Run the frontend and backend in separate terminals.
+Prerequisites: Node.js 20.9 or newer, Python 3.11 or newer, and Docker Desktop
+(or another Docker installation with Compose). Clone the repository, then run
+the backend and frontend in separate terminals.
 
-### Frontend
+### 1. Backend and database
 
-```bash
-cd apps/web
-npm install
-npm run dev
-```
-
-Open <http://localhost:3000>.
-
-### Backend
+From the repository root:
 
 ```bash
 cd services/api
+cp .env.example .env
+docker compose up -d postgres
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 ```
 
-The API runs at <http://localhost:8000>, and its Swagger documentation is available at <http://localhost:8000/docs>.
+Windows PowerShell uses these two equivalent commands in place of `cp` and
+`source`:
+
+```powershell
+Copy-Item .env.example .env
+.\.venv\Scripts\Activate.ps1
+```
+
+Confirm the API is running at <http://localhost:8000/health>. Swagger is at
+<http://localhost:8000/docs>.
+
+### 2. Frontend
+
+```bash
+cd apps/web
+npm ci
+npm run dev
+```
+
+Open <http://localhost:3000>. The frontend uses `http://localhost:8000` by
+default. If the API runs elsewhere, create `apps/web/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+The ver1 interface can create, list, open, and delete courses. A course detail
+page lists its documents and accepts PDF uploads up to 10 MiB. API errors such
+as invalid PDFs, missing courses, duplicate documents, and oversized files are
+shown directly in the page.
 
 ## Resume Talking Points
 
