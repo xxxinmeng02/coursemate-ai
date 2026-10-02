@@ -110,7 +110,7 @@ ROLLBACK 外层事务
 
 - SQLite 回归测试在原实现上得到 **7 failed, 10 passed**，失败原因符合预期：旧分块丢失、没有互斥、状态和会话边界未受保护。成功替换及部分已有安全行为在基线上已通过。
 - 首批 3 个 PostgreSQL 测试在独立副本的原解析实现上得到 **2 failed, 1 passed**，分别证实没有处理锁和刷新失败丢失旧数据。
-- 修复后，SQLite 后端套件为 **42 passed, 1 warning**。
+- 修复后，默认后端套件为 **42 passed, 4 skipped, 1 warning**；跳过的是可选 PostgreSQL 检查。
 - 启用 PostgreSQL 检查后的完整套件为 **46 passed, 1 warning**。
 
 基线为 33 项测试；新增 9 个 SQLite 测试用例（其中状态测试参数化为 2 个）及 4 个 PostgreSQL 检查。原有重试和持久化失败测试也更新以对应新事务边界。
@@ -138,6 +138,10 @@ TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
 测试账号需能创建和删除 schema。应使用独立测试库。
 
 现有唯一警告来自 Starlette TestClient 使用 AnyIO 的弃用接口；本次不扩展依赖升级范围。
+
+### 独立审查
+
+独立审查未发现实现中的严重或重要正确性问题。审查发现提交失败测试的保护不足：若所有 commit 都被模拟为失败，错误的二次清理也可能被回滚而逃过断言。已将测试改为只有第一次提交失败，后续提交使用真实数据库行为，并断言只有一次提交尝试。加强后的测试在原实现上失败（发生两次提交），在修复后通过；完整套件重新确认 **46 passed, 1 warning**。
 
 ### 迁移
 

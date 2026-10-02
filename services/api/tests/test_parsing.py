@@ -343,13 +343,22 @@ def test_final_commit_failure_preserves_previous_data(db_session_factory, storag
     with db_session_factory() as session:
         content = _ready_content(session, storage_dir)
         content_id = content.id
+        real_commit = session.commit
+        commit_attempts = 0
 
         def fail_commit():
-            raise RuntimeError("final commit failed before reaching the database")
+            nonlocal commit_attempts
+            commit_attempts += 1
+            if commit_attempts == 1:
+                raise RuntimeError("final commit failed before reaching the database")
+            # Unsafe cleanup followed by a second commit must really persist,
+            # so it cannot hide behind an always-failing commit stub.
+            return real_commit()
 
         monkeypatch.setattr(session, "commit", fail_commit)
         with pytest.raises(ContentProcessingError):
             process_content(session, content)
+        assert commit_attempts == 1
 
     with db_session_factory() as check:
         assert check.get(Content, content_id).status == "ready"

@@ -54,6 +54,6 @@
 
 ### Task 3: Final review and delivery
 
-- [ ] Perform an independent branch review, fix material findings with failing regressions first, and rerun the complete suite.
-- [ ] Verify clean branch, logical commits, unchanged schema, and no upload/AI scope expansion.
-- [ ] Retain the dedicated branch for the user; do not merge or push automatically.
+- [x] Perform an independent branch review, fix material findings with failing regressions first, and rerun the complete suite.
+- [x] Verify clean branch, logical commits, unchanged schema, and no upload/AI scope expansion.
+- [x] Retain the dedicated branch for the user; do not merge or push automatically.
