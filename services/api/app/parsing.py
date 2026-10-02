@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
 from pypdf import PdfReader
-from sqlalchemy import delete
+from sqlalchemy import delete, inspect, update
 from sqlalchemy.orm import Session
 
 from app import storage
@@ -14,6 +15,7 @@ from app.models.content import Content
 TARGET_CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
 BOUNDARY_WINDOW = 200
+logger = logging.getLogger(__name__)
 
 
 class ContentProcessingError(RuntimeError):
@@ -107,50 +109,82 @@ def _has_meaningful_text(pages: list[str]) -> bool:
 def process_content(db: Session, content: Content) -> list[Chunk]:
     """Parse one Content's stored PDF and persist its canonical chunk set.
 
-    Chunk page numbers are 1-based, matching user-facing PDF metadata. Chunks
-    are indexed globally for the Content, while each page is chunked separately.
+    Use a dedicated, clean session: this function owns commit/rollback. A no-op
+    UPDATE locks the current Content row until the outer transaction completes
+    (PostgreSQL row lock; SQLite writer lock), refreshing stale ORM state.
+    Processing is transaction-local; readers keep seeing the last committed
+    status and chunks. A savepoint protects those chunks during replacement.
+
+    Page numbers are 1-based and chunk indexes are global for the Content.
     """
+    state = inspect(content)
+    if state.session is not db or state.identity is None:
+        raise ContentProcessingError("Content must be persisted in the processing session")
+    if db.new or db.dirty or db.deleted:
+        raise ContentProcessingError("Processing requires a session without pending changes")
+    if db.in_nested_transaction():
+        raise ContentProcessingError("Processing cannot run inside a caller's savepoint")
+
+    content_id = state.identity[0]
     try:
-        content.status = "processing"
-        db.execute(delete(Chunk).where(Chunk.content_id == content.id))
-        db.commit()
+        # Unlike SELECT FOR UPDATE (ignored by SQLite), this is a write on both
+        # supported databases. Do not commit it before extraction/replacement.
+        locked_content = db.scalars(
+            update(Content)
+            .where(Content.id == content_id)
+            .values(status=Content.status)
+            .returning(Content)
+            .execution_options(populate_existing=True, synchronize_session=False)
+        ).one_or_none()
+        if locked_content is None:
+            raise ContentProcessingError("Content no longer exists")
+        previous_status = locked_content.status
+        if previous_status not in {"uploaded", "failed", "ready"}:
+            raise ContentProcessingError(f"Cannot process content in state {previous_status}")
 
-        pdf_path = storage.storage_path_for_hash(content.content_hash)
-        extracted_pages = extract_pdf_pages(pdf_path)
-        normalized_pages = [normalize_text(page) for page in extracted_pages]
-        if not _has_meaningful_text(normalized_pages):
-            raise ContentProcessingError("PDF contains no meaningful extracted text")
+        try:
+            with db.begin_nested():
+                locked_content.status = "processing"
+                db.flush()
+                pdf_path = storage.storage_path_for_hash(locked_content.content_hash)
+                extracted_pages = extract_pdf_pages(pdf_path)
+                normalized_pages = [normalize_text(page) for page in extracted_pages]
+                if not _has_meaningful_text(normalized_pages):
+                    raise ContentProcessingError("PDF contains no meaningful extracted text")
 
-        chunks: list[Chunk] = []
-        chunk_index = 0
-        for page_number, page_text in enumerate(normalized_pages, start=1):
-            for chunk_text in chunk_page(page_text):
-                chunks.append(
-                    Chunk(
-                        content_id=content.id,
-                        text=chunk_text,
-                        page_number=page_number,
-                        chunk_index=chunk_index,
-                    )
-                )
-                chunk_index += 1
+                chunks: list[Chunk] = []
+                for page_number, page_text in enumerate(normalized_pages, start=1):
+                    for chunk_text in chunk_page(page_text):
+                        chunks.append(
+                            Chunk(
+                                content_id=content_id,
+                                text=chunk_text,
+                                page_number=page_number,
+                                chunk_index=len(chunks),
+                            )
+                        )
 
-        db.add_all(chunks)
-        content.status = "ready"
+                db.execute(delete(Chunk).where(Chunk.content_id == content_id))
+                db.add_all(chunks)
+                locked_content.status = "ready"
+                db.flush()
+        except Exception as exc:
+            # Savepoint rollback restored canonical data; the outer write lock
+            # is still held. Never delete chunks as failure cleanup.
+            locked_content.status = "ready" if previous_status == "ready" else "failed"
+            db.commit()
+            logger.exception("PDF processing failed for content_id=%s", content_id)
+            if isinstance(exc, ContentProcessingError):
+                raise
+            raise ContentProcessingError("Could not process content") from exc
+
         db.commit()
         return chunks
-    except Exception as exc:
+    except ContentProcessingError:
         db.rollback()
-        try:
-            db.execute(delete(Chunk).where(Chunk.content_id == content.id))
-            content.status = "failed"
-            db.commit()
-        except Exception as cleanup_exc:
-            db.rollback()
-            raise ContentProcessingError(
-                "Could not clean up failed content processing"
-            ) from cleanup_exc
-
-        if isinstance(exc, ContentProcessingError):
-            raise
-        raise ContentProcessingError("Could not process content") from exc
+        raise
+    except Exception as exc:
+        # This also covers lock acquisition and final COMMIT failure. Once the
+        # lock is released, no separate cleanup/status write may race a worker.
+        db.rollback()
+        raise ContentProcessingError("Could not persist content processing") from exc
