@@ -34,11 +34,11 @@
 
 **Interfaces:** Keep `process_content`; processing errors remain `ContentProcessingError` with chained causes.
 
-- [ ] Add failed-refresh, stale-session, concurrent-connection, successful-refresh, INSERT-failure, COMMIT-failure, and pending-session regressions. Existing canonical rows and final statuses are asserted from fresh queries.
-- [ ] Run targeted tests against original implementation; confirm expected failures for deletion, stale state, and concurrent extraction.
-- [ ] Acquire ownership before extraction, refresh identity state, reject ineligible statuses, and replace only inside a savepoint. On rollback, never delete canonical rows as cleanup.
-- [ ] Run the whole backend suite. Expected: original 33 tests plus regressions pass.
-- [ ] Commit tests and implementation together after RED→GREEN evidence.
+- [x] Add failed-refresh, stale-session, concurrent-connection, successful-refresh, INSERT-failure, COMMIT-failure, and pending-session regressions. Existing canonical rows and final statuses are asserted from fresh queries.
+- [x] Run targeted tests against original implementation; confirm expected failures for deletion, stale state, and concurrent extraction.
+- [x] Acquire ownership before extraction, refresh identity state, reject ineligible statuses, and replace only inside a savepoint. On rollback, never delete canonical rows as cleanup.
+- [x] Run the whole backend suite. Expected: original 33 tests plus regressions pass.
+- [x] Commit tests and implementation together after RED→GREEN evidence.
 
 ### Task 2: PostgreSQL verification and handoff documentation
 
@@ -46,11 +46,11 @@
 
 **Interfaces:** Optional `TEST_POSTGRES_URL` enables focused integration tests in a unique temporary schema; absence skips them.
 
-- [ ] Add deterministic two-session concurrency and failed-replacement integration cases; synchronize threads with events and verify PostgreSQL lock waits through `pg_stat_activity`, not sleep-based guesses.
-- [ ] Run them against the original parser and confirm they catch the known bugs before validating the fix.
-- [ ] Run tests in an isolated PostgreSQL 17 container. Never use the user's course database.
-- [ ] Document transaction boundaries, externally visible statuses, retry paths, upload trigger point, shared-content policy, session ownership, and remaining crash/progress limitations.
-- [ ] Record exact final test results and unchanged Alembic heads; commit the report and integration verification.
+- [x] Add deterministic two-session concurrency and failed-replacement integration cases; synchronize threads with events and verify PostgreSQL lock waits through `pg_stat_activity`, not sleep-based guesses.
+- [x] Run them against the original parser and confirm they catch the known bugs before validating the fix.
+- [x] Run tests in an isolated PostgreSQL 17 container. Never use the user's course database.
+- [x] Document transaction boundaries, externally visible statuses, retry paths, upload trigger point, shared-content policy, session ownership, and remaining crash/progress limitations.
+- [x] Record exact final test results and unchanged Alembic heads; commit the report and integration verification.
 
 ### Task 3: Final review and delivery
 
