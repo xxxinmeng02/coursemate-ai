@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 from fastapi import UploadFile
 
-STORAGE_DIR = Path(__file__).resolve().parents[1] / "storage"
+STORAGE_DIR = Path(os.getenv("COURSEMATE_STORAGE_DIR", str(Path(__file__).resolve().parents[1] / "storage")))
 STORAGE_KEY_PREFIX = "storage"
 MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
 UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024

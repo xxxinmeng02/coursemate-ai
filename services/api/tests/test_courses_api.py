@@ -45,7 +45,7 @@ def storage_dir(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def client(db_session_factory, storage_dir):
+def client(db_session_factory, storage_dir, monkeypatch):
     """TestClient whose database dependency uses the SQLite session factory."""
 
     def override_get_db():
@@ -53,6 +53,8 @@ def client(db_session_factory, storage_dir):
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
+    from app import jobs
+    monkeypatch.setattr(jobs, "get_session_factory", lambda: db_session_factory)
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
@@ -180,6 +182,7 @@ def test_course_detail_missing_returns_404(client):
 def test_delete_course_returns_204_and_preserves_content(client, db_session_factory):
     created = _create_course(client, "Operating Systems")
     course_id = created.json()["id"]
+    other_course_id = _create_course(client, "Shared content owner").json()["id"]
 
     with db_session_factory() as session:
         content = Content(
@@ -197,6 +200,7 @@ def test_delete_course_returns_204_and_preserves_content(client, db_session_fact
             name="lecture1.pdf",
         )
         session.add(document)
+        session.add(Document(course_id=other_course_id, content_id=content.id, name="shared.pdf"))
         session.commit()
 
         content_id = content.id

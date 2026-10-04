@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
+from app import jobs
+from app.content_lifecycle import lock_course, lock_content, mark_unreferenced
 from app.models.course import Course
 from app.models.document import Document
 from app.schemas.course import (
@@ -111,9 +113,9 @@ def get_course(course_id: int, db: Session = Depends(get_db)) -> CourseDetail:
 
 
 @router.delete("/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_course(course_id: int, db: Session = Depends(get_db)) -> Response:
-    """Delete a course. Its documents are removed via the existing cascade."""
-    course = db.get(Course, course_id)
+def delete_course(course_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> Response:
+    """Detach course documents and schedule only newly unreferenced content."""
+    course = lock_course(db, course_id)
 
     if course is None:
         raise HTTPException(
@@ -121,6 +123,12 @@ def delete_course(course_id: int, db: Session = Depends(get_db)) -> Response:
             detail="Course not found",
         )
 
+    content_ids = sorted(set(db.scalars(select(Document.content_id).where(Document.course_id == course_id))))
+    contents = [lock_content(db, content_id) for content_id in content_ids]
     db.delete(course)
+    db.flush()
+    cleanup_ids = [content.id for content in contents if mark_unreferenced(db, content)]
     db.commit()
+    for content_id in cleanup_ids:
+        jobs.schedule_content_cleanup(background_tasks, content_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

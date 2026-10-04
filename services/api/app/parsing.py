@@ -5,10 +5,11 @@ import re
 from pathlib import Path
 
 from pypdf import PdfReader
-from sqlalchemy import delete, inspect, update
+from sqlalchemy import delete, inspect
 from sqlalchemy.orm import Session
 
 from app import storage
+from app.content_lifecycle import lock_content
 from app.models.chunk import Chunk
 from app.models.content import Content
 
@@ -129,13 +130,7 @@ def process_content(db: Session, content: Content) -> list[Chunk]:
     try:
         # Unlike SELECT FOR UPDATE (ignored by SQLite), this is a write on both
         # supported databases. Do not commit it before extraction/replacement.
-        locked_content = db.scalars(
-            update(Content)
-            .where(Content.id == content_id)
-            .values(status=Content.status)
-            .returning(Content)
-            .execution_options(populate_existing=True, synchronize_session=False)
-        ).one_or_none()
+        locked_content = lock_content(db, content_id)
         if locked_content is None:
             raise ContentProcessingError("Content no longer exists")
         previous_status = locked_content.status
