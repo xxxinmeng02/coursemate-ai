@@ -12,5 +12,5 @@ export default async function CourseDetailPage({
     notFound();
   }
 
-  return <CourseDetailView courseId={Number(courseId)} />;
+  return <CourseDetailView key={courseId} courseId={Number(courseId)} />;
 }

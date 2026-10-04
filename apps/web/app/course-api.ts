@@ -99,3 +99,13 @@ export function uploadDocument(courseId: number, file: File) {
     body: formData,
   });
 }
+
+export function retryDocument(courseId: number, documentId: number) {
+  return request<DocumentSummary>(`/courses/${courseId}/documents/${documentId}/retry`, {
+    method: "POST",
+  });
+}
+
+export function deleteDocument(courseId: number, documentId: number) {
+  return request<void>(`/courses/${courseId}/documents/${documentId}`, { method: "DELETE" });
+}
