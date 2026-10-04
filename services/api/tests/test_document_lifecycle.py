@@ -170,3 +170,11 @@ def test_retry_remaining_states_without_duplicate_processing(client, db_session_
     response = client.post(f"/courses/{course}/documents/{doc}/retry")
     assert response.status_code == expected
     assert schedule.call_count == (1 if state == "uploaded" else 0)
+
+
+def test_staging_disposal_error_does_not_hide_committed_upload(client, monkeypatch):
+    course = _create_course(client, "Staging disposal").json()["id"]
+    monkeypatch.setattr(storage, "discard_staged_upload", Mock(side_effect=OSError("staging cleanup")))
+    response = _upload_pdf(client, course, _pdf_bytes(["Committed document"]))
+    assert response.status_code == 201
+    assert client.get(f"/courses/{course}").json()["documents"][0]["status"] == "ready"

@@ -81,7 +81,10 @@ async def upload_document(course_id: int, background_tasks: BackgroundTasks,
         db.rollback()
         raise HTTPException(500, "Could not save document") from exc
     finally:
-        storage.discard_staged_upload(staged)
+        try:
+            storage.discard_staged_upload(staged)
+        except OSError:
+            logger.exception("Could not discard staged upload; retaining temporary file")
         if owns_file and not committed and staged is not None:
             # Rollback releases the creation lock. Reacquire it before deleting:
             # a concurrent winner may have adopted the same hash path meanwhile.
