@@ -4,44 +4,18 @@ Every test owns a temporary schema. No course database tables are touched.
 """
 from __future__ import annotations
 
-import os
 import threading
 import time
-import uuid
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
-from sqlalchemy import create_engine, event, select, text
+from sqlalchemy import event, select, text
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import sessionmaker
 
 import app.models  # noqa: F401
-from app.database import Base
 from app.models.chunk import Chunk
 from app.models.content import Content
 from app.parsing import ContentProcessingError, process_content
-
-
-@pytest.fixture()
-def postgres_factory():
-    url = os.getenv("TEST_POSTGRES_URL")
-    if not url:
-        pytest.skip("Set TEST_POSTGRES_URL to run PostgreSQL integration checks")
-    engine = create_engine(url)
-    if engine.dialect.name != "postgresql":
-        engine.dispose()
-        pytest.fail("TEST_POSTGRES_URL must point to PostgreSQL")
-    schema = f"processing_test_{uuid.uuid4().hex}"
-    try:
-        with engine.begin() as conn:
-            conn.execute(text(f'CREATE SCHEMA "{schema}"'))
-        scoped_engine = engine.execution_options(schema_translate_map={None: schema})
-        Base.metadata.create_all(scoped_engine)
-        yield sessionmaker(bind=scoped_engine, autoflush=False, expire_on_commit=False)
-    finally:
-        with engine.begin() as conn:
-            conn.execute(text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
-        engine.dispose()
 
 
 def _seed(factory, *, ready=False):
