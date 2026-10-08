@@ -124,3 +124,28 @@ the additive migration enables the extension (the migration role needs extension
 privileges). Downgrade removes only the Chunk fields/constraint and retains the
 shared extension. Existing SQLite tests use JSON only for persistence; they do
 not substitute for PostgreSQL vector ranking tests.
+
+## Generate embeddings
+
+After migration and PDF processing, run from `services/api`:
+
+```bash
+python -m app.embedding_backfill
+python -m app.embedding_backfill --content-id 123
+python -m app.embedding_backfill --content-id 123 --force
+```
+
+The command processes ready Content once, regardless of how many Courses refer
+to it. It skips valid embeddings for the current configuration. Use `--force`
+for an explicit refresh; changing model/revision also replaces incompatible
+vectors. Each Content uses a dedicated Session and one atomic transaction.
+Provider/validation/persistence failures preserve all prior chunks and vectors;
+the command reports counts and exits nonzero if any Content fails, while keeping
+previously completed Contents. Retry safely after resolving the failure.
+
+Generation uses the same Content write lock as PDF processing, held during the
+bounded provider calls. Competing writers wait. Successful PDF refresh replaces
+the canonical chunks and therefore requires another embedding backfill; failed
+refreshes retain existing data. Upload does not automatically parse or embed.
+Never pass a request Session or ORM object to future background work: create a
+new Session and pass only Content IDs to `embed_content`.
