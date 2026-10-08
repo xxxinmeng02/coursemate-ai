@@ -149,3 +149,32 @@ the canonical chunks and therefore requires another embedding backfill; failed
 refreshes retain existing data. Upload does not automatically parse or embed.
 Never pass a request Session or ORM object to future background work: create a
 new Session and pass only Content IDs to `embed_content`.
+
+## Course semantic search
+
+```http
+POST /courses/123/search
+Content-Type: application/json
+
+{"query": "What is parallel speedup?", "top_k": 5}
+```
+
+`top_k` defaults to `RETRIEVAL_DEFAULT_TOP_K` (5), with a valid range of 1–50.
+Queries are trimmed, nonblank, and limited to 2000 characters. Missing Courses
+return 404, invalid requests 422, and embedding failures a safe 503. Courses
+without eligible embeddings return `{"results": []}` without a provider call.
+
+Results contain `chunk_id`, `text`, `page_number`, `document_id`, `document_name`,
+and `score` (cosine similarity = 1 − cosine distance, not a probability).
+Search filters ready Content reached through the requested Course's Documents,
+and only vectors matching the captured embedding configuration. Shared Content
+is available from every referencing Course. Duplicate Course-local Documents
+produce one canonical result, with the lowest Document ID's metadata. Sorting
+uses exact pgvector cosine distance with Chunk ID ties, followed by `top_k`.
+There is no approximate index in this foundation.
+
+Internal consumers call `search_course(db, course_id, query, top_k)` in
+`app/retrieval.py`; the caller owns the read-only Session. Routers only validate
+and translate errors. SQL ranking is isolated from the embedding provider, and
+neither module depends on PDF parsing. A future reranker/hybrid search belongs
+inside retrieval; future answer generation consumes retrieval results.

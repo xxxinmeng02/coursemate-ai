@@ -179,3 +179,112 @@ def test_generation_serializes_with_pdf_refresh(
         assert len(chunks) == 1
         assert chunks[0].text == "Fresh text."
         assert (chunks[0].embedding is not None) == refresh_first
+
+
+def test_semantic_ranking_top_k_and_course_isolation(postgres_factory, seed_topics, monkeypatch):
+    from app import embeddings
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+    monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
+    with postgres_factory() as db:
+        results = search_course(db, topic["a"], "What is parallel speedup?", 2)
+        assert [r.chunk_id for r in results] == [topic["parallel"], topic["tcp"]]
+        assert results[0].score == pytest.approx(0.8, abs=1e-6)
+        assert results[1].score == pytest.approx(0.0)
+        assert all(r.chunk_id != topic["foreign"] for r in results)
+
+
+def test_shared_content_has_course_local_document_metadata(postgres_factory, seed_topics, monkeypatch):
+    from app import embeddings
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+    monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
+    with postgres_factory() as db:
+        a = search_course(db, topic["a"], "Parallel speedup", 5)
+        b = search_course(db, topic["b"], "Parallel speedup", 5)
+    shared_a = next(r for r in a if r.chunk_id == topic["parallel"])
+    shared_b = next(r for r in b if r.chunk_id == topic["parallel"])
+    assert (shared_a.document_id, shared_a.document_name) == (topic["parallel_document"], "parallel.pdf")
+    assert (shared_b.document_id, shared_b.document_name) == (topic["shared_document"], "shared-in-b.pdf")
+    assert shared_a.text == shared_b.text
+
+
+def test_duplicate_documents_do_not_duplicate_chunks(postgres_factory, seed_topics, monkeypatch):
+    from app import embeddings
+    from app.models.document import Document
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+    with postgres_factory() as db:
+        db.add(Document(course_id=topic["a"], content_id=topic["parallel_content"], name="copy.pdf"))
+        db.commit()
+    monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
+    with postgres_factory() as db:
+        results = search_course(db, topic["a"], "Parallel speedup", 3)
+    assert [r.chunk_id for r in results] == [topic["parallel"], topic["tcp"], topic["accounting"]]
+    assert results[0].document_id == topic["parallel_document"]
+
+
+@pytest.mark.parametrize("excluded", ["unembedded", "nonready", "configuration"])
+def test_ineligible_chunks_are_excluded(postgres_factory, seed_topics, monkeypatch, excluded):
+    from app import embeddings
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+    with postgres_factory() as db:
+        chunk = db.get(Chunk, topic["parallel"])
+        if excluded == "unembedded":
+            chunk.embedding = chunk.embedding_config = None
+        elif excluded == "nonready":
+            db.get(Content, chunk.content_id).status = "failed"
+        else:
+            chunk.embedding_config = "openai:text-embedding-3-small:1536:v2"
+        db.commit()
+    monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
+    with postgres_factory() as db:
+        results = search_course(db, topic["a"], "Parallel speedup", 5)
+    assert [r.chunk_id for r in results] == [topic["tcp"], topic["accounting"]]
+
+
+def test_missing_course_does_not_embed(postgres_factory, monkeypatch):
+    from app import embeddings
+    from app.retrieval import CourseNotFoundError, search_course
+    monkeypatch.setattr(embeddings, "embed_text", lambda *args, **kw: pytest.fail("Unexpected embedding"))
+    with postgres_factory() as db, pytest.raises(CourseNotFoundError):
+        search_course(db, 999999, "Parallel speedup", 5)
+
+
+def test_retrieval_preserves_caller_session_state(postgres_factory, seed_topics, monkeypatch):
+    from app import embeddings
+    from app.models.course import Course
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+    monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
+    with postgres_factory(autoflush=True) as db:
+        pending = Course(name="Must remain pending")
+        db.add(pending)
+        results = search_course(db, topic["a"], "Parallel speedup", 1)
+        assert results[0].chunk_id == topic["parallel"]
+        assert pending in db.new and pending.id is None
+        with db.no_autoflush:
+            assert len(db.scalars(select(Course)).all()) == 2
+
+
+def test_query_and_candidates_share_captured_configuration(postgres_factory, seed_topics, monkeypatch):
+    from app import embeddings
+    from app.retrieval import search_course
+    topic = seed_topics(postgres_factory)
+
+    def provider(value, *, config):
+        assert config.identifier == "openai:text-embedding-3-small:1536:v1"
+        monkeypatch.setenv("EMBEDDING_REVISION", "v2")
+        return [1.0] + [0.0] * 1535
+
+    monkeypatch.setattr(embeddings, "embed_text", provider)
+    with postgres_factory() as db:
+        assert search_course(db, topic["a"], "Parallel speedup", 1)[0].chunk_id == topic["parallel"]
+
+
+@pytest.mark.parametrize("query,k", [(" ", 5), ("x" * 2001, 5), ("valid", 0), ("valid", 51), ("valid", True)])
+def test_internal_search_validates_inputs(postgres_factory, query, k):
+    from app.retrieval import search_course
+    with postgres_factory() as db, pytest.raises(ValueError):
+        search_course(db, 999999, query, k)

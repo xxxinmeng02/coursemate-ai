@@ -11,6 +11,8 @@ import app.models  # noqa: F401
 from app.database import Base
 from app.models.chunk import Chunk
 from app.models.content import Content
+from app.models.course import Course
+from app.models.document import Document
 
 
 @pytest.fixture()
@@ -45,6 +47,41 @@ def seed_chunks():
             db.add_all(chunks)
             db.commit()
             return content.id, [chunk.id for chunk in chunks]
+    return seed
+
+
+@pytest.fixture()
+def seed_topics(seed_chunks):
+    def seed(factory):
+        with factory() as db:
+            course_a, course_b = Course(name="Course A"), Course(name="Course B")
+            db.add_all([course_a, course_b])
+            db.commit()
+            a, b = course_a.id, course_b.id
+        result = {"a": a, "b": b}
+        cases = [
+            ("parallel", "Parallel programming: speedup is serial time divided by parallel time.",
+             [0.8, 0.6, 0.0], a),
+            ("tcp", "TCP networking provides reliable ordered packet delivery.", [0, 1, 0], a),
+            ("accounting", "Accounting balances assets, liabilities and equity.", [0, 0, 1], a),
+            ("foreign", "Private Course B material.", [1, 0, 0], b),
+        ]
+        for topic, value, direction, course_id in cases:
+            content_id, chunk_ids = seed_chunks(factory, texts=(value,), embedded=True)
+            with factory() as db:
+                db.get(Chunk, chunk_ids[0]).embedding = direction + [0.0] * 1533
+                doc = Document(course_id=course_id, content_id=content_id, name=f"{topic}.pdf")
+                db.add(doc)
+                db.commit()
+                result[topic] = chunk_ids[0]
+                result[f"{topic}_content"] = content_id
+                result[f"{topic}_document"] = doc.id
+        with factory() as db:
+            shared = Document(course_id=b, content_id=result["parallel_content"], name="shared-in-b.pdf")
+            db.add(shared)
+            db.commit()
+            result["shared_document"] = shared.id
+        return result
     return seed
 
 

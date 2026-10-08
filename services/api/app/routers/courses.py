@@ -6,6 +6,9 @@ from sqlalchemy.orm import Session, selectinload
 from app.database import get_db
 from app.models.course import Course
 from app.models.document import Document
+from app.embeddings import EmbeddingError
+from app.retrieval import CourseNotFoundError, search_course
+from app.schemas.retrieval import SearchRequest, SearchResponse
 from app.schemas.course import (
     CourseCreate,
     CourseDetail,
@@ -124,3 +127,16 @@ def delete_course(course_id: int, db: Session = Depends(get_db)) -> Response:
     db.delete(course)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/{course_id}/search", response_model=SearchResponse)
+def search_course_chunks(
+    course_id: int, payload: SearchRequest, db: Session = Depends(get_db),
+) -> SearchResponse:
+    try:
+        results = search_course(db, course_id, payload.query, payload.top_k)
+    except CourseNotFoundError:
+        raise HTTPException(status_code=404, detail="Course not found") from None
+    except EmbeddingError:
+        raise HTTPException(status_code=503, detail="Embedding service unavailable") from None
+    return SearchResponse(results=results)
