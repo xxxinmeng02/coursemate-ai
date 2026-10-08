@@ -47,6 +47,9 @@ def test_upgrade_existing_head_preserves_chunks_and_round_trips():
             row = conn.execute(text("SELECT text, page_number, chunk_index, embedding, embedding_config FROM chunks")).one()
             assert tuple(row) == ("Existing canonical text", 5, 0, None, None)
             assert conn.scalar(text("SELECT status FROM contents")) == "ready"
+            assert tuple(conn.execute(text(
+                "SELECT course_id, content_id, name FROM documents"
+            )).one()) == (course_id, content_id, "old.pdf")
             assert conn.scalar(text("SELECT format_type(atttypid, atttypmod) FROM pg_attribute "
                                     "WHERE attrelid = 'chunks'::regclass AND attname = 'embedding'")) == "vector(1536)"
             assert conn.scalar(text("SELECT count(*) FROM pg_extension WHERE extname = 'vector'")) == 1
@@ -60,6 +63,9 @@ def test_upgrade_existing_head_preserves_chunks_and_round_trips():
         alembic("upgrade", "head")
         with scoped.connect() as conn:
             assert conn.scalar(text("SELECT text FROM chunks")) == "Existing canonical text"
+            assert tuple(conn.execute(text(
+                "SELECT course_id, content_id, name FROM documents"
+            )).one()) == (course_id, content_id, "old.pdf")
     finally:
         scoped.dispose()
         with engine.begin() as conn:

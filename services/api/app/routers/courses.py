@@ -8,7 +8,9 @@ from app.models.course import Course
 from app.models.document import Document
 from app.embeddings import EmbeddingError
 from app.retrieval import CourseNotFoundError, search_course
-from app.schemas.retrieval import SearchRequest, SearchResponse
+from app.schemas.retrieval import (
+    RetrievalConfigurationError, SearchRequest, SearchResponse, get_default_top_k,
+)
 from app.schemas.course import (
     CourseCreate,
     CourseDetail,
@@ -134,9 +136,10 @@ def search_course_chunks(
     course_id: int, payload: SearchRequest, db: Session = Depends(get_db),
 ) -> SearchResponse:
     try:
-        results = search_course(db, course_id, payload.query, payload.top_k)
+        top_k = payload.top_k if "top_k" in payload.model_fields_set else get_default_top_k()
+        results = search_course(db, course_id, payload.query, top_k)
     except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found") from None
-    except EmbeddingError:
-        raise HTTPException(status_code=503, detail="Embedding service unavailable") from None
+    except (EmbeddingError, RetrievalConfigurationError):
+        raise HTTPException(status_code=503, detail="Retrieval service unavailable") from None
     return SearchResponse(results=results)

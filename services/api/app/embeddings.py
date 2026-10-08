@@ -43,7 +43,7 @@ def get_embedding_config() -> EmbeddingConfig:
 
 
 def validate_embedding(vector: list[float]) -> list[float]:
-    """Validate actual float32 storage values, including under/overflow."""
+    """Validate float32 storage values and normalize safely for cosine search."""
     try:
         if len(vector) != EMBEDDING_DIMENSIONS:
             raise ValueError
@@ -58,9 +58,10 @@ def validate_embedding(vector: list[float]) -> list[float]:
             if not math.isfinite(rounded):
                 raise ValueError
             stored.append(rounded)
-        if not any(stored):
+        norm = math.hypot(*stored)
+        if not norm:
             raise ValueError
-        return stored
+        return [struct.unpack("f", struct.pack("f", value / norm))[0] for value in stored]
     except (TypeError, ValueError, OverflowError, struct.error):
         raise EmbeddingError("Invalid embedding vector") from None
 

@@ -68,3 +68,12 @@ def test_live_model_topic_quality(postgres_factory, topics):
         pytest.skip("Set RUN_LIVE_EMBEDDING_EVAL=1 and OPENAI_API_KEY for real model quality")
     from app.retrieval_eval import evaluate_topics
     assert all(item["passed"] for item in evaluate_topics(postgres_factory, topics))
+
+
+def test_topic_tie_does_not_count_as_semantic_success(postgres_factory, topics, monkeypatch):
+    from app.retrieval_eval import evaluate_topics
+    monkeypatch.setattr(embeddings, "embed_text", lambda value, **kw: [1.0] + [0.0] * 1535)
+    results = evaluate_topics(postgres_factory, topics)
+    assert results[0]["actual_topic"] == "parallel"  # Deterministic ID tiebreak alone is insufficient.
+    assert results[0]["scores"] == [1.0, 1.0, 1.0]
+    assert results[0]["passed"] is False

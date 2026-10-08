@@ -5,6 +5,7 @@ tests. This command always uses the configured real embedding provider.
 """
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -57,10 +58,16 @@ def evaluate_topics(factory: sessionmaker, fixture: dict) -> list[dict]:
         with factory() as db:
             ranked = search_course(db, course_id, case["query"], len(topic_by_chunk))
         topics = [topic_by_chunk[hit.chunk_id] for hit in ranked]
+        scores = [hit.score for hit in ranked]
+        passed = (
+            bool(topics) and topics[0] == case["expected_topic"]
+            and all(math.isfinite(score) for score in scores)
+            and all(scores[0] > score for topic, score in zip(topics[1:], scores[1:])
+                    if topic != case["expected_topic"])
+        )
         results.append({"query": case["query"], "expected_topic": case["expected_topic"],
                         "actual_topic": topics[0] if topics else None,
-                        "ranked_topics": topics, "scores": [hit.score for hit in ranked],
-                        "passed": bool(topics) and topics[0] == case["expected_topic"]})
+                        "ranked_topics": topics, "scores": scores, "passed": passed})
     return results
 
 

@@ -109,7 +109,9 @@ Chunk vectors use pgvector `vector(1536)` and OpenAI `text-embedding-3-small`.
 Configure `OPENAI_API_KEY`, `EMBEDDING_MODEL`, and `EMBEDDING_REVISION` in `.env`
 or the process environment. Keys are never part of stored configuration IDs.
 The provider boundary is `app/embeddings.py`; it requests 1536 dimensions and
-validates finite, nonzero float32 values before persistence or search.
+validates finite, nonzero float32 values and safely normalizes them before
+persistence or search. Existing non-unit vectors are normalized only in the SQL
+expression, without writing to Chunk rows.
 
 Each stored vector tracks `openai:{model}:1536:{revision}`. Search compares only
 vectors from the query's configuration. `text-embedding-3-large` can also be
@@ -119,7 +121,8 @@ aliases are not immutable snapshots: bump the revision for incompatible provider
 or input changes even if the alias stays the same. No automatic LLM generation
 or PDF processing integration is introduced.
 
-PostgreSQL must have pgvector installed. Compose uses PostgreSQL 17 with pgvector;
+PostgreSQL must have pgvector 0.7.0 or later installed for `l2_normalize`.
+Compose uses PostgreSQL 17 with pgvector;
 the additive migration enables the extension (the migration role needs extension
 privileges). Downgrade removes only the Chunk fields/constraint and retains the
 shared extension. Existing SQLite tests use JSON only for persistence; they do
@@ -161,7 +164,9 @@ Content-Type: application/json
 
 `top_k` defaults to `RETRIEVAL_DEFAULT_TOP_K` (5), with a valid range of 1–50.
 Queries are trimmed, nonblank, and limited to 2000 characters. Missing Courses
-return 404, invalid requests 422, and embedding failures a safe 503. Courses
+return 404, invalid requests 422, and embedding failures a safe 503. Invalid
+server defaults also return a safe 503 when used; explicit valid `top_k` bypasses
+that default. Courses
 without eligible embeddings return `{"results": []}` without a provider call.
 
 Results contain `chunk_id`, `text`, `page_number`, `document_id`, `document_name`,
@@ -199,6 +204,8 @@ TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
 
 The command uses real embeddings, seeds only a temporary schema, reports
 expected/actual topics and scores, and removes that schema on success/failure.
+Success requires finite scores and the expected topic strictly above unrelated
+topics; ties do not count as semantic success.
 It never seeds normal Course tables. A successful small fixture is a sanity
 check; evaluate representative course queries and recall before adding answers.
 

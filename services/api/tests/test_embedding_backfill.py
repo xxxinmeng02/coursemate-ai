@@ -209,3 +209,13 @@ def test_cli_selected_content_is_idempotent(db_factory, seed_chunks, monkeypatch
     monkeypatch.setattr(embeddings, "embed_text", lambda text, **kw: [1.0] + [0.0] * 1535)
     assert embedding_backfill.main(["--content-id", str(content_id)]) == 0
     assert embedding_backfill.main(["--content-id", str(content_id)]) == 0
+
+
+def test_generation_normalizes_extreme_provider_output(db_factory, seed_chunks, monkeypatch):
+    from app.embedding_backfill import embed_content
+    content_id, _ = seed_chunks(db_factory, texts=("Parallel programming",))
+    monkeypatch.setattr(embeddings, "embed_text", lambda value, **kw: [1e30, 1e30] + [0.0] * 1534)
+    with db_factory() as db:
+        embed_content(db, content_id)
+    _, rows = snapshot(db_factory, content_id)
+    assert rows[0][4][:2] == pytest.approx([0.70710678, 0.70710678], abs=1e-7)

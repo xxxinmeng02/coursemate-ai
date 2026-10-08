@@ -129,3 +129,11 @@ def test_network_failure_is_safe(provider, monkeypatch):
         embeddings.embed_text("Parallel speedup")
     assert "test-secret-do-not-log" not in str(error.value)
     assert error.value.__cause__ is None
+
+
+@pytest.mark.parametrize("magnitude", [1e30, 1e-40, 3.0])
+def test_finite_nonunit_vectors_are_normalized_safely(magnitude):
+    from app.embeddings import validate_embedding
+    vector = validate_embedding([magnitude, magnitude] + [0.0] * 1534)
+    assert vector[:2] == pytest.approx([0.70710678, 0.70710678], abs=1e-7)
+    assert vector[2:] == [0.0] * 1534

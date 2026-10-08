@@ -1,6 +1,7 @@
 """Course retrieval: query embedding followed by an exact scoped vector query."""
 from dataclasses import dataclass
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
@@ -63,9 +64,15 @@ def _course_chunks(db: Session, course_id: int, config_id: str) -> Select:
 def _search_course_vectors(
     db: Session, candidates: Select, vector: list[float], top_k: int,
 ) -> list[RetrievalResult]:
-    distance = Chunk.embedding.cosine_distance(vector)
-    statement = candidates.add_columns((1.0 - distance).label("score")) \
+    # Normalize legacy/imported vectors in SQL without changing stored Chunk state.
+    # pgvector's raw float32 cosine arithmetic can overflow/underflow otherwise.
+    distance = func.l2_normalize(
+        Chunk.embedding, type_=Vector(embeddings.EMBEDDING_DIMENSIONS),
+    ).cosine_distance(vector)
+    statement = (
+        candidates.add_columns((1.0 - distance).label("score"))
         .order_by(distance.asc(), Chunk.id.asc()).limit(top_k)
+    )
     return [RetrievalResult(**row) for row in db.execute(statement).mappings()]
 
 
