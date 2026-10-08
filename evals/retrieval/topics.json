@@ -1,0 +1,25 @@
+{
+  "description": "Three-topic sanity case. Geometry directions are synthetic test data, not model quality evidence.",
+  "documents": [
+    {
+      "topic": "parallel",
+      "text": "Parallel programming divides work across processors. Parallel speedup is the execution time on one processor divided by the time using multiple processors. Amdahl's law limits speedup when a portion of the program remains serial.",
+      "geometry_direction": [0.8, 0.6, 0.0]
+    },
+    {
+      "topic": "tcp",
+      "text": "TCP provides reliable ordered delivery of bytes over a network. Sequence numbers, acknowledgments and retransmission recover lost packets. Congestion control adjusts the sender's transmission rate.",
+      "geometry_direction": [0.0, 1.0, 0.0]
+    },
+    {
+      "topic": "accounting",
+      "text": "Financial accounting records business transactions. The accounting equation states that assets equal liabilities plus equity. Revenue minus expenses determines profit in an income statement.",
+      "geometry_direction": [0.0, 0.0, 1.0]
+    }
+  ],
+  "queries": [
+    {"query": "How much faster can a program run when work is distributed across processors?", "expected_topic": "parallel", "geometry_direction": [1.0, 0.0, 0.0]},
+    {"query": "How does a connection recover lost packets and deliver data in order?", "expected_topic": "tcp", "geometry_direction": [0.0, 1.0, 0.0]},
+    {"query": "What relationship links a company's assets, debts and owners' equity?", "expected_topic": "accounting", "geometry_direction": [0.0, 0.0, 1.0]}
+  ]
+}

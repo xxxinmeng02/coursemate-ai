@@ -178,3 +178,41 @@ Internal consumers call `search_course(db, course_id, query, top_k)` in
 and translate errors. SQL ranking is isolated from the embedding provider, and
 neither module depends on PDF parsing. A future reranker/hybrid search belongs
 inside retrieval; future answer generation consumes retrieval results.
+
+## Retrieval evaluation and PostgreSQL verification
+
+The three-topic fixture is `evals/retrieval/topics.json`: parallel programming,
+TCP/networking, and accounting, each with a related natural-language query.
+Deterministic tests use clearly labeled synthetic vectors and real pgvector to
+verify ranking. Those tests establish database/query correctness, not embedding
+model quality. No SQL similarity behavior is mocked.
+
+For real model quality, configure `OPENAI_API_KEY` and an explicit separate test
+database (the account needs schema and extension privileges):
+
+```bash
+TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
+  python -m app.retrieval_eval
+TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
+  RUN_LIVE_EMBEDDING_EVAL=1 python -m pytest tests/test_retrieval_eval.py -q
+```
+
+The command uses real embeddings, seeds only a temporary schema, reports
+expected/actual topics and scores, and removes that schema on success/failure.
+It never seeds normal Course tables. A successful small fixture is a sanity
+check; evaluate representative course queries and recall before adding answers.
+
+```bash
+python -m pytest -q
+TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' python -m pytest -q
+TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
+  python -m pytest tests/test_retrieval_postgres.py tests/test_retrieval_migrations.py -q
+alembic heads
+```
+
+The migration test creates pre-retrieval rows at the existing head, upgrades to
+pgvector, checks preservation/type/extension, runs `alembic check`, and exercises
+downgrade/re-upgrade. All PostgreSQL tests isolate their tables in random schemas.
+Without a test URL they skip explicitly; live quality additionally requires the
+opt-in flag and API key. See [the implementation report](../../docs/RAG_RETRIEVAL_FOUNDATION.md)
+for exact results, maintainability review, and limitations.
