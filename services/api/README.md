@@ -102,3 +102,25 @@ alembic upgrade head
 
 The current models live in `app/models/`, and the schema revisions are under
 `alembic/versions/`.
+
+## Embedding configuration
+
+Chunk vectors use pgvector `vector(1536)` and OpenAI `text-embedding-3-small`.
+Configure `OPENAI_API_KEY`, `EMBEDDING_MODEL`, and `EMBEDDING_REVISION` in `.env`
+or the process environment. Keys are never part of stored configuration IDs.
+The provider boundary is `app/embeddings.py`; it requests 1536 dimensions and
+validates finite, nonzero float32 values before persistence or search.
+
+Each stored vector tracks `openai:{model}:1536:{revision}`. Search compares only
+vectors from the query's configuration. `text-embedding-3-large` can also be
+selected with an explicit 1536-dimensional output; changing models/revisions
+requires re-embedding. Changing dimension requires another migration. Model
+aliases are not immutable snapshots: bump the revision for incompatible provider
+or input changes even if the alias stays the same. No automatic LLM generation
+or PDF processing integration is introduced.
+
+PostgreSQL must have pgvector installed. Compose uses PostgreSQL 17 with pgvector;
+the additive migration enables the extension (the migration role needs extension
+privileges). Downgrade removes only the Chunk fields/constraint and retains the
+shared extension. Existing SQLite tests use JSON only for persistence; they do
+not substitute for PostgreSQL vector ranking tests.
