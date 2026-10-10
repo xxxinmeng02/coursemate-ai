@@ -1,0 +1,26 @@
+{
+  "dataset_id": "parallel-computing-v2",
+  "dataset_sha256": "c7d55c6273de37b6f0d272d1a0d15752c10b8d11b9c8a3dc1113fd3b9491f3a0",
+  "dataset_provenance": "Authored on 2026-10-11 as realistic teaching material for testing, expanding the existing parallel-programming topic. Not uploaded university slides or an independently sampled student benchmark. Logical page boundaries are explicit; PDF extraction is not evaluated.",
+  "question_count": 25,
+  "document_count": 4,
+  "chunk_count": 24,
+  "embedding_config": "openai:text-embedding-3-small:1536:v1",
+  "chunking": {
+    "target_characters": 1200,
+    "overlap_characters": 200
+  },
+  "latency_scope": "One full-course search including query embedding/network and SQL; excludes backfill",
+  "run_at_utc": "2026-10-10T23:47:23.551148+00:00",
+  "status": "blocked",
+  "real_embeddings_used": false,
+  "metrics": {
+    "recall_at_1": null,
+    "recall_at_3": null,
+    "recall_at_5": null,
+    "mrr": null
+  },
+  "latency_ms": null,
+  "results": [],
+  "blocker": "OPENAI_API_KEY is not configured"
+}

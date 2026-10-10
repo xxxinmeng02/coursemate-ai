@@ -223,3 +223,22 @@ downgrade/re-upgrade. All PostgreSQL tests isolate their tables in random schema
 Without a test URL they skip explicitly; live quality additionally requires the
 opt-in flag and API key. See [the implementation report](../../docs/RAG_RETRIEVAL_FOUNDATION.md)
 for exact results, maintainability review, and limitations.
+
+
+## Realistic course retrieval benchmark
+
+The separate 25-question benchmark expands the existing evaluation command:
+
+```bash
+TEST_POSTGRES_URL='postgresql+psycopg://USER:PASSWORD@HOST:PORT/TEST_DB' \
+  python -m app.retrieval_eval --benchmark \
+  --output ../../evals/retrieval/results/parallel-computing-v2-live.json
+```
+
+It reuses current chunking, backfill and Course search in a temporary schema.
+It records Recall@1/3/5, full-corpus MRR, end-to-end latency and actual passages.
+With no API key, it writes a blocked artifact with null metrics; regression tests
+using synthetic embeddings do not validate model quality. Exit 0 means measurement
+completed, not that the system is ready for answer generation.
+See [benchmark data, questions and metric definitions](../../evals/retrieval/README.md)
+and [the evaluation report](../../docs/RETRIEVAL_EVALUATION.md).

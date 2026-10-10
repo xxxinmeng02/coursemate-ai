@@ -1,0 +1,286 @@
+{
+  "id": "parallel-computing-v2",
+  "course": "Parallel Computing Foundations",
+  "provenance": "Authored on 2026-10-11 as realistic teaching material for testing, expanding the existing parallel-programming topic. Not uploaded university slides or an independently sampled student benchmark. Logical page boundaries are explicit; PDF extraction is not evaluated.",
+  "references": [
+    {
+      "title": "OpenMP worksharing-loop scheduling (5.1)",
+      "url": "https://www.openmp.org/spec-html/5.1/openmpsu48.html"
+    },
+    {
+      "title": "MPI nonblocking communication",
+      "url": "https://www.mpi-forum.org/docs/mpi-1.1/mpi-11-html/node44.html"
+    },
+    {
+      "title": "MPI collective completion semantics (4.1)",
+      "url": "https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report/node145.htm"
+    }
+  ],
+  "documents": [
+    {
+      "name": "01-performance-notes.txt",
+      "pages": [
+        "Lecture 1, page 1: Measuring parallel performance\n\nSpeedup is the one-worker execution time divided by the execution time with p workers. Parallel efficiency is speedup divided by the worker count. A computation taking 80 seconds on one worker and 20 seconds on eight has speedup four and efficiency one half. Compare runs that solve the same problem with the same accuracy. Report the one-worker baseline rather than comparing against an unrelated slow implementation. Wall-clock elapsed time, rather than the sum of CPU times, measures how long the user waits.\n\nParallel overhead includes creating workers, communication, synchronization, and combining partial results. Adding workers can increase overhead faster than it decreases useful computation. A tiny loop can therefore run more slowly with eight workers than with one. This does not mean its numerical result is incorrect. Measure several repetitions and report a representative value, since a single run can include unrelated operating-system activity. Keep input size, compiler options, and hardware conditions comparable.\n\nWhen interpreting a timing chart, distinguish time spent doing useful work from time spent waiting for the slowest participant. A balanced workload can still scale poorly if all workers contend for memory bandwidth. Increasing the worker count is an experiment, not a guarantee of a smaller elapsed time. Record throughput separately when the experiment serves many independent requests: a system may finish more requests per second without reducing the latency of one request.",
+        "Lecture 1, page 2: The fixed-workload serial limit\n\nAmdahl's law models a fixed workload with serial fraction s and perfectly parallel remaining work. Its ideal speedup on p processors is 1 / (s + (1-s)/p). If ten percent of the original runtime cannot be parallelized, the limiting speedup is ten even with arbitrarily many processors. This limit assumes the serial fraction stays fixed; actual communication and coordination costs can lower the achieved speedup further. A serial setup stage can dominate after the other stages have been accelerated.\n\nFor example, a simulation spends ten seconds reading and preparing data and ninety seconds updating independent particles on one processor. Accelerating the particle updates does not automatically accelerate the input stage. As processors are added, the unchanged preparation time becomes a larger fraction of the new runtime. To improve the limit, reduce the serial work itself or change the algorithm; repeatedly buying more processors cannot remove that dependency.\n\nThe model is useful for deciding where optimization effort belongs. It is not a claim that every real program has a permanent, input-independent serial fraction. First determine whether the benchmark holds the total problem size constant. Next identify dependencies that force work to execute sequentially. Finally distinguish those dependencies from avoidable overhead such as a lock around an otherwise independent update. The ideal equation omits memory effects and scheduling costs, so measured results require a separate timing explanation.",
+        "Lecture 1, page 3: Scaling experiments\n\nStrong scaling keeps the total problem size fixed while increasing the number of workers. Weak scaling keeps approximately the same work per worker, so the total problem grows with the worker count. Solving the same mesh on more machines is a strong-scaling experiment; growing the mesh so each machine owns the same number of cells is a weak-scaling experiment. The two tests answer different capacity questions and should not share an unlabeled speedup graph.\n\nAmdahl examines a fixed-size job, whereas Gustafson's scaled-speedup argument considers a larger parallel workload within a similar elapsed-time budget. Increasing the problem size can make the useful parallel portion larger relative to serial setup. This does not contradict the fixed-workload limit: the experiments hold different quantities constant. A laboratory report should state its workload rule before drawing conclusions from a rising processor count.\n\nFor weak scaling, compare elapsed time as total work and processors grow together. Ideally the runtime stays approximately constant, although communication can still increase. For strong scaling, compare runtime for the same input and look for diminishing returns. Neither test proves that an algorithm is efficient on a different machine or a much smaller input. The amount of memory available per worker, the shape of the domain, and interconnect costs can change the result even when the scaling definition is unchanged."
+      ]
+    },
+    {
+      "name": "02-shared-memory-notes.txt",
+      "pages": [
+        "Lecture 2, page 1: Races and atomic updates\n\nA data race occurs when concurrent threads access the same memory location, at least one access is a write, and the accesses are not properly synchronized. Updating a shared counter with counter = counter + 1 is a read-modify-write operation. Two threads can both read the old value and overwrite each other's increments. The final total may be too small even though each thread executed its instruction. Observing a correct result on one run does not establish that the program is race-free.\n\nMutual exclusion protects a critical section so only one participating thread executes it at a time. An atomic update can protect a supported single-location operation without wrapping an entire multi-statement block in a lock. A lock is appropriate when the invariant spans several variables or several operations. Protecting only the read while leaving the write unprotected does not make the whole increment atomic. All conflicting accesses must follow the synchronization discipline.\n\nA local variable belongs to one thread only if its storage is actually private, not merely because its name appears inside a function. A pointer can still refer to shared storage. For a sum over independent array elements, separate per-thread accumulators followed by a combine step can avoid a shared-counter bottleneck. Correctness and performance are separate questions: a single lock may produce the right answer while forcing all updates to execute one after another.",
+        "Lecture 2, page 2: Waiting, lock order, and deadlock\n\nA barrier makes participating threads wait until every participant reaches the same phase boundary. A mutex instead permits one thread at a time to enter a protected critical section. A barrier is not a replacement for mutual exclusion around a shared update: threads may still execute conflicting writes before they arrive. Conversely, holding a mutex does not prove that all other threads have completed the previous phase. Choose the mechanism that matches the dependency.\n\nDeadlock can arise when one thread holds lock A and waits for B while another holds B and waits for A. Neither thread can release its first lock because it is waiting for the other. Requiring every thread to acquire multiple locks in the same global order removes this particular circular-wait pattern. Adding more processors or inserting a sleep does not establish progress. Avoid waiting at a barrier while holding a lock that another participant needs to reach that barrier.\n\nSuppose worker one locks the account table and then the transaction log, while worker two locks the log and then the table. An intermittent freeze with both workers waiting suggests a lock-order cycle rather than missing CPU capacity. Draw a wait-for relationship before changing the algorithm. Removing a barrier simply to stop a hang can violate phase ordering and introduce a race. Synchronization should encode required dependencies; extra waiting can hurt performance without making an incorrect access discipline correct.",
+        "Lecture 2, page 3: Scheduling and cache effects\n\nStatic scheduling assigns loop iterations in predetermined groups, with low scheduling overhead when iteration costs are similar. Dynamic scheduling hands out further groups as workers finish, helping balance irregular iteration costs at the price of more coordination. A loop whose early items take much longer than later ones can leave statically assigned workers idle. Dynamic scheduling changes work assignment, not the correctness of dependencies between iterations. An iteration that needs the previous iteration's output cannot be made independent merely by changing the schedule.\n\nFalse sharing occurs when threads modify distinct variables located on the same cache line, causing coherence traffic even though the program has no logical data race on those variables. Padding or separating frequently written per-thread counters can reduce the interference. This is different from true sharing, where threads intentionally update the same location and need synchronization. A correct program can therefore slow down because of how independent data are laid out in memory.\n\nThe best scheduling chunk size balances coordination cost against the risk that one worker receives all the expensive iterations. Very small groups can improve balance while increasing scheduling overhead; very large groups do the reverse. Measure the actual distribution of iteration costs before selecting a policy. If the program scales poorly despite balanced work, inspect cache-line traffic and memory bandwidth rather than assuming that additional barriers will solve the problem."
+      ]
+    },
+    {
+      "name": "03-message-passing-notes.txt",
+      "pages": [
+        "Lecture 3, page 1: Separate memories and communication completion\n\nMPI processes normally have separate address spaces. Changing an array in one process does not update another process's local copy; processes exchange data explicitly with messages. Communicator, source or destination, and tag help identify matching point-to-point operations. A message-passing design must say which process owns each piece of data and when a receiver is allowed to use an arriving value. Shared-memory threads instead can directly access shared objects, subject to synchronization rules.\n\nA nonblocking send starts an operation and returns a request; the send buffer must not be modified until that operation completes. Waiting or testing the request establishes completion for safe buffer reuse. Completion of a send does not by itself prove that the remote application has finished consuming the data. A blocking call and a nonblocking start therefore have different return conditions; returning quickly from the start call is not proof that the transfer has finished.\n\nIndependent computation can be placed between starting communication and waiting for completion, making overlap possible. Actual overlap depends on the implementation and workload and must be measured. Computation that reads the receive buffer cannot run before the receive completes. In a stencil update, cells away from the edge may be independent of incoming boundary values, whereas edge cells must wait. A correct overlap schedule respects those dependencies rather than placing an arbitrary delay before reading the buffer.",
+        "Lecture 3, page 2: Collective communication\n\nA broadcast distributes data from one designated root to every participating process. A scatter distributes different pieces of a root's data, while a gather collects pieces at a root. These operations move data; they do not necessarily perform arithmetic on the values. Use a broadcast to distribute common simulation parameters and a scatter when each worker should receive a different section of an input array. Participants must call compatible collective operations on the appropriate communicator.\n\nA reduction combines values with an operation such as sum, minimum, or maximum and returns the combined result at a root. An all-reduce returns the combined value to every participant. To let every worker decide whether a distributed solver has converged, all-reduce a local error measure with a maximum operation. Gathering all errors to one root does not itself calculate the maximum or make that maximum available everywhere. A further computation and distribution would be needed in that design.\n\nA collective call should not be treated as an implicit general-purpose barrier unless its documented semantics require synchronization. All participants taking part in the operation is different from every participant returning at exactly the same moment. A collective involving the wrong communicator can wait for processes that never join it. State both the data-flow purpose and the participating group in a communication plan; naming an operation without identifying its root or communicator leaves the algorithm underspecified.",
+        "Lecture 3, page 3: Communication cost and phase coordination\n\nA simple message-cost model is startup latency plus bytes transferred divided by effective bandwidth. Latency dominates many tiny messages, while bandwidth matters for large transfers. Combining small independent messages can reduce repeated startup costs, but waiting too long to form a batch can delay useful work. A link with high peak bandwidth can still perform poorly for a program that sends thousands of short messages in sequence. Measure communication patterns rather than reasoning from one hardware headline.\n\nAn MPI barrier establishes a phase boundary: a process cannot complete the barrier until all members have entered it. It does not make the machines' wall clocks identical. Timestamps from different hosts need clock synchronization or a measurement method that avoids assuming a shared clock. Timing a distributed phase usually requires a clear choice about whether waiting and communication are included. A barrier can help define the phase but can also introduce extra waiting.\n\nCommunication time and computation time are not interchangeable. If a process sends a tiny request and waits before doing any other work, the critical path can include the full startup cost on every iteration. Overlap is possible only for work that is independent of the outstanding communication. Increasing a message's payload can improve throughput without improving the latency of a single request. These observations explain why a larger interconnect bandwidth alone may not accelerate a synchronization-heavy algorithm."
+      ]
+    },
+    {
+      "name": "04-decomposition-notes.txt",
+      "pages": [
+        "Lecture 4, page 1: Task graphs and decomposition\n\nData decomposition assigns different portions of a dataset to workers that perform similar operations. Task decomposition assigns different activities or functions, which may operate on shared or exchanged data. Splitting an image into tiles for the same filter is data decomposition; assigning decoding, filtering, and encoding to different workers is task decomposition. An implementation can combine both approaches. The decomposition must identify data ownership and dependencies, not merely assign names to workers.\n\nWork is the total amount of computation in a task graph, while span is the length of its longest dependency chain. Even with unlimited processors, the runtime cannot be less than the span. The work-to-span ratio indicates the graph's available parallelism. Many tasks do not guarantee high parallelism if most of them depend on the same sequential chain. Improving the scheduling policy cannot eliminate an algorithmic dependency that has not been changed.\n\nFor a divide-and-conquer computation, independent subproblems can proceed concurrently before their results are combined. If a parent waits immediately after launching each child, the implementation can serialize work that the graph permits to run in parallel. Distinguish a limitation of the task graph from a limitation introduced by its execution order. A good diagram labels edges with the actual data required by the successor; unrelated tasks should not be connected simply because they appeared next to each other in source code.",
+        "Lecture 4, page 2: Domain boundaries and halo exchange\n\nIn a grid-based stencil, each cell's new value depends on nearby cells from the previous step. Domain decomposition gives each worker a subdomain. Halo or ghost cells hold copies of neighboring boundary values so local updates can read data owned by another worker. Refresh the halos before using those values in the next dependent update. Halos are copies for communication, not independent new physical cells in the simulated domain.\n\nAs a fixed two-dimensional grid is split among more workers, each subdomain gets smaller and its boundary-to-interior ratio grows. Communication relative to useful computation can therefore increase as more workers are added. This surface-to-volume effect can limit strong scaling even when every worker owns the same number of cells. Balancing the cell count addresses one source of imbalance but does not remove the cost of exchanging boundaries.\n\nInterior cells can often be updated while incoming halo messages are in flight, followed by edge cells after the messages complete. This changes scheduling without changing the stencil's mathematical dependence on the previous step. Do not update an edge using stale ghost values merely because a nonblocking receive has been started. Increasing the halo width also changes the amount of exchanged data and must match the numerical method; an arbitrary larger halo is not a general cure for communication overhead.",
+        "Lecture 4, page 3: Pipelines and numerical reproducibility\n\nA pipeline lets different stages process different items concurrently, after the initial fill. For a stream of images, decoding item three can overlap filtering item two and encoding item one. The throughput is limited by the slowest stage. The latency of one item still includes its journey through all stages. A dependency requiring the filtered output means that encoding the same image cannot start before the necessary filtered data exist. Overlapping different items is distinct from ignoring a dependency within one item.\n\nFloating-point addition is not exactly associative, so changing a parallel reduction tree can change the last bits of a sum without any data race. Different grouping changes rounding, even when each update is synchronized correctly. A reproducibility requirement may call for a fixed combine order or a more stable summation method, often with a performance cost. Do not diagnose every small numerical difference as a missing lock; first separate nondeterministic access from deterministic but different arithmetic grouping.\n\nIn a lab experiment, record both performance and the accepted numerical tolerance. A program that produces an answer outside that tolerance is not made correct by a fast timing. Conversely, a tiny permitted rounding difference does not establish a concurrency defect. To analyze pipeline timing, measure stage service times and observe queues; adding workers to a fast stage cannot remove the bottleneck in the slow stage. The same dependency reasoning used for task graphs helps explain which stages or items may safely overlap."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "F01",
+      "type": "factual",
+      "question": "A run drops from 80 seconds to 20 seconds using eight workers. Where is the definition needed to calculate its acceleration?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "speedup",
+      "evidence": "Speedup is the one-worker execution time divided by the execution time with p workers."
+    },
+    {
+      "id": "F02",
+      "type": "factual",
+      "question": "What is the best theoretical acceleration if a tenth of a fixed job must stay sequential?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "Amdahl limit",
+      "evidence": "If ten percent of the original runtime cannot be parallelized, the limiting speedup is ten even with arbitrarily many processors."
+    },
+    {
+      "id": "F03",
+      "type": "factual",
+      "question": "Which protection can make a single shared-counter increment indivisible?",
+      "expected_document": "02-shared-memory-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "atomic update",
+      "evidence": "An atomic update can protect a supported single-location operation without wrapping an entire multi-statement block in a lock."
+    },
+    {
+      "id": "F04",
+      "type": "factual",
+      "question": "Which communication operation sends the same initial parameters from the coordinator to all workers?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "broadcast",
+      "evidence": "A broadcast distributes data from one designated root to every participating process."
+    },
+    {
+      "id": "F05",
+      "type": "factual",
+      "question": "What are the extra border copies used by a worker updating its own piece of a simulation grid?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "halo cells",
+      "evidence": "Halo or ghost cells hold copies of neighboring boundary values so local updates can read data owned by another worker."
+    },
+    {
+      "id": "P01",
+      "type": "paraphrase",
+      "question": "Why does the input preparation step become the main obstacle after the rest of a simulation is made much faster?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "serial bottleneck",
+      "evidence": "As processors are added, the unchanged preparation time becomes a larger fraction of the new runtime."
+    },
+    {
+      "id": "P02",
+      "type": "paraphrase",
+      "question": "Some loop items take far longer than others. How can finished workers pick up more items instead of waiting?",
+      "expected_document": "02-shared-memory-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "dynamic scheduling",
+      "evidence": "Dynamic scheduling hands out further groups as workers finish, helping balance irregular iteration costs at the price of more coordination."
+    },
+    {
+      "id": "P03",
+      "type": "paraphrase",
+      "question": "I changed a local array on one machine. Why does another MPI worker still see its old copy?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "separate address spaces",
+      "evidence": "Changing an array in one process does not update another process's local copy; processes exchange data explicitly with messages."
+    },
+    {
+      "id": "P04",
+      "type": "paraphrase",
+      "question": "All machines passed the rendezvous, but their timestamps disagree. What assumption in my timing method is wrong?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "barrier versus clock synchronization",
+      "evidence": "It does not make the machines' wall clocks identical."
+    },
+    {
+      "id": "P05",
+      "type": "paraphrase",
+      "question": "Each worker owns equally many cells, yet using more workers spends a larger fraction of time exchanging borders. Why?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "surface-to-volume effect",
+      "evidence": "Communication relative to useful computation can therefore increase as more workers are added."
+    },
+    {
+      "id": "T01",
+      "type": "terminology",
+      "question": "What measure describes how effectively the allocated processor count is being used relative to the observed acceleration?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "parallel efficiency",
+      "evidence": "Parallel efficiency is speedup divided by the worker count."
+    },
+    {
+      "id": "T02",
+      "type": "terminology",
+      "question": "What do researchers call the experiment where each extra machine receives another equally sized piece of work?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "weak scaling",
+      "evidence": "Weak scaling keeps approximately the same work per worker, so the total problem grows with the worker count."
+    },
+    {
+      "id": "T03",
+      "type": "terminology",
+      "question": "What is the name for cache interference between threads that write different nearby counters?",
+      "expected_document": "02-shared-memory-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "false sharing",
+      "evidence": "False sharing occurs when threads modify distinct variables located on the same cache line, causing coherence traffic even though the program has no logical data race on those variables."
+    },
+    {
+      "id": "T04",
+      "type": "terminology",
+      "question": "What collective operation combines workers' values with a function such as maximum?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "reduction",
+      "evidence": "A reduction combines values with an operation such as sum, minimum, or maximum and returns the combined result at a root."
+    },
+    {
+      "id": "T05",
+      "type": "terminology",
+      "question": "Which task-graph quantity describes the sequential dependency chain that no number of processors can bypass?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "span",
+      "evidence": "span is the length of its longest dependency chain."
+    },
+    {
+      "id": "C01",
+      "type": "comparison",
+      "question": "How do the fixed-input and growing-input scaling experiments differ in what they hold constant?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "strong versus weak scaling",
+      "evidence": "Strong scaling keeps the total problem size fixed while increasing the number of workers. Weak scaling keeps approximately the same work per worker, so the total problem grows with the worker count."
+    },
+    {
+      "id": "C02",
+      "type": "comparison",
+      "question": "How does waiting for everyone to finish a phase differ from protecting a shared update against simultaneous access?",
+      "expected_document": "02-shared-memory-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "barrier versus mutex",
+      "evidence": "A barrier makes participating threads wait until every participant reaches the same phase boundary. A mutex instead permits one thread at a time to enter a protected critical section."
+    },
+    {
+      "id": "C03",
+      "type": "comparison",
+      "question": "How is starting an asynchronous send different from knowing its memory buffer is safe to overwrite?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "nonblocking start versus completion",
+      "evidence": "A nonblocking send starts an operation and returns a request; the send buffer must not be modified until that operation completes."
+    },
+    {
+      "id": "C04",
+      "type": "comparison",
+      "question": "Is splitting an image into tiles the same kind of parallel decomposition as assigning decoding and filtering to different workers?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "data versus task decomposition",
+      "evidence": "Splitting an image into tiles for the same filter is data decomposition; assigning decoding, filtering, and encoding to different workers is task decomposition."
+    },
+    {
+      "id": "C05",
+      "type": "comparison",
+      "question": "Why can a fast network handle a huge transfer well but still be poor for thousands of tiny transfers?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "latency versus bandwidth",
+      "evidence": "Latency dominates many tiny messages, while bandwidth matters for large transfers."
+    },
+    {
+      "id": "H01",
+      "type": "hard",
+      "question": "My numerical output is correct, but an eight-worker version of a tiny loop takes longer. Which performance costs should I inspect?",
+      "expected_document": "01-performance-notes.txt",
+      "expected_page": 1,
+      "expected_topic": "parallel overhead",
+      "evidence": "Adding workers can increase overhead faster than it decreases useful computation."
+    },
+    {
+      "id": "H02",
+      "type": "hard",
+      "question": "Two workers intermittently freeze: one holds the table lock and needs the log, while the other holds the log and needs the table. What explains this?",
+      "expected_document": "02-shared-memory-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "circular wait deadlock",
+      "evidence": "Deadlock can arise when one thread holds lock A and waits for B while another holds B and waits for A.",
+      "alternative_evidence": [
+        "An intermittent freeze with both workers waiting suggests a lock-order cycle rather than missing CPU capacity."
+      ]
+    },
+    {
+      "id": "H03",
+      "type": "hard",
+      "question": "Every solver worker needs the largest error across all workers before deciding to stop. Why would gathering the numbers to one coordinator be insufficient?",
+      "expected_document": "03-message-passing-notes.txt",
+      "expected_page": 2,
+      "expected_topic": "all-reduce convergence",
+      "evidence": "To let every worker decide whether a distributed solver has converged, all-reduce a local error measure with a maximum operation.",
+      "alternative_evidence": [
+        "Gathering all errors to one root does not itself calculate the maximum or make that maximum available everywhere. A further computation and distribution would be needed in that design."
+      ]
+    },
+    {
+      "id": "H04",
+      "type": "hard",
+      "question": "An image encoder needs filtered pixels. Can it safely overlap with filtering, and which items may move through the stages together?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "pipeline dependencies",
+      "evidence": "Overlapping different items is distinct from ignoring a dependency within one item."
+    },
+    {
+      "id": "H05",
+      "type": "hard",
+      "question": "All accesses are synchronized, but changing the worker arrangement slightly changes the final sum. What explanation should I investigate before adding more locks?",
+      "expected_document": "04-decomposition-notes.txt",
+      "expected_page": 3,
+      "expected_topic": "floating point reproducibility",
+      "evidence": "Floating-point addition is not exactly associative, so changing a parallel reduction tree can change the last bits of a sum without any data race."
+    }
+  ]
+}
