@@ -17,6 +17,24 @@ export type CourseDetail = CourseSummary & {
   documents: DocumentSummary[];
 };
 
+export type SearchResult = {
+  chunk_id: number;
+  text: string;
+  page_number: number | null;
+  document_id: number;
+  document_name: string;
+  score: number;
+};
+
+export function searchCourse(courseId: number, query: string, topK = 5, signal?: AbortSignal) {
+  return request<{ results: SearchResult[] }>(`/courses/${courseId}/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, top_k: topK }),
+    signal,
+  });
+}
+
 type FastApiError = {
   detail?: string | Array<{ msg?: string }>;
 };

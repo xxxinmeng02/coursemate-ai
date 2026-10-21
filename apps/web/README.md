@@ -41,7 +41,15 @@ HTTP status so invalid PDFs (`400`), missing courses (`404`), duplicate files
 
 ## Verification
 
+Course detail pages include a collapsed **Retrieval debug** panel. It calls
+`POST /courses/{id}/search` with a query and top_k, and displays the returned
+chunks, PDF names, 1-based pages and cosine similarity scores. Scores are not
+answer confidence. No chat or LLM generation is included. An empty response may
+mean that parsing/backfill has not run; see the
+[real-course retrieval runbook](../../docs/REAL_COURSE_RETRIEVAL.md).
+
 ```bash
 npm run lint
+npm test
 npm run build
 ```

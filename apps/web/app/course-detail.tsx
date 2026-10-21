@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import RetrievalDebug from "./retrieval-debug";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, deleteCourse, getCourse, uploadDocument, type CourseDetail } from "./course-api";
@@ -225,6 +226,7 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
                 </div>
               )}
             </section>
+            <RetrievalDebug key={courseId} courseId={courseId} />
           </>
         )}
       </main>

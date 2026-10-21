@@ -1,0 +1,315 @@
+{
+  "id": "mit-6006-s2020-v1",
+  "course": "MIT 6.006 Introduction to Algorithms (Spring 2020)",
+  "created_on": "2026-10-21",
+  "course_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/",
+  "provenance": "Five unchanged lecture PDFs from a real MIT course. Questions and Chinese answer/locator notes authored for this evaluation; not collected from students. Labels fixed before any live search measurement.",
+  "page_numbering": "1-based physical PDF pages, including the MIT OCW attribution page; no page offsets or invented logical pages.",
+  "license": {
+    "name": "MIT OCW CC BY-NC-SA 4.0",
+    "url": "https://ocw.mit.edu/pages/privacy-and-terms-of-use/",
+    "note": "Download originals from MIT. PDFs are not redistributed in this repository. Attribute Erik Demaine, Jason Ku, Justin Solomon and MIT OpenCourseWare."
+  },
+  "language": "English queries against English PDFs; Chinese notes for annotation review. Cross-language retrieval is not measured.",
+  "documents": [
+    {
+      "name": "MIT6_006S20_lec4.pdf",
+      "title": "Lecture 4: Hashing",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/ce9e94705b914598ce78a00a70a1f734_MIT6_006S20_lec4.pdf",
+      "resource_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec4/",
+      "sha256": "cbc9a669f00c7554520c667853f4bc95f041348fea7ce76fd8a37246c94dc564",
+      "pages": 5
+    },
+    {
+      "name": "MIT6_006S20_lec9.pdf",
+      "title": "Lecture 9: Breadth-First Search",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/196a95604877d326c6586e60477b59d4_MIT6_006S20_lec9.pdf",
+      "resource_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec9/",
+      "sha256": "db45282ccf191109d6725ebaead32ca8c8477abda594f45c1ac83bb78fee17bd",
+      "pages": 5
+    },
+    {
+      "name": "MIT6_006S20_lec10.pdf",
+      "title": "Lecture 10: Depth-First Search",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/f3e349e0eb3288592289d2c81e0c4f4d_MIT6_006S20_lec10.pdf",
+      "resource_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec10/",
+      "sha256": "1130b0c7e033a7232c591b497d8fbafca25840f61492bda9875fdecb39dc2c78",
+      "pages": 5
+    },
+    {
+      "name": "MIT6_006S20_lec13.pdf",
+      "title": "Lecture 13: Dijkstra's Algorithm",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/d819e7f4568aced8d5b59e03db6c7b67_MIT6_006S20_lec13.pdf",
+      "resource_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec13/",
+      "sha256": "1ab30bcc723f73f3cedb1c49266cc3bb6d8dbfc53dcf46e1d232df6d5c76a9b5",
+      "pages": 5
+    },
+    {
+      "name": "MIT6_006S20_lec15.pdf",
+      "title": "Lecture 15: Recursive Algorithms",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/9eb3e9a51a7b5b60b0f67c2277f8b0ee_MIT6_006S20_lec15.pdf",
+      "resource_url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/resources/mit6_006s20_lec15/",
+      "sha256": "4ffd3740ecac3df26f3b03651a9295a44858f3e3e90da1129d605305b1dc4a1c",
+      "pages": 8
+    }
+  ],
+  "questions": [
+    {
+      "id": "H01",
+      "type": "scenario",
+      "question": "My student IDs are huge numbers but I only have a few thousand students. Why is using each ID as an array index wasteful?",
+      "expected_document": "MIT6_006S20_lec4.pdf",
+      "expected_page": 2,
+      "locator": "Direct Access Array，小节末尾的空间开销说明",
+      "answer_summary": "按键空间大小分配数组，空间取决于 u 而非实际人数 n。",
+      "evidence_anchor": "But space"
+    },
+    {
+      "id": "H02",
+      "type": "paraphrase",
+      "question": "Two different keys land in the same bucket. How does chaining let me keep both?",
+      "expected_document": "MIT6_006S20_lec4.pdf",
+      "expected_page": 3,
+      "locator": "Chaining 小节首两条",
+      "answer_summary": "让桶指向另一数据结构，保存落入该桶的多个元素。",
+      "evidence_anchor": "Store collisions"
+    },
+    {
+      "id": "H03",
+      "type": "misconception",
+      "question": "I use key modulo table size. Why doesn't that alone guarantee fast lookups for every input?",
+      "expected_document": "MIT6_006S20_lec4.pdf",
+      "expected_page": 3,
+      "locator": "Hash Functions 下 Division 小节，固定函数的坏输入",
+      "answer_summary": "固定函数总可能遇到大量碰撞的输入；表大小和键的分布会影响链长。",
+      "evidence_anchor": "every hash function"
+    },
+    {
+      "id": "H04",
+      "type": "explanation",
+      "question": "When we randomize the hash function, what exactly is random in the expected constant-time claim?",
+      "expected_document": "MIT6_006S20_lec4.pdf",
+      "expected_page": 4,
+      "locator": "Universal 小节的概率界与期望链长推导",
+      "answer_summary": "对函数族中随机选择的函数取期望，而非假设输入键随机；装载因子须有界。",
+      "evidence_anchor": "over h"
+    },
+    {
+      "id": "H05",
+      "type": "scenario",
+      "question": "A hash table resize is expensive. How can insertions still be called constant time?",
+      "expected_document": "MIT6_006S20_lec4.pdf",
+      "expected_page": 4,
+      "locator": "Dynamic 小节三条",
+      "answer_summary": "重建代价分摊到多次动态操作；结论是期望摊还常数时间。",
+      "evidence_anchor": "amortized over many"
+    },
+    {
+      "id": "B01",
+      "type": "scenario",
+      "question": "On a one-way road map, are the roads into a junction the same list as the roads out?",
+      "expected_document": "MIT6_006S20_lec9.pdf",
+      "expected_page": 2,
+      "locator": "Neighbor Sets/Adjacencies 首两条",
+      "answer_summary": "有向图分别记录入邻居和出邻居；两者通常不同。",
+      "evidence_anchor": "incoming neighbor set"
+    },
+    {
+      "id": "B02",
+      "type": "explanation",
+      "question": "Why does storing a graph as neighbor lists take space for both vertices and edges?",
+      "expected_document": "MIT6_006S20_lec9.pdf",
+      "expected_page": 2,
+      "locator": "Graph Representations 的结构大小与握手引理推导",
+      "answer_summary": "顶点映射占 O(V)，所有邻接表合计占 O(E)。",
+      "evidence_anchor": "handshaking lemma"
+    },
+    {
+      "id": "B03",
+      "type": "scenario",
+      "question": "I need routes from one start to every destination. Do I have to store a separate full route for each?",
+      "expected_document": "MIT6_006S20_lec9.pdf",
+      "expected_page": 3,
+      "locator": "Shortest Paths Tree 小节",
+      "answer_summary": "保存每个可达顶点的前驱即可重建路径，树大小为 O(V)。",
+      "evidence_anchor": "store its parent"
+    },
+    {
+      "id": "B04",
+      "type": "scenario",
+      "question": "Every move in my puzzle costs one step. How can I find the fewest moves without trying every possible route?",
+      "expected_document": "MIT6_006S20_lec9.pdf",
+      "expected_page": 4,
+      "locator": "Breadth-First Search 的 level sets 与逐层扩展",
+      "answer_summary": "BFS 按距离逐层扩展，首次发现时设置距离与父节点。",
+      "evidence_anchor": "increasing order of distance"
+    },
+    {
+      "id": "B05",
+      "type": "edge_case",
+      "question": "My BFS never reaches one vertex. What distance should I report for it?",
+      "expected_document": "MIT6_006S20_lec9.pdf",
+      "expected_page": 4,
+      "locator": "BFS 初始化括号及遍历结束时的距离处理",
+      "answer_summary": "不可达顶点的距离为无穷大。",
+      "evidence_anchor": "not reachable"
+    },
+    {
+      "id": "D01",
+      "type": "misconception",
+      "question": "DFS found me a route. Can I assume it's the route with the fewest edges?",
+      "expected_document": "MIT6_006S20_lec10.pdf",
+      "expected_page": 2,
+      "locator": "Depth-First Search 开头对返回树的说明",
+      "answer_summary": "不能；DFS 保证可达性，不保证最短路径。",
+      "evidence_anchor": "not necessarily shortest"
+    },
+    {
+      "id": "D02",
+      "type": "scenario",
+      "question": "A search from one vertex misses a separate island of vertices. How do I visit the whole graph?",
+      "expected_document": "MIT6_006S20_lec10.pdf",
+      "expected_page": 3,
+      "locator": "Full-BFS and Full-DFS 的循环步骤",
+      "answer_summary": "反复从未访问的顶点启动搜索，直至全部顶点被访问。",
+      "evidence_anchor": "arbitrary unvisited vertex"
+    },
+    {
+      "id": "D03",
+      "type": "scenario",
+      "question": "How can I group an undirected network into separate connected islands using graph search?",
+      "expected_document": "MIT6_006S20_lec10.pdf",
+      "expected_page": 3,
+      "locator": "Graph Connectivity 的证明最后一条",
+      "answer_summary": "执行完整遍历，将每次单源搜索访问的顶点分为一个连通分量。",
+      "evidence_anchor": "connected component"
+    },
+    {
+      "id": "D04",
+      "type": "scenario",
+      "question": "My tasks have one-way prerequisites and no cycles. How do DFS finishing times give a valid task order?",
+      "expected_document": "MIT6_006S20_lec10.pdf",
+      "expected_page": 4,
+      "locator": "Topological Sort 的 Finishing Order 与 Claim",
+      "answer_summary": "完整 DFS 的完成顺序反转，得到 DAG 的拓扑序。",
+      "evidence_anchor": "reverse of"
+    },
+    {
+      "id": "D05",
+      "type": "scenario",
+      "question": "While recursively exploring a directed graph, what sort of edge tells me I've found a cycle?",
+      "expected_document": "MIT6_006S20_lec10.pdf",
+      "expected_page": 4,
+      "locator": "Cycle Detection，维护当前递归路径祖先的部分",
+      "answer_summary": "指向当前路径上祖先的边表明存在有向环；已访问顶点不一定是祖先。",
+      "evidence_anchor": "an ancestor"
+    },
+    {
+      "id": "J01",
+      "type": "edge_case",
+      "question": "Some roads have zero cost and others have negative cost. Which of those is allowed by Dijkstra's assumptions?",
+      "expected_document": "MIT6_006S20_lec13.pdf",
+      "expected_page": 1,
+      "locator": "Review 最后一条及 Non-negative Edge Weights",
+      "answer_summary": "允许零权边；该算法的保证要求边权非负，不能一般性接受负权边。",
+      "evidence_anchor": "non-negative edge weights"
+    },
+    {
+      "id": "J02",
+      "type": "scenario",
+      "question": "I found a cheaper route to a vertex still waiting in Dijkstra's queue. What must I change in the queue?",
+      "expected_document": "MIT6_006S20_lec13.pdf",
+      "expected_page": 2,
+      "locator": "Dijkstra's Algorithm，松弛步骤之后的队列更新",
+      "answer_summary": "更新距离估计，并降低该顶点在可变优先队列中的键。",
+      "evidence_anchor": "Decrease the key"
+    },
+    {
+      "id": "J03",
+      "type": "explanation",
+      "question": "Why is a vertex's distance final when Dijkstra removes it as the current minimum?",
+      "expected_document": "MIT6_006S20_lec13.pdf",
+      "expected_page": 3,
+      "locator": "Correctness，移除顺序归纳及非负权不等式链",
+      "answer_summary": "安全松弛与非负边权使最小估计在出队时等于真实最短距离。",
+      "evidence_anchor": "when vertex v"
+    },
+    {
+      "id": "J04",
+      "type": "comparison",
+      "question": "Should I use the same priority queue for a very dense graph and a very sparse one?",
+      "expected_document": "MIT6_006S20_lec13.pdf",
+      "expected_page": 4,
+      "locator": "Running Time 表格下 dense 与 sparse 两条",
+      "answer_summary": "稠密图数组可达 O(V²)；稀疏图二叉堆可达 O(V log V)。",
+      "evidence_anchor": "graph is dense"
+    },
+    {
+      "id": "J05",
+      "type": "explanation",
+      "question": "For Dijkstra's running time, how often do we build the queue, remove a minimum, and lower a key?",
+      "expected_document": "MIT6_006S20_lec13.pdf",
+      "expected_page": 4,
+      "locator": "Running Time 的 Time/Occurrences 表",
+      "answer_summary": "建队一次，删除最小值 V 次，降低键至多 E 次。",
+      "evidence_anchor": "Occurrences in Dijkstra"
+    },
+    {
+      "id": "P01",
+      "type": "scenario",
+      "question": "My recursive Fibonacci function has only two short calls, so why does it get slow so quickly?",
+      "expected_document": "MIT6_006S20_lec15.pdf",
+      "expected_page": 2,
+      "locator": "Fibonacci Numbers 的代码、递推运行时间及重复子问题",
+      "answer_summary": "同一子问题被重复求解，递归调用树导致指数级工作。",
+      "evidence_anchor": "computed more than once"
+    },
+    {
+      "id": "P02",
+      "type": "comparison",
+      "question": "If I cache recursive answers or fill a table in order, am I solving different Fibonacci subproblems?",
+      "expected_document": "MIT6_006S20_lec15.pdf",
+      "expected_page": 3,
+      "locator": "Re-using Subproblem Solutions 的 top-down/bottom-up 对照",
+      "answer_summary": "子问题相同；前者按需缓存，后者按依赖拓扑序计算。",
+      "evidence_anchor": "Top down"
+    },
+    {
+      "id": "P03",
+      "type": "edge_case",
+      "question": "The notes say Fibonacci needs linearly many additions. Is the actual runtime still linear when the integers get huge?",
+      "expected_document": "MIT6_006S20_lec15.pdf",
+      "expected_page": 3,
+      "locator": "本页末尾关于整数位数与每次加法代价的三条",
+      "answer_summary": "大整数加法并非常数；按机器字长 w 计，总成本为 O(n+n²/w)。",
+      "evidence_anchor": "Each addition costs"
+    },
+    {
+      "id": "P04",
+      "type": "comparison",
+      "question": "What makes dynamic programming different from just splitting a problem into independent recursive pieces?",
+      "expected_document": "MIT6_006S20_lec15.pdf",
+      "expected_page": 4,
+      "locator": "Dynamic Programming，小节中依赖重叠的条目",
+      "answer_summary": "DP 的子问题依赖重叠，复用解；独立分治的依赖通常呈树状。",
+      "evidence_anchor": "dependencies overlap"
+    },
+    {
+      "id": "P05",
+      "type": "scenario",
+      "question": "In the bowling problem, why isn't the best choice always to hit the first pin immediately?",
+      "expected_document": "MIT6_006S20_lec15.pdf",
+      "expected_page": 6,
+      "locator": "Bowling Algorithms，后半部 suffix DP 的三种选择",
+      "answer_summary": "可能跳过、单独击倒或与下一瓶一起击倒；比较各选择的后缀总分。",
+      "evidence_anchor": "skip pin",
+      "alternative_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 7,
+          "evidence_anchor": "skip pin"
+        }
+      ]
+    }
+  ]
+}

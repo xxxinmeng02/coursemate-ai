@@ -1,0 +1,18 @@
+{
+  "status": "labels_validated",
+  "question_count": 25,
+  "document_count": 5,
+  "chunk_count": 46,
+  "pdf_checksums_verified": true,
+  "search_quality_measured": false,
+  "dataset_id": "mit-6006-s2020-v1",
+  "dataset_sha256": "62486be17182efaa8098b2acc9ae2fdad1f342905d4e98f160f4f0c6614470c6",
+  "validated_at_utc": "2026-10-21T02:02:55.002493+00:00",
+  "source_pdf_sha256": {
+    "MIT6_006S20_lec4.pdf": "cbc9a669f00c7554520c667853f4bc95f041348fea7ce76fd8a37246c94dc564",
+    "MIT6_006S20_lec9.pdf": "db45282ccf191109d6725ebaead32ca8c8477abda594f45c1ac83bb78fee17bd",
+    "MIT6_006S20_lec10.pdf": "1130b0c7e033a7232c591b497d8fbafca25840f61492bda9875fdecb39dc2c78",
+    "MIT6_006S20_lec13.pdf": "1ab30bcc723f73f3cedb1c49266cc3bb6d8dbfc53dcf46e1d232df6d5c76a9b5",
+    "MIT6_006S20_lec15.pdf": "4ffd3740ecac3df26f3b03651a9295a44858f3e3e90da1129d605305b1dc4a1c"
+  }
+}

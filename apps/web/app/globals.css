@@ -232,6 +232,22 @@ h1 { margin-bottom: 9px; font-size: clamp(34px, 4.2vw, 52px); line-height: 1.05;
 .status-failed { color: #a12f2f; background: #fde9e8; }
 .status-pending_cleanup { color: #815d1e; background: #fbf0d7; }
 .date-cell { color: var(--muted); white-space: nowrap; }
+.retrieval-debug { margin-top: 30px; background: white; border: 1px solid var(--border); border-radius: 17px; }
+.retrieval-debug summary { padding: 20px; cursor: pointer; font-weight: 750; }
+.retrieval-debug summary span { margin-left: 10px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.retrieval-debug-body { padding: 0 20px 20px; }
+.retrieval-debug-body > p, .retrieval-score-note, .retrieval-query, .retrieval-empty { color: var(--muted); line-height: 1.6; margin-top: 18px; }
+.retrieval-debug label { display: block; font-size: 14px; font-weight: 650; }
+.retrieval-debug textarea { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; resize: vertical; font: inherit; }
+.retrieval-debug small { color: var(--muted); }
+.retrieval-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 15px; flex-wrap: wrap; }
+.retrieval-controls label { display: flex; align-items: center; gap: 10px; }
+.retrieval-controls select { padding: 8px; border: 1px solid var(--border); border-radius: 8px; font: inherit; background: white; }
+.retrieval-results { display: grid; gap: 14px; margin: 15px 0 0; padding: 0; list-style: none; }
+.retrieval-results li { min-width: 0; padding: 16px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: 10px; }
+.retrieval-result-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; overflow-wrap: anywhere; }
+.retrieval-result-heading span { color: var(--accent); font-size: 13px; font-variant-numeric: tabular-nums; }
+.retrieval-results pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 14px; line-height: 1.65; margin-bottom: 0; }
 .detail-error { margin-top: 10px; }
 .detail-skeleton { display: grid; gap: 24px; }
 .skeleton-panel { height: 150px; border-radius: 20px; }

@@ -1,5 +1,17 @@
 # Course retrieval benchmark
 
+## Real course PDFs (2026-10-21)
+
+For the requested real-course student-style questions, use
+[`mit_6006.json`](mit_6006.json) and the
+[25-question review catalogue](MIT_6006_QUESTIONS.md).
+These use five unchanged MIT OCW PDFs with physical PDF page numbers and hashes,
+not the authored text corpus described below. See the
+[runbook and validation limits](../../docs/REAL_COURSE_RETRIEVAL.md) for offline
+validation, course preparation, HTTP measurement and the Course debug panel.
+The existing `python -m app.retrieval_eval --benchmark` still runs the authored
+parallel-computing fixture; it does not run the new real-PDF dataset.
+
 `parallel_computing.json` is an authored test course, not a university lecture
 capture or an independent sample of real student questions. It expands the
 parallel-programming topic already present in `topics.json`. Four documents,
