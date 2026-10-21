@@ -1,0 +1,1433 @@
+{
+  "dataset_id": "mit-6006-s2020-v1",
+  "dataset_sha256": "62486be17182efaa8098b2acc9ae2fdad1f342905d4e98f160f4f0c6614470c6",
+  "source_pdf_sha256": {
+    "MIT6_006S20_lec4.pdf": "cbc9a669f00c7554520c667853f4bc95f041348fea7ce76fd8a37246c94dc564",
+    "MIT6_006S20_lec9.pdf": "db45282ccf191109d6725ebaead32ca8c8477abda594f45c1ac83bb78fee17bd",
+    "MIT6_006S20_lec10.pdf": "1130b0c7e033a7232c591b497d8fbafca25840f61492bda9875fdecb39dc2c78",
+    "MIT6_006S20_lec13.pdf": "1ab30bcc723f73f3cedb1c49266cc3bb6d8dbfc53dcf46e1d232df6d5c76a9b5",
+    "MIT6_006S20_lec15.pdf": "4ffd3740ecac3df26f3b03651a9295a44858f3e3e90da1129d605305b1dc4a1c"
+  },
+  "run_at_utc": "2026-10-21T02:57:00.344911+00:00",
+  "course_id": 1,
+  "top_k": 5,
+  "status": "completed",
+  "search_quality_measured": true,
+  "metrics": {
+    "source_page_hit_at_1": 0.68,
+    "source_page_hit_at_3": 0.88,
+    "source_page_hit_at_5": 0.96,
+    "anchor_hit_at_1": 0.56,
+    "anchor_hit_at_3": 0.8,
+    "anchor_hit_at_5": 0.88,
+    "anchor_mrr_at_5": 0.6933333333333332
+  },
+  "results": [
+    {
+      "id": "H01",
+      "query": "My student IDs are huge numbers but I only have a few thousand students. Why is using each ID as an array index wasteful?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "page_number": 2,
+          "evidence_anchor": "But space"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 105.54140000022016,
+      "hits": [
+        {
+          "chunk_id": 33,
+          "text": "strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(\n• Example: if keys are ten-letter names, for one bit per name, requires 2610 ≈ 17.6 TB space\n• How can we use less space?\nHashing\n• Idea! If n \u001c u, map keys to a smaller range m = Θ(n) and use smaller direct access array\n• Hash function: h(k) : {0,...,u − 1}→{ 0,...,m − 1} (also hash map)\n• Direct access array called hash table, h(k) called the hash of key k\n• If m \u001c u, no hash function is injective by pigeonhole principle",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6702293753623962
+        },
+        {
+          "chunk_id": 34,
+          "text": "3 Lecture 4: Hashing\n• Always exists keys a, b such that h(a) = h(b) → Collision! :(\n• Can’t store both items at same index, so where to store? Either:\n– store somewhere else in the array (open addressing)\n∗ complicated analysis, but common and practical\n– store in another data structure supporting dynamic set interface (chaining)\nChaining\n• Idea! Store collisions in another data structure (a chain)\n• If keys roughly evenly distributed over indices, chain size is n/m = n/Ω(n) = O(1)!\n• If chain has O(1) size, all operations take O(1) time! Yay!\n• If not, many items may map to same location, e.g. h(k) = constant, chain size is Θ(n) :(\n• Need good hash function! So what’s a good hash function?\nHash Functions\nDivision (bad): h(k) = (k mod m)\n• Heuristic, good when keys are uniformly distributed!\n• m should avoid symmetries of the stored keys\n• Large primes far from powers of 2 and 10 can be reasonable\n• Python uses a version of this with some additional mixing\n• If u \u001d n, every hash function will have some input set that will a create O(n) size chain\n• Idea! Don’t use a ﬁxed hash function! Choose one randomly (but carefully)!",
+          "page_number": 3,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6604965925216675
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6575332880020142
+        },
+        {
+          "chunk_id": 30,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 4: Hashing\nLecture 4: Hashing\nReview\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\n• Idea! Want faster search and dynamic operations. Can we find(k) faster than Θ(log n)?\n• Answer is no (lower bound)! (But actually, yes...!?)\nComparison Model\n• In this model, assume algorithm can only differentiate items via comparisons\n• Comparable items: black boxes only supporting comparisons between pairs\n• Comparisons are <, ≤, >, ≥, =, =6 , outputs are binary: True or False\n• Goal: Store a set of n comparable items, support find(k) operation\n• Running time is lower bounded by # comparisons performed, so count comparisons!\nDecision Tree\n• Any algorithm can be viewed as a decision tree of operations performed\n• An internal node represents a binary comparison, branching either True or False\n• For a comparison algorithm, the decision tree is binary (draw example)\n• A leaf represents algorithm termination, resulting in an algorithm output",
+          "page_number": 1,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6540215405238604
+        },
+        {
+          "chunk_id": 36,
+          "text": "perations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\nDirect Access Array u 1 1 u u\nHash Table n(e) 1(e) 1(a)(e) n n",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.648857593536377
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "query": "Two different keys land in the same bucket. How does chaining let me keep both?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "page_number": 3,
+          "evidence_anchor": "Store collisions"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 76.18530000036117,
+      "hits": [
+        {
+          "chunk_id": 34,
+          "text": "3 Lecture 4: Hashing\n• Always exists keys a, b such that h(a) = h(b) → Collision! :(\n• Can’t store both items at same index, so where to store? Either:\n– store somewhere else in the array (open addressing)\n∗ complicated analysis, but common and practical\n– store in another data structure supporting dynamic set interface (chaining)\nChaining\n• Idea! Store collisions in another data structure (a chain)\n• If keys roughly evenly distributed over indices, chain size is n/m = n/Ω(n) = O(1)!\n• If chain has O(1) size, all operations take O(1) time! Yay!\n• If not, many items may map to same location, e.g. h(k) = constant, chain size is Θ(n) :(\n• Need good hash function! So what’s a good hash function?\nHash Functions\nDivision (bad): h(k) = (k mod m)\n• Heuristic, good when keys are uniformly distributed!\n• m should avoid symmetries of the stored keys\n• Large primes far from powers of 2 and 10 can be reasonable\n• Python uses a version of this with some additional mixing\n• If u \u001d n, every hash function will have some input set that will a create O(n) size chain\n• Idea! Don’t use a ﬁxed hash function! Choose one randomly (but carefully)!",
+          "page_number": 3,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7545338273048401
+        },
+        {
+          "chunk_id": 33,
+          "text": "strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(\n• Example: if keys are ten-letter names, for one bit per name, requires 2610 ≈ 17.6 TB space\n• How can we use less space?\nHashing\n• Idea! If n \u001c u, map keys to a smaller range m = Θ(n) and use smaller direct access array\n• Hash function: h(k) : {0,...,u − 1}→{ 0,...,m − 1} (also hash map)\n• Direct access array called hash table, h(k) called the hash of key k\n• If m \u001c u, no hash function is injective by pigeonhole principle",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6528993248939514
+        },
+        {
+          "chunk_id": 35,
+          "text": "4 Lecture 4: Hashing\nUniversal (good, theoretically): hab(k) = (((ak + b) mod p) mod m)\n• Hash Family H(p, m) = {hab | a, b ∈{ 0,...,p − 1} and a 6= 0}\n• Parameterized by a ﬁxed prime p>u, with a and b chosen from range {0,...,p − 1}\n• H is a Universal family: Pr {h(ki) = h(kj )}≤ 1/m ∀ki =6 kj ∈{ 0,...,u − 1}\nh∈H\n• Why is universality useful? Implies short chain lengths! (in expectation)\n• Xij indicator random variable over h ∈H : Xij = 1 if h(ki) = h(kj ), Xij = 0 otherwise\nP • Size of chain at index h(ki) is random variable Xi = j Xij\n• Expected size of chain at index h(ki)\n( )X X X\nE {Xi} = E Xij = E {Xij } = 1 + E {Xij }\nh∈H h∈H h∈H h∈H j j j=6 i\nX\n= 1 + (1) Pr {h(ki) = h(kj )} + (0) Pr {h(ki) =6 h(kj )}\nh∈H h∈H\nj6=i\nX\n≤ 1 + 1/m = 1 + (n − 1)/m\nj6=i\n• Since m = Ω(n), load factor α = n/m = O(1), so O(1) in expectation!\nDynamic\n• If n/m far from 1, rebuild with new randomly chosen hash function for new size m\n• Same analysis as dynamic arrays, cost can be amortized over many dynamic operations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.652485191822052
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.624657154083252
+        },
+        {
+          "chunk_id": 36,
+          "text": "perations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\nDirect Access Array u 1 1 u u\nHash Table n(e) 1(e) 1(a)(e) n n",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6217839121818542
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "query": "I use key modulo table size. Why doesn't that alone guarantee fast lookups for every input?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "page_number": 3,
+          "evidence_anchor": "every hash function"
+        }
+      ],
+      "first_source_page_rank": 2,
+      "first_anchor_rank": 2,
+      "latency_ms": 75.8656000107294,
+      "hits": [
+        {
+          "chunk_id": 33,
+          "text": "strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(\n• Example: if keys are ten-letter names, for one bit per name, requires 2610 ≈ 17.6 TB space\n• How can we use less space?\nHashing\n• Idea! If n \u001c u, map keys to a smaller range m = Θ(n) and use smaller direct access array\n• Hash function: h(k) : {0,...,u − 1}→{ 0,...,m − 1} (also hash map)\n• Direct access array called hash table, h(k) called the hash of key k\n• If m \u001c u, no hash function is injective by pigeonhole principle",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7459107637405396
+        },
+        {
+          "chunk_id": 34,
+          "text": "3 Lecture 4: Hashing\n• Always exists keys a, b such that h(a) = h(b) → Collision! :(\n• Can’t store both items at same index, so where to store? Either:\n– store somewhere else in the array (open addressing)\n∗ complicated analysis, but common and practical\n– store in another data structure supporting dynamic set interface (chaining)\nChaining\n• Idea! Store collisions in another data structure (a chain)\n• If keys roughly evenly distributed over indices, chain size is n/m = n/Ω(n) = O(1)!\n• If chain has O(1) size, all operations take O(1) time! Yay!\n• If not, many items may map to same location, e.g. h(k) = constant, chain size is Θ(n) :(\n• Need good hash function! So what’s a good hash function?\nHash Functions\nDivision (bad): h(k) = (k mod m)\n• Heuristic, good when keys are uniformly distributed!\n• m should avoid symmetries of the stored keys\n• Large primes far from powers of 2 and 10 can be reasonable\n• Python uses a version of this with some additional mixing\n• If u \u001d n, every hash function will have some input set that will a create O(n) size chain\n• Idea! Don’t use a ﬁxed hash function! Choose one randomly (but carefully)!",
+          "page_number": 3,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7077731490135193
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7034376859664917
+        },
+        {
+          "chunk_id": 36,
+          "text": "perations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\nDirect Access Array u 1 1 u u\nHash Table n(e) 1(e) 1(a)(e) n n",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6897436380386353
+        },
+        {
+          "chunk_id": 30,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 4: Hashing\nLecture 4: Hashing\nReview\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\n• Idea! Want faster search and dynamic operations. Can we find(k) faster than Θ(log n)?\n• Answer is no (lower bound)! (But actually, yes...!?)\nComparison Model\n• In this model, assume algorithm can only differentiate items via comparisons\n• Comparable items: black boxes only supporting comparisons between pairs\n• Comparisons are <, ≤, >, ≥, =, =6 , outputs are binary: True or False\n• Goal: Store a set of n comparable items, support find(k) operation\n• Running time is lower bounded by # comparisons performed, so count comparisons!\nDecision Tree\n• Any algorithm can be viewed as a decision tree of operations performed\n• An internal node represents a binary comparison, branching either True or False\n• For a comparison algorithm, the decision tree is binary (draw example)\n• A leaf represents algorithm termination, resulting in an algorithm output",
+          "page_number": 1,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6724764509485048
+        }
+      ]
+    },
+    {
+      "id": "H04",
+      "query": "When we randomize the hash function, what exactly is random in the expected constant-time claim?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "page_number": 4,
+          "evidence_anchor": "over h"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 77.20859999244567,
+      "hits": [
+        {
+          "chunk_id": 35,
+          "text": "4 Lecture 4: Hashing\nUniversal (good, theoretically): hab(k) = (((ak + b) mod p) mod m)\n• Hash Family H(p, m) = {hab | a, b ∈{ 0,...,p − 1} and a 6= 0}\n• Parameterized by a ﬁxed prime p>u, with a and b chosen from range {0,...,p − 1}\n• H is a Universal family: Pr {h(ki) = h(kj )}≤ 1/m ∀ki =6 kj ∈{ 0,...,u − 1}\nh∈H\n• Why is universality useful? Implies short chain lengths! (in expectation)\n• Xij indicator random variable over h ∈H : Xij = 1 if h(ki) = h(kj ), Xij = 0 otherwise\nP • Size of chain at index h(ki) is random variable Xi = j Xij\n• Expected size of chain at index h(ki)\n( )X X X\nE {Xi} = E Xij = E {Xij } = 1 + E {Xij }\nh∈H h∈H h∈H h∈H j j j=6 i\nX\n= 1 + (1) Pr {h(ki) = h(kj )} + (0) Pr {h(ki) =6 h(kj )}\nh∈H h∈H\nj6=i\nX\n≤ 1 + 1/m = 1 + (n − 1)/m\nj6=i\n• Since m = Ω(n), load factor α = n/m = O(1), so O(1) in expectation!\nDynamic\n• If n/m far from 1, rebuild with new randomly chosen hash function for new size m\n• Same analysis as dynamic arrays, cost can be amortized over many dynamic operations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7681131362915039
+        },
+        {
+          "chunk_id": 34,
+          "text": "3 Lecture 4: Hashing\n• Always exists keys a, b such that h(a) = h(b) → Collision! :(\n• Can’t store both items at same index, so where to store? Either:\n– store somewhere else in the array (open addressing)\n∗ complicated analysis, but common and practical\n– store in another data structure supporting dynamic set interface (chaining)\nChaining\n• Idea! Store collisions in another data structure (a chain)\n• If keys roughly evenly distributed over indices, chain size is n/m = n/Ω(n) = O(1)!\n• If chain has O(1) size, all operations take O(1) time! Yay!\n• If not, many items may map to same location, e.g. h(k) = constant, chain size is Θ(n) :(\n• Need good hash function! So what’s a good hash function?\nHash Functions\nDivision (bad): h(k) = (k mod m)\n• Heuristic, good when keys are uniformly distributed!\n• m should avoid symmetries of the stored keys\n• Large primes far from powers of 2 and 10 can be reasonable\n• Python uses a version of this with some additional mixing\n• If u \u001d n, every hash function will have some input set that will a create O(n) size chain\n• Idea! Don’t use a ﬁxed hash function! Choose one randomly (but carefully)!",
+          "page_number": 3,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7475122809410095
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7253692150115967
+        },
+        {
+          "chunk_id": 30,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 4: Hashing\nLecture 4: Hashing\nReview\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\n• Idea! Want faster search and dynamic operations. Can we find(k) faster than Θ(log n)?\n• Answer is no (lower bound)! (But actually, yes...!?)\nComparison Model\n• In this model, assume algorithm can only differentiate items via comparisons\n• Comparable items: black boxes only supporting comparisons between pairs\n• Comparisons are <, ≤, >, ≥, =, =6 , outputs are binary: True or False\n• Goal: Store a set of n comparable items, support find(k) operation\n• Running time is lower bounded by # comparisons performed, so count comparisons!\nDecision Tree\n• Any algorithm can be viewed as a decision tree of operations performed\n• An internal node represents a binary comparison, branching either True or False\n• For a comparison algorithm, the decision tree is binary (draw example)\n• A leaf represents algorithm termination, resulting in an algorithm output",
+          "page_number": 1,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7140661903659231
+        },
+        {
+          "chunk_id": 36,
+          "text": "perations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\nDirect Access Array u 1 1 u u\nHash Table n(e) 1(e) 1(a)(e) n n",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7125425934791565
+        }
+      ]
+    },
+    {
+      "id": "H05",
+      "query": "A hash table resize is expensive. How can insertions still be called constant time?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "page_number": 4,
+          "evidence_anchor": "amortized over many"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 4,
+      "latency_ms": 82.68629999656696,
+      "hits": [
+        {
+          "chunk_id": 36,
+          "text": "perations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\nDirect Access Array u 1 1 u u\nHash Table n(e) 1(e) 1(a)(e) n n",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7736563913123727
+        },
+        {
+          "chunk_id": 34,
+          "text": "3 Lecture 4: Hashing\n• Always exists keys a, b such that h(a) = h(b) → Collision! :(\n• Can’t store both items at same index, so where to store? Either:\n– store somewhere else in the array (open addressing)\n∗ complicated analysis, but common and practical\n– store in another data structure supporting dynamic set interface (chaining)\nChaining\n• Idea! Store collisions in another data structure (a chain)\n• If keys roughly evenly distributed over indices, chain size is n/m = n/Ω(n) = O(1)!\n• If chain has O(1) size, all operations take O(1) time! Yay!\n• If not, many items may map to same location, e.g. h(k) = constant, chain size is Θ(n) :(\n• Need good hash function! So what’s a good hash function?\nHash Functions\nDivision (bad): h(k) = (k mod m)\n• Heuristic, good when keys are uniformly distributed!\n• m should avoid symmetries of the stored keys\n• Large primes far from powers of 2 and 10 can be reasonable\n• Python uses a version of this with some additional mixing\n• If u \u001d n, every hash function will have some input set that will a create O(n) size chain\n• Idea! Don’t use a ﬁxed hash function! Choose one randomly (but carefully)!",
+          "page_number": 3,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7662091483536112
+        },
+        {
+          "chunk_id": 33,
+          "text": "strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(\n• Example: if keys are ten-letter names, for one bit per name, requires 2610 ≈ 17.6 TB space\n• How can we use less space?\nHashing\n• Idea! If n \u001c u, map keys to a smaller range m = Θ(n) and use smaller direct access array\n• Hash function: h(k) : {0,...,u − 1}→{ 0,...,m − 1} (also hash map)\n• Direct access array called hash table, h(k) called the hash of key k\n• If m \u001c u, no hash function is injective by pigeonhole principle",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7632859576727739
+        },
+        {
+          "chunk_id": 35,
+          "text": "4 Lecture 4: Hashing\nUniversal (good, theoretically): hab(k) = (((ak + b) mod p) mod m)\n• Hash Family H(p, m) = {hab | a, b ∈{ 0,...,p − 1} and a 6= 0}\n• Parameterized by a ﬁxed prime p>u, with a and b chosen from range {0,...,p − 1}\n• H is a Universal family: Pr {h(ki) = h(kj )}≤ 1/m ∀ki =6 kj ∈{ 0,...,u − 1}\nh∈H\n• Why is universality useful? Implies short chain lengths! (in expectation)\n• Xij indicator random variable over h ∈H : Xij = 1 if h(ki) = h(kj ), Xij = 0 otherwise\nP • Size of chain at index h(ki) is random variable Xi = j Xij\n• Expected size of chain at index h(ki)\n( )X X X\nE {Xi} = E Xij = E {Xij } = 1 + E {Xij }\nh∈H h∈H h∈H h∈H j j j=6 i\nX\n= 1 + (1) Pr {h(ki) = h(kj )} + (0) Pr {h(ki) =6 h(kj )}\nh∈H h∈H\nj6=i\nX\n≤ 1 + 1/m = 1 + (n − 1)/m\nj6=i\n• Since m = Ω(n), load factor α = n/m = O(1), so O(1) in expectation!\nDynamic\n• If n/m far from 1, rebuild with new randomly chosen hash function for new size m\n• Same analysis as dynamic arrays, cost can be amortized over many dynamic operations\n• So a hash table can implement dynamic set operations in expected amortized O(1) time! :)\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)",
+          "page_number": 4,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7341597299027366
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.716779551410066
+        }
+      ]
+    },
+    {
+      "id": "B01",
+      "query": "On a one-way road map, are the roads into a junction the same list as the roads out?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "page_number": 2,
+          "evidence_anchor": "incoming neighbor set"
+        }
+      ],
+      "first_source_page_rank": 4,
+      "first_anchor_rank": 4,
+      "latency_ms": 83.68850000260863,
+      "hits": [
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6474080278697025
+        },
+        {
+          "chunk_id": 1,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 10: Depth-First Search\nLecture 10: Depth-First Search\nPreviously\n• Graph deﬁnitions (directed/undirected, simple, neighbors, degree)\n• Graph representations (Set mapping vertices to adjacency lists)\n• Paths and simple paths, path length, distance, shortest path\n• Graph Path Problems\n– Single Pair Reachability(G,s,t)\n– Single Source Reachability(G,s)\n– Single Pair Shortest Path(G,s,t)\n– Single Source Shortest Paths(G,s) (SSSP)\n• Breadth-First Search (BFS)\n– algorithm that solves Single Source Shortest Paths\n– with appropriate data structures, runs in O(|V | + |E|) time (linear in input size)\nExamples\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf",
+          "page_number": 1,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6288234182841608
+        },
+        {
+          "chunk_id": 42,
+          "text": "3 Lecture 9: Breadth-First Search\nPaths\n• A path is a sequence of vertices p = (v1,v 2,...,v k) where (vi,v i+1) ∈ E for all 1 ≤ i<k .\n• A path is simple if it does not repeat vertices2\n• The length `(p) of a path p is the number of edges in the path\n• The distance δ(u, v) from u ∈ V to v ∈ V is the minimum length of any path from u to v,\ni.e., the length of a shortest path from u to v\n(by convention, δ(u, v) = ∞ if u is not connected to v)\nGraph Path Problems\n• There are many problems you might want to solve concerning paths in a graph:\n• SINGLE PAIR REACHABILITY (G, s, t): is there a path in G from s ∈ V to t ∈ V ?\n• SINGLE PAIR SHORTEST PATH(G, s, t): return distance δ(s, t), and\na shortest path in G = (V, E) from s ∈ V to t ∈ V\n• SINGLE SOURCE SHORTEST PATHS (G, s): return δ(s, v) for all v ∈ V , and\na shortest-path tree containing a shortest path from s to every v ∈ V (deﬁned below)\n• Each problem above is at least as hard as every problem above it\n(i.e., you can use a black-box that solves a lower problem to solve any higher problem)\n• We won’t show algorithms to solve all of these problems\n• Instead, show one algorithm that solves the hardest in O(|V | + |E|) time!",
+          "page_number": 3,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6286911147052714
+        },
+        {
+          "chunk_id": 40,
+          "text": "2 Lecture 9: Breadth-First Search\nNeighbor Sets/Adjacencies\n• The outgoing neighbor set of u ∈ V is Adj+(u) = {v ∈ V | (u, v) ∈ E}\n• The incoming neighbor set of u ∈ V is Adj−(u) = {v ∈ V | (v, u) ∈ E}\n• The out-degree of a vertex u ∈ V is deg+(u) = |Adj+(u)|\n• The in-degree of a vertex u ∈ V is deg−(u) = |Adj−(u)|\n• For undirected graphs, Adj−(u) = Adj+(u) and deg−(u) = deg+(u)\n• Dropping superscript defaults to outgoing, i.e., Adj(u) = Adj+(u) and deg(u) = deg+(u)\nGraph Representations\n• To store a graph G = (V, E), we need to store the outgoing edges Adj(u) for all u ∈ V\n• First, need a Set data structure Adj to map u to Adj(u)\n• Then for each u, need to store Adj(u) in another data structure called an adjacency list\n• Common to use direct access array or hash table for Adj, since want lookup fast by vertex\n• Common to use array or linked list for each Adj(u) since usually only iteration is needed1\n• For the common representations, Adj has size Θ(|V |), while each Adj(u) has size Θ(deg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6237575001644345
+        },
+        {
+          "chunk_id": 41,
+          "text": "eg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples\n• Examples 1 and 2 assume vertices are labeled {0, 1,..., |V |− 1}, so can use a direct access\narray for Adj, and store Adj(u) in an array. Example 3 uses a hash table for Adj.\nEx 1 (Undirected) | Ex 2 (Directed) | Ex 3 (Undirected)\nG1 = [ | G2 = [ | G3 = {\n[2, 1], # 0 | [2], # 0 | a: [s, b], b: [a],\n[2, 0, 3], # 1 | [2, 0], # 1 | s: [a, c], c: [s, d, e],\n[1, 3, 0], # 2 | [1], # 2 | d: [c, e, f], e: [c, d, f],\n[1, 2], # 3 | ] | f: [d, e], g: [],\n] | | }\n• Note that in an undirected graph, connections are symmetric as every edge is outgoing twice\n1A hash table for each Adj(u) can allow checking for an edge (u, v) ∈ E in O(1)(e) time",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6185789292627256
+        }
+      ]
+    },
+    {
+      "id": "B02",
+      "query": "Why does storing a graph as neighbor lists take space for both vertices and edges?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "page_number": 2,
+          "evidence_anchor": "handshaking lemma"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 80.93419999931939,
+      "hits": [
+        {
+          "chunk_id": 40,
+          "text": "2 Lecture 9: Breadth-First Search\nNeighbor Sets/Adjacencies\n• The outgoing neighbor set of u ∈ V is Adj+(u) = {v ∈ V | (u, v) ∈ E}\n• The incoming neighbor set of u ∈ V is Adj−(u) = {v ∈ V | (v, u) ∈ E}\n• The out-degree of a vertex u ∈ V is deg+(u) = |Adj+(u)|\n• The in-degree of a vertex u ∈ V is deg−(u) = |Adj−(u)|\n• For undirected graphs, Adj−(u) = Adj+(u) and deg−(u) = deg+(u)\n• Dropping superscript defaults to outgoing, i.e., Adj(u) = Adj+(u) and deg(u) = deg+(u)\nGraph Representations\n• To store a graph G = (V, E), we need to store the outgoing edges Adj(u) for all u ∈ V\n• First, need a Set data structure Adj to map u to Adj(u)\n• Then for each u, need to store Adj(u) in another data structure called an adjacency list\n• Common to use direct access array or hash table for Adj, since want lookup fast by vertex\n• Common to use array or linked list for each Adj(u) since usually only iteration is needed1\n• For the common representations, Adj has size Θ(|V |), while each Adj(u) has size Θ(deg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7879451043638539
+        },
+        {
+          "chunk_id": 38,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 9: Breadth-First Search\nLecture 9: Breadth-First Search\nNew Unit: Graphs!\n• Quiz 1 next week covers lectures L01 - L08 on Data Structures and Sorting\n• Today, start new unit, lectures L09 - L14 on Graph Algorithms\nGraph Applications\n• Why? Graphs are everywhere!\n• any network system has direct connection to graphs\n• e.g., road networks, computer networks, social networks\n• the state space of any discrete system can be represented by a transition graph\n• e.g., puzzle & games like Chess, Tetris, Rubik’s cube\n• e.g., application workﬂows, speciﬁcations\nGraph Deﬁnitions\nG1\n0 1\n2 3\nG2\n0\n1 2\nG3\na\nb\ns\nc\nd\ne\nf\ng\n• Graph G = (V, E) is a set of vertices V and a set of pairs of vertices E ⊆ V × V .\n• Directed edges are ordered pairs, e.g., (u, v) for u, v ∈ V\n• Undirected edges are unordered pairs, e.g., {u, v} for u, v ∈ V i.e., (u, v) and (v, u)\n• In this class, we assume all graphs are simple:\n– edges are distinct, e.g., (u, v) only occurs once in E (though (v, u) may appear), and\n– edges are pairs of distinct vertices, e.g., u =6 v for all (u, v) ∈ E",
+          "page_number": 1,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.758507564156798
+        },
+        {
+          "chunk_id": 44,
+          "text": "4 Lecture 9: Breadth-First Search\nBreadth-First Search (BFS)\n• How to compute δ(s, v) and P (v) for all v ∈ V ?\n• Store δ(s, v) and P (v) in Set data structures mapping vertices v to distance and parent\n• (If no path from s to v, do not store v in P and set δ(s, v) to ∞)\n• Idea! Explore graph nodes in increasing order of distance\n• Goal: Compute level sets Li = {v | v ∈ V and d(s, v) = i} (i.e., all vertices at distance i)\n• Claim: Every vertex v ∈ Li must be adjacent to a vertex u ∈ Li−1 (i.e., v ∈ Adj(u))\n• Claim: No vertex that is in Lj for some j <i, appears in Li\n• Invariant: δ(s, v) and P (v) have been computed correctly for all v in any Lj for j <i\n• Base case (i = 1): L0 = {s}, δ(s, s) = 0, P (s) = None\n• Inductive Step: To compute Li:\n– for every vertex u in Li−1:\n∗ for every vertex v ∈ Adj(u) that does not appear in any Lj for j <i:\n· add v to Li, set δ(s, v) = i, and set P (v) = u\n• Repeatedly compute Li from Lj for j <i for increasing i until Li is the empty set\n• Set δ(s, v) = ∞ for any v ∈ V for which δ(s, v) was not set\n• Breadth-ﬁrst search correctly computes all δ(s, v) and P (v) by induction\n• Running time analysis:\n– Store each Li in data structure with Θ(|Li|)-time iteration and O(1)-time insertion",
+          "page_number": 4,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7234880708608635
+        },
+        {
+          "chunk_id": 41,
+          "text": "eg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples\n• Examples 1 and 2 assume vertices are labeled {0, 1,..., |V |− 1}, so can use a direct access\narray for Adj, and store Adj(u) in an array. Example 3 uses a hash table for Adj.\nEx 1 (Undirected) | Ex 2 (Directed) | Ex 3 (Undirected)\nG1 = [ | G2 = [ | G3 = {\n[2, 1], # 0 | [2], # 0 | a: [s, b], b: [a],\n[2, 0, 3], # 1 | [2, 0], # 1 | s: [a, c], c: [s, d, e],\n[1, 3, 0], # 2 | [1], # 2 | d: [c, e, f], e: [c, d, f],\n[1, 2], # 3 | ] | f: [d, e], g: [],\n] | | }\n• Note that in an undirected graph, connections are symmetric as every edge is outgoing twice\n1A hash table for each Adj(u) can allow checking for an edge (u, v) ∈ E in O(1)(e) time",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7164038588759996
+        },
+        {
+          "chunk_id": 39,
+          "text": "lass, we assume all graphs are simple:\n– edges are distinct, e.g., (u, v) only occurs once in E (though (v, u) may appear), and\n– edges are pairs of distinct vertices, e.g., u =6 v for all (u, v) ∈ E\n� \u0001 � \u0001|V | |V |– Simple implies |E| = O(|V |2), since |E|≤ for undirected, ≤ 2 for directed 2 2",
+          "page_number": 1,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7154959609808957
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "query": "I need routes from one start to every destination. Do I have to store a separate full route for each?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "page_number": 3,
+          "evidence_anchor": "store its parent"
+        }
+      ],
+      "first_source_page_rank": 5,
+      "first_anchor_rank": null,
+      "latency_ms": 77.49470000271685,
+      "hits": [
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6528479274692668
+        },
+        {
+          "chunk_id": 4,
+          "text": "3 Lecture 10: Depth-First Search\nFull-BFS and Full-DFS\n• Suppose want to explore entire graph, not just vertices reachable from one vertex\n• Idea! Repeat a graph search algorithm A on any unvisited vertex\n• Repeat the following until all vertices have been visited:\n– Choose an arbitrary unvisited vertex s, use A to explore all vertices reachable from s\n• We call this algorithm Full-A, speciﬁcally Full-BFS or Full-DFS if A is BFS or DFS\n• Visits every vertex once, so both Full-BFS and Full-DFS run in O(|V | + |E|) time\n• Example: Run Full-DFS/Full-BFS on G1 and/or G2\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf\nGraph Connectivity\n• An undirected graph is connected if there is a path connecting every pair of vertices\n• In a directed graph, vertex u may be reachable from v, but v may not be reachable from u\n• Connectivity is more complicated for directed graphs (we won’t discuss in this class)\n• Connectivity(G): is undirected graph G connected?\n• Connected Components(G): given undirected graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6430942245609538
+        },
+        {
+          "chunk_id": 1,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 10: Depth-First Search\nLecture 10: Depth-First Search\nPreviously\n• Graph deﬁnitions (directed/undirected, simple, neighbors, degree)\n• Graph representations (Set mapping vertices to adjacency lists)\n• Paths and simple paths, path length, distance, shortest path\n• Graph Path Problems\n– Single Pair Reachability(G,s,t)\n– Single Source Reachability(G,s)\n– Single Pair Shortest Path(G,s,t)\n– Single Source Shortest Paths(G,s) (SSSP)\n• Breadth-First Search (BFS)\n– algorithm that solves Single Source Shortest Paths\n– with appropriate data structures, runs in O(|V | + |E|) time (linear in input size)\nExamples\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf",
+          "page_number": 1,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6380960180645013
+        },
+        {
+          "chunk_id": 16,
+          "text": "should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)\nGeneral Unweighted BFS |V | + |E|\nDAG Any DAG Relaxation |V | + |E|\nGeneral Non-negative Dijkstra\nBellman-Ford\n|V | log |V | + |E|\n|V | · |E|General Any\n• What about All-Pairs Shortest Paths?\n• Doing a SSSP algorithm |V | times is actually pretty good, since output has size O(|V |2)\n• Can do better than |V |· O(|V |·|E |) for general graphs with negative weights (next time!)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6345192629672021
+        },
+        {
+          "chunk_id": 42,
+          "text": "3 Lecture 9: Breadth-First Search\nPaths\n• A path is a sequence of vertices p = (v1,v 2,...,v k) where (vi,v i+1) ∈ E for all 1 ≤ i<k .\n• A path is simple if it does not repeat vertices2\n• The length `(p) of a path p is the number of edges in the path\n• The distance δ(u, v) from u ∈ V to v ∈ V is the minimum length of any path from u to v,\ni.e., the length of a shortest path from u to v\n(by convention, δ(u, v) = ∞ if u is not connected to v)\nGraph Path Problems\n• There are many problems you might want to solve concerning paths in a graph:\n• SINGLE PAIR REACHABILITY (G, s, t): is there a path in G from s ∈ V to t ∈ V ?\n• SINGLE PAIR SHORTEST PATH(G, s, t): return distance δ(s, t), and\na shortest path in G = (V, E) from s ∈ V to t ∈ V\n• SINGLE SOURCE SHORTEST PATHS (G, s): return δ(s, v) for all v ∈ V , and\na shortest-path tree containing a shortest path from s to every v ∈ V (deﬁned below)\n• Each problem above is at least as hard as every problem above it\n(i.e., you can use a black-box that solves a lower problem to solve any higher problem)\n• We won’t show algorithms to solve all of these problems\n• Instead, show one algorithm that solves the hardest in O(|V | + |E|) time!",
+          "page_number": 3,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6331079036199011
+        }
+      ]
+    },
+    {
+      "id": "B04",
+      "query": "Every move in my puzzle costs one step. How can I find the fewest moves without trying every possible route?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "page_number": 4,
+          "evidence_anchor": "increasing order of distance"
+        }
+      ],
+      "first_source_page_rank": null,
+      "first_anchor_rank": null,
+      "latency_ms": 76.05909999983851,
+      "hits": [
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6866775564359174
+        },
+        {
+          "chunk_id": 24,
+          "text": "5 Lecture 15: Recursive Algorithms\nDAG Shortest Paths\n• Recall the DAG SSSP problem: given a DAG G and vertex s, compute δ(s, v) for all v ∈ V\n• Subproblems: δ(s, v) for all v ∈ V\n• Relation: δ(s, v) = min{δ(s, u) + w(u, v) | u ∈ Adj−(v)} ∪ {∞}\n• Topo. order: Topological order of G\n• Base cases: δ(s, s) = 0\n• Original: All subproblems\nP • Time: O(1 + | Adj−(v)|) = O(|V | + |E|)v∈V\n• DAG Relaxation computes the same min values as this dynamic program, just\n– step-by-step (if new value < min, update min via edge relaxation), and\n– from the perspective of u and Adj+(u) instead of v and Adj−(v)\nBowling\n• Given n pins labeled 0, 1,...,n − 1\n• Pin i has value vi\n• Ball of size similar to pin can hit either\n– 1 pin i, in which case we get vi points\n– 2 adjacent pins i and i + 1, in which case we get vi · vi+1 points\n• Once a pin is hit, it can’t be hit again (removed)\n• Problem: Throw zero or more balls to maximize total points\n• Example: [ −1, 1 , 1 , 1 , 9, 9 , 3 , −3, −5 , 2, 2 ]",
+          "page_number": 5,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.6724841594696045
+        },
+        {
+          "chunk_id": 43,
+          "text": "ack-box that solves a lower problem to solve any higher problem)\n• We won’t show algorithms to solve all of these problems\n• Instead, show one algorithm that solves the hardest in O(|V | + |E|) time!\nShortest Paths Tree\n• How to return a shortest path from source vertex s for every vertex in graph?\n• Many paths could have length Ω(|V |), so returning every path could require Ω(|V |2) time\n• Instead, for all v ∈ V , store its parent P (v): second to last vertex on a shortest path from s\n• Let P (s) be null (no second to last vertex on shortest path from s to s)\n• Set of parents comprise a shortest paths tree with O(|V |) size!\n(i.e., reversed shortest paths back to s from every vertex reachable from s)\n2A path in 6.006 is a “walk” in 6.042. A “path” in 6.042 is a simple path in 6.006.",
+          "page_number": 3,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6716361045837402
+        },
+        {
+          "chunk_id": 42,
+          "text": "3 Lecture 9: Breadth-First Search\nPaths\n• A path is a sequence of vertices p = (v1,v 2,...,v k) where (vi,v i+1) ∈ E for all 1 ≤ i<k .\n• A path is simple if it does not repeat vertices2\n• The length `(p) of a path p is the number of edges in the path\n• The distance δ(u, v) from u ∈ V to v ∈ V is the minimum length of any path from u to v,\ni.e., the length of a shortest path from u to v\n(by convention, δ(u, v) = ∞ if u is not connected to v)\nGraph Path Problems\n• There are many problems you might want to solve concerning paths in a graph:\n• SINGLE PAIR REACHABILITY (G, s, t): is there a path in G from s ∈ V to t ∈ V ?\n• SINGLE PAIR SHORTEST PATH(G, s, t): return distance δ(s, t), and\na shortest path in G = (V, E) from s ∈ V to t ∈ V\n• SINGLE SOURCE SHORTEST PATHS (G, s): return δ(s, v) for all v ∈ V , and\na shortest-path tree containing a shortest path from s to every v ∈ V (deﬁned below)\n• Each problem above is at least as hard as every problem above it\n(i.e., you can use a black-box that solves a lower problem to solve any higher problem)\n• We won’t show algorithms to solve all of these problems\n• Instead, show one algorithm that solves the hardest in O(|V | + |E|) time!",
+          "page_number": 3,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6630791623317949
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.660402774810791
+        }
+      ]
+    },
+    {
+      "id": "B05",
+      "query": "My BFS never reaches one vertex. What distance should I report for it?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "page_number": 4,
+          "evidence_anchor": "not reachable"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 2,
+      "latency_ms": 92.55549999943469,
+      "hits": [
+        {
+          "chunk_id": 44,
+          "text": "4 Lecture 9: Breadth-First Search\nBreadth-First Search (BFS)\n• How to compute δ(s, v) and P (v) for all v ∈ V ?\n• Store δ(s, v) and P (v) in Set data structures mapping vertices v to distance and parent\n• (If no path from s to v, do not store v in P and set δ(s, v) to ∞)\n• Idea! Explore graph nodes in increasing order of distance\n• Goal: Compute level sets Li = {v | v ∈ V and d(s, v) = i} (i.e., all vertices at distance i)\n• Claim: Every vertex v ∈ Li must be adjacent to a vertex u ∈ Li−1 (i.e., v ∈ Adj(u))\n• Claim: No vertex that is in Lj for some j <i, appears in Li\n• Invariant: δ(s, v) and P (v) have been computed correctly for all v in any Lj for j <i\n• Base case (i = 1): L0 = {s}, δ(s, s) = 0, P (s) = None\n• Inductive Step: To compute Li:\n– for every vertex u in Li−1:\n∗ for every vertex v ∈ Adj(u) that does not appear in any Lj for j <i:\n· add v to Li, set δ(s, v) = i, and set P (v) = u\n• Repeatedly compute Li from Lj for j <i for increasing i until Li is the empty set\n• Set δ(s, v) = ∞ for any v ∈ V for which δ(s, v) was not set\n• Breadth-ﬁrst search correctly computes all δ(s, v) and P (v) by induction\n• Running time analysis:\n– Store each Li in data structure with Θ(|Li|)-time iteration and O(1)-time insertion",
+          "page_number": 4,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6853757108859933
+        },
+        {
+          "chunk_id": 45,
+          "text": "was not set\n• Breadth-ﬁrst search correctly computes all δ(s, v) and P (v) by induction\n• Running time analysis:\n– Store each Li in data structure with Θ(|Li|)-time iteration and O(1)-time insertion\n(i.e., in a dynamic array or linked list)\n– Checking for a vertex v in any Lj for j <i can be done by checking for v in P\n– Maintain δ and P in Set data structures supporting dictionary ops in O(1) time\n(i.e., direct access array or hash table)\n– Algorithm adds each vertex u to ≤ 1 level and spends O(1) time for each v ∈ Adj(u)P – Work upper bounded by O(1) × deg(u) = O(|E|) by handshake lemma u∈V\n– Spend Θ(|V |) at end to assign δ(s, v) for vertices v ∈ V not reachable from s\n– So breadth-ﬁrst search runs in linear time! O(|V | + |E|)\n• Run breadth-ﬁrst search from s in the graph in Example 3",
+          "page_number": 4,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6795295476913452
+        },
+        {
+          "chunk_id": 3,
+          "text": "– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)\n– Either v is in P , so has already been visited, or v will be visited while visiting u\n– In either case, v will be visited by DFS and will be added correctly to P\nRunning Time\n• Algorithm visits each vertex u at most once and spends O(1) time for each v ∈ Adj(u)\nP • Work upper bounded by O(1) × deg(u) = O(|E|)u∈V\n• Unlike BFS, not returning a distance for each vertex, so DFS runs in O(|E|) time",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6755650043487549
+        },
+        {
+          "chunk_id": 10,
+          "text": "distances beforehand? :(\n• Observation 1: If weights non-negative, monotonic distance increase along shortest paths\n– i.e., if vertex u appears on a shortest path from s to v, then δ(s, u) ≤ δ(s, v)\n– Let Vx ⊂ V be the subset of vertices reachable within distance ≤ x from s\n– If v ∈ Vx, then any shortest path from s to v only contains vertices from Vx\n– Perhaps grow Vx one vertex at a time! (but growing for every x is slow if weights large)\n• Observation 2: Can solve SSSP fast if given order of vertices in increasing distance from s\n– Remove edges that go against this order (since cannot participate in shortest paths)\n– May still have cycles if zero-weight edges: repeatedly collapse into single vertices\n– Compute δ(s, v) for each v ∈ V using DAG relaxation in O(|V | + |E|) time",
+          "page_number": 1,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6709546446800232
+        },
+        {
+          "chunk_id": 1,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 10: Depth-First Search\nLecture 10: Depth-First Search\nPreviously\n• Graph deﬁnitions (directed/undirected, simple, neighbors, degree)\n• Graph representations (Set mapping vertices to adjacency lists)\n• Paths and simple paths, path length, distance, shortest path\n• Graph Path Problems\n– Single Pair Reachability(G,s,t)\n– Single Source Reachability(G,s)\n– Single Pair Shortest Path(G,s,t)\n– Single Source Shortest Paths(G,s) (SSSP)\n• Breadth-First Search (BFS)\n– algorithm that solves Single Source Shortest Paths\n– with appropriate data structures, runs in O(|V | + |E|) time (linear in input size)\nExamples\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf",
+          "page_number": 1,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6658536791801453
+        }
+      ]
+    },
+    {
+      "id": "D01",
+      "query": "DFS found me a route. Can I assume it's the route with the fewest edges?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "page_number": 2,
+          "evidence_anchor": "not necessarily shortest"
+        }
+      ],
+      "first_source_page_rank": 2,
+      "first_anchor_rank": 2,
+      "latency_ms": 78.95880000432953,
+      "hits": [
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7530413269996643
+        },
+        {
+          "chunk_id": 2,
+          "text": "2 Lecture 10: Depth-First Search\nDepth-First Search (DFS)\n• Searches a graph from a vertex s, similar to BFS\n• Solves Single Source Reachability, not SSSP. Useful for solving other problems (later!)\n• Return (not necessarily shortest) parent tree of parent pointers back to s\n• Idea! Visit outgoing adjacencies recursively, but never revisit a vertex\n• i.e., follow any path until you get stuck, backtrack until ﬁnding an unexplored path to explore\n• P (s) = None, then run visit(s), where\n• visit(u) :\n– for every v ∈ Adj(u) that does not appear in P :\n∗ set P (v) = u and recursively call visit(v)\n– (DFS ﬁnishes visiting vertex u, for use later!)\n• Example: Run DFS on G1 and/or G2 from a\nCorrectness\n• Claim: DFS visits v and correctly sets P (v) for every vertex v reachable from s\n• Proof: induct on k, for claim on only vertices within distance k from s\n– Base case (k = 0): P (s) is set correctly for s and s is visited\n– Inductive step: Consider vertex v with δ(s, v) = k0 + 1\n– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7371167540550232
+        },
+        {
+          "chunk_id": 3,
+          "text": "– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)\n– Either v is in P , so has already been visited, or v will be visited while visiting u\n– In either case, v will be visited by DFS and will be added correctly to P\nRunning Time\n• Algorithm visits each vertex u at most once and spends O(1) time for each v ∈ Adj(u)\nP • Work upper bounded by O(1) × deg(u) = O(|E|)u∈V\n• Unlike BFS, not returning a distance for each vertex, so DFS runs in O(|E|) time",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7327309846878052
+        },
+        {
+          "chunk_id": 14,
+          "text": "duction, so:\nd(s, y) ≤ δ(s, x) + w(x, y) relaxed edge (x, y) when removed x\n= δ(s, y) subpaths of shortest paths are shortest paths\n≤ δ(s, v 0) non-negative edge weights\n0)≤ d(s, v relaxation is safe\n≤ d(s, y) v 0 is vertex with minimum d(s, v 0) in Q\n∗ So d(s, v0) = δ(s, v0), as desired",
+          "page_number": 3,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7108919620513916
+        },
+        {
+          "chunk_id": 4,
+          "text": "3 Lecture 10: Depth-First Search\nFull-BFS and Full-DFS\n• Suppose want to explore entire graph, not just vertices reachable from one vertex\n• Idea! Repeat a graph search algorithm A on any unvisited vertex\n• Repeat the following until all vertices have been visited:\n– Choose an arbitrary unvisited vertex s, use A to explore all vertices reachable from s\n• We call this algorithm Full-A, speciﬁcally Full-BFS or Full-DFS if A is BFS or DFS\n• Visits every vertex once, so both Full-BFS and Full-DFS run in O(|V | + |E|) time\n• Example: Run Full-DFS/Full-BFS on G1 and/or G2\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf\nGraph Connectivity\n• An undirected graph is connected if there is a path connecting every pair of vertices\n• In a directed graph, vertex u may be reachable from v, but v may not be reachable from u\n• Connectivity is more complicated for directed graphs (we won’t discuss in this class)\n• Connectivity(G): is undirected graph G connected?\n• Connected Components(G): given undirected graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7016531825065613
+        }
+      ]
+    },
+    {
+      "id": "D02",
+      "query": "A search from one vertex misses a separate island of vertices. How do I visit the whole graph?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "page_number": 3,
+          "evidence_anchor": "arbitrary unvisited vertex"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 80.57710000139195,
+      "hits": [
+        {
+          "chunk_id": 4,
+          "text": "3 Lecture 10: Depth-First Search\nFull-BFS and Full-DFS\n• Suppose want to explore entire graph, not just vertices reachable from one vertex\n• Idea! Repeat a graph search algorithm A on any unvisited vertex\n• Repeat the following until all vertices have been visited:\n– Choose an arbitrary unvisited vertex s, use A to explore all vertices reachable from s\n• We call this algorithm Full-A, speciﬁcally Full-BFS or Full-DFS if A is BFS or DFS\n• Visits every vertex once, so both Full-BFS and Full-DFS run in O(|V | + |E|) time\n• Example: Run Full-DFS/Full-BFS on G1 and/or G2\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf\nGraph Connectivity\n• An undirected graph is connected if there is a path connecting every pair of vertices\n• In a directed graph, vertex u may be reachable from v, but v may not be reachable from u\n• Connectivity is more complicated for directed graphs (we won’t discuss in this class)\n• Connectivity(G): is undirected graph G connected?\n• Connected Components(G): given undirected graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7743564248085022
+        },
+        {
+          "chunk_id": 2,
+          "text": "2 Lecture 10: Depth-First Search\nDepth-First Search (DFS)\n• Searches a graph from a vertex s, similar to BFS\n• Solves Single Source Reachability, not SSSP. Useful for solving other problems (later!)\n• Return (not necessarily shortest) parent tree of parent pointers back to s\n• Idea! Visit outgoing adjacencies recursively, but never revisit a vertex\n• i.e., follow any path until you get stuck, backtrack until ﬁnding an unexplored path to explore\n• P (s) = None, then run visit(s), where\n• visit(u) :\n– for every v ∈ Adj(u) that does not appear in P :\n∗ set P (v) = u and recursively call visit(v)\n– (DFS ﬁnishes visiting vertex u, for use later!)\n• Example: Run DFS on G1 and/or G2 from a\nCorrectness\n• Claim: DFS visits v and correctly sets P (v) for every vertex v reachable from s\n• Proof: induct on k, for claim on only vertices within distance k from s\n– Base case (k = 0): P (s) is set correctly for s and s is visited\n– Inductive step: Consider vertex v with δ(s, v) = k0 + 1\n– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7432883977890015
+        },
+        {
+          "chunk_id": 44,
+          "text": "4 Lecture 9: Breadth-First Search\nBreadth-First Search (BFS)\n• How to compute δ(s, v) and P (v) for all v ∈ V ?\n• Store δ(s, v) and P (v) in Set data structures mapping vertices v to distance and parent\n• (If no path from s to v, do not store v in P and set δ(s, v) to ∞)\n• Idea! Explore graph nodes in increasing order of distance\n• Goal: Compute level sets Li = {v | v ∈ V and d(s, v) = i} (i.e., all vertices at distance i)\n• Claim: Every vertex v ∈ Li must be adjacent to a vertex u ∈ Li−1 (i.e., v ∈ Adj(u))\n• Claim: No vertex that is in Lj for some j <i, appears in Li\n• Invariant: δ(s, v) and P (v) have been computed correctly for all v in any Lj for j <i\n• Base case (i = 1): L0 = {s}, δ(s, s) = 0, P (s) = None\n• Inductive Step: To compute Li:\n– for every vertex u in Li−1:\n∗ for every vertex v ∈ Adj(u) that does not appear in any Lj for j <i:\n· add v to Li, set δ(s, v) = i, and set P (v) = u\n• Repeatedly compute Li from Lj for j <i for increasing i until Li is the empty set\n• Set δ(s, v) = ∞ for any v ∈ V for which δ(s, v) was not set\n• Breadth-ﬁrst search correctly computes all δ(s, v) and P (v) by induction\n• Running time analysis:\n– Store each Li in data structure with Θ(|Li|)-time iteration and O(1)-time insertion",
+          "page_number": 4,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7210199451750504
+        },
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7173864245414734
+        },
+        {
+          "chunk_id": 38,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 9: Breadth-First Search\nLecture 9: Breadth-First Search\nNew Unit: Graphs!\n• Quiz 1 next week covers lectures L01 - L08 on Data Structures and Sorting\n• Today, start new unit, lectures L09 - L14 on Graph Algorithms\nGraph Applications\n• Why? Graphs are everywhere!\n• any network system has direct connection to graphs\n• e.g., road networks, computer networks, social networks\n• the state space of any discrete system can be represented by a transition graph\n• e.g., puzzle & games like Chess, Tetris, Rubik’s cube\n• e.g., application workﬂows, speciﬁcations\nGraph Deﬁnitions\nG1\n0 1\n2 3\nG2\n0\n1 2\nG3\na\nb\ns\nc\nd\ne\nf\ng\n• Graph G = (V, E) is a set of vertices V and a set of pairs of vertices E ⊆ V × V .\n• Directed edges are ordered pairs, e.g., (u, v) for u, v ∈ V\n• Undirected edges are unordered pairs, e.g., {u, v} for u, v ∈ V i.e., (u, v) and (v, u)\n• In this class, we assume all graphs are simple:\n– edges are distinct, e.g., (u, v) only occurs once in E (though (v, u) may appear), and\n– edges are pairs of distinct vertices, e.g., u =6 v for all (u, v) ∈ E",
+          "page_number": 1,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7171049118041992
+        }
+      ]
+    },
+    {
+      "id": "D03",
+      "query": "How can I group an undirected network into separate connected islands using graph search?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "page_number": 3,
+          "evidence_anchor": "connected component"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 79.03190000797622,
+      "hits": [
+        {
+          "chunk_id": 4,
+          "text": "3 Lecture 10: Depth-First Search\nFull-BFS and Full-DFS\n• Suppose want to explore entire graph, not just vertices reachable from one vertex\n• Idea! Repeat a graph search algorithm A on any unvisited vertex\n• Repeat the following until all vertices have been visited:\n– Choose an arbitrary unvisited vertex s, use A to explore all vertices reachable from s\n• We call this algorithm Full-A, speciﬁcally Full-BFS or Full-DFS if A is BFS or DFS\n• Visits every vertex once, so both Full-BFS and Full-DFS run in O(|V | + |E|) time\n• Example: Run Full-DFS/Full-BFS on G1 and/or G2\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf\nGraph Connectivity\n• An undirected graph is connected if there is a path connecting every pair of vertices\n• In a directed graph, vertex u may be reachable from v, but v may not be reachable from u\n• Connectivity is more complicated for directed graphs (we won’t discuss in this class)\n• Connectivity(G): is undirected graph G connected?\n• Connected Components(G): given undirected graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7474451661109924
+        },
+        {
+          "chunk_id": 38,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 9: Breadth-First Search\nLecture 9: Breadth-First Search\nNew Unit: Graphs!\n• Quiz 1 next week covers lectures L01 - L08 on Data Structures and Sorting\n• Today, start new unit, lectures L09 - L14 on Graph Algorithms\nGraph Applications\n• Why? Graphs are everywhere!\n• any network system has direct connection to graphs\n• e.g., road networks, computer networks, social networks\n• the state space of any discrete system can be represented by a transition graph\n• e.g., puzzle & games like Chess, Tetris, Rubik’s cube\n• e.g., application workﬂows, speciﬁcations\nGraph Deﬁnitions\nG1\n0 1\n2 3\nG2\n0\n1 2\nG3\na\nb\ns\nc\nd\ne\nf\ng\n• Graph G = (V, E) is a set of vertices V and a set of pairs of vertices E ⊆ V × V .\n• Directed edges are ordered pairs, e.g., (u, v) for u, v ∈ V\n• Undirected edges are unordered pairs, e.g., {u, v} for u, v ∈ V i.e., (u, v) and (v, u)\n• In this class, we assume all graphs are simple:\n– edges are distinct, e.g., (u, v) only occurs once in E (though (v, u) may appear), and\n– edges are pairs of distinct vertices, e.g., u =6 v for all (u, v) ∈ E",
+          "page_number": 1,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7148255109786987
+        },
+        {
+          "chunk_id": 40,
+          "text": "2 Lecture 9: Breadth-First Search\nNeighbor Sets/Adjacencies\n• The outgoing neighbor set of u ∈ V is Adj+(u) = {v ∈ V | (u, v) ∈ E}\n• The incoming neighbor set of u ∈ V is Adj−(u) = {v ∈ V | (v, u) ∈ E}\n• The out-degree of a vertex u ∈ V is deg+(u) = |Adj+(u)|\n• The in-degree of a vertex u ∈ V is deg−(u) = |Adj−(u)|\n• For undirected graphs, Adj−(u) = Adj+(u) and deg−(u) = deg+(u)\n• Dropping superscript defaults to outgoing, i.e., Adj(u) = Adj+(u) and deg(u) = deg+(u)\nGraph Representations\n• To store a graph G = (V, E), we need to store the outgoing edges Adj(u) for all u ∈ V\n• First, need a Set data structure Adj to map u to Adj(u)\n• Then for each u, need to store Adj(u) in another data structure called an adjacency list\n• Common to use direct access array or hash table for Adj, since want lookup fast by vertex\n• Common to use array or linked list for each Adj(u) since usually only iteration is needed1\n• For the common representations, Adj has size Θ(|V |), while each Adj(u) has size Θ(deg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7053122520446777
+        },
+        {
+          "chunk_id": 5,
+          "text": "directed graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components\n• Consider a graph algorithm A that solves Single Source Reachability\n• Claim: A can be used to solve Connected Components\n• Proof: Run Full-A. For each run of A, put visited vertices in a connected component",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6913483348890646
+        },
+        {
+          "chunk_id": 1,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 10: Depth-First Search\nLecture 10: Depth-First Search\nPreviously\n• Graph deﬁnitions (directed/undirected, simple, neighbors, degree)\n• Graph representations (Set mapping vertices to adjacency lists)\n• Paths and simple paths, path length, distance, shortest path\n• Graph Path Problems\n– Single Pair Reachability(G,s,t)\n– Single Source Reachability(G,s)\n– Single Pair Shortest Path(G,s,t)\n– Single Source Shortest Paths(G,s) (SSSP)\n• Breadth-First Search (BFS)\n– algorithm that solves Single Source Shortest Paths\n– with appropriate data structures, runs in O(|V | + |E|) time (linear in input size)\nExamples\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf",
+          "page_number": 1,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6881616711616516
+        }
+      ]
+    },
+    {
+      "id": "D04",
+      "query": "My tasks have one-way prerequisites and no cycles. How do DFS finishing times give a valid task order?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "page_number": 4,
+          "evidence_anchor": "reverse of"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": null,
+      "latency_ms": 100.90229999332223,
+      "hits": [
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6750064097346788
+        },
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6539134967845828
+        },
+        {
+          "chunk_id": 3,
+          "text": "– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)\n– Either v is in P , so has already been visited, or v will be visited while visiting u\n– In either case, v will be visited by DFS and will be added correctly to P\nRunning Time\n• Algorithm visits each vertex u at most once and spends O(1) time for each v ∈ Adj(u)\nP • Work upper bounded by O(1) × deg(u) = O(|E|)u∈V\n• Unlike BFS, not returning a distance for each vertex, so DFS runs in O(|E|) time",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.652159293060282
+        },
+        {
+          "chunk_id": 2,
+          "text": "2 Lecture 10: Depth-First Search\nDepth-First Search (DFS)\n• Searches a graph from a vertex s, similar to BFS\n• Solves Single Source Reachability, not SSSP. Useful for solving other problems (later!)\n• Return (not necessarily shortest) parent tree of parent pointers back to s\n• Idea! Visit outgoing adjacencies recursively, but never revisit a vertex\n• i.e., follow any path until you get stuck, backtrack until ﬁnding an unexplored path to explore\n• P (s) = None, then run visit(s), where\n• visit(u) :\n– for every v ∈ Adj(u) that does not appear in P :\n∗ set P (v) = u and recursively call visit(v)\n– (DFS ﬁnishes visiting vertex u, for use later!)\n• Example: Run DFS on G1 and/or G2 from a\nCorrectness\n• Claim: DFS visits v and correctly sets P (v) for every vertex v reachable from s\n• Proof: induct on k, for claim on only vertices within distance k from s\n– Base case (k = 0): P (s) is set correctly for s and s is visited\n– Inductive step: Consider vertex v with δ(s, v) = k0 + 1\n– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6392389726411993
+        },
+        {
+          "chunk_id": 16,
+          "text": "should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)\nGeneral Unweighted BFS |V | + |E|\nDAG Any DAG Relaxation |V | + |E|\nGeneral Non-negative Dijkstra\nBellman-Ford\n|V | log |V | + |E|\n|V | · |E|General Any\n• What about All-Pairs Shortest Paths?\n• Doing a SSSP algorithm |V | times is actually pretty good, since output has size O(|V |2)\n• Can do better than |V |· O(|V |·|E |) for general graphs with negative weights (next time!)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.637213606751371
+        }
+      ]
+    },
+    {
+      "id": "D05",
+      "query": "While recursively exploring a directed graph, what sort of edge tells me I've found a cycle?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "page_number": 4,
+          "evidence_anchor": "an ancestor"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 78.41170000028796,
+      "hits": [
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7988864183425903
+        },
+        {
+          "chunk_id": 6,
+          "text": "4 Lecture 10: Depth-First Search\nTopological Sort\n• A Directed Acyclic Graph (DAG) is a directed graph that contains no directed cycle.\n• A T opological Order of a graph G = (V, E) is an ordering f on the vertices such that:\nevery edge (u, v) ∈ E satisﬁes f (u) <f (v).\n• Exercise: Prove that a directed graph admits a topological ordering if and only if it is a DAG.\n• How to ﬁnd a topological order?\n• A Finishing Order is the order in which a Full-DFS ﬁnishes visiting each vertex in G\n• Claim: If G = (V, E) is a DAG, the reverse of a ﬁnishing order is a topological order\n• Proof: Need to prove, for every edge (u, v) ∈ E that u is ordered before v,\ni.e., the visit to v ﬁnishes before visiting u. Two cases:\n– If u visited before v:\n∗ Before visit to u ﬁnishes, will visit v (via (u, v) or otherwise)\n∗ Thus the visit to v ﬁnishes before visiting u\n– If v visited before u:\n∗ u can’t be reached from v since graph is acyclic\n∗ Thus the visit to v ﬁnishes before visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7781802879679388
+        },
+        {
+          "chunk_id": 4,
+          "text": "3 Lecture 10: Depth-First Search\nFull-BFS and Full-DFS\n• Suppose want to explore entire graph, not just vertices reachable from one vertex\n• Idea! Repeat a graph search algorithm A on any unvisited vertex\n• Repeat the following until all vertices have been visited:\n– Choose an arbitrary unvisited vertex s, use A to explore all vertices reachable from s\n• We call this algorithm Full-A, speciﬁcally Full-BFS or Full-DFS if A is BFS or DFS\n• Visits every vertex once, so both Full-BFS and Full-DFS run in O(|V | + |E|) time\n• Example: Run Full-DFS/Full-BFS on G1 and/or G2\nG1\na\nd\nb\ne\nc\nf\nG2\na\nd\nb\ne\nc\nf\nGraph Connectivity\n• An undirected graph is connected if there is a path connecting every pair of vertices\n• In a directed graph, vertex u may be reachable from v, but v may not be reachable from u\n• Connectivity is more complicated for directed graphs (we won’t discuss in this class)\n• Connectivity(G): is undirected graph G connected?\n• Connected Components(G): given undirected graph G = (V, E), return partition of V\ninto subsets Vi ⊆ V (connected components) where each Vi is connected in G and there are\nno edges between vertices from different connected components",
+          "page_number": 3,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7612255811691284
+        },
+        {
+          "chunk_id": 2,
+          "text": "2 Lecture 10: Depth-First Search\nDepth-First Search (DFS)\n• Searches a graph from a vertex s, similar to BFS\n• Solves Single Source Reachability, not SSSP. Useful for solving other problems (later!)\n• Return (not necessarily shortest) parent tree of parent pointers back to s\n• Idea! Visit outgoing adjacencies recursively, but never revisit a vertex\n• i.e., follow any path until you get stuck, backtrack until ﬁnding an unexplored path to explore\n• P (s) = None, then run visit(s), where\n• visit(u) :\n– for every v ∈ Adj(u) that does not appear in P :\n∗ set P (v) = u and recursively call visit(v)\n– (DFS ﬁnishes visiting vertex u, for use later!)\n• Example: Run DFS on G1 and/or G2 from a\nCorrectness\n• Claim: DFS visits v and correctly sets P (v) for every vertex v reachable from s\n• Proof: induct on k, for claim on only vertices within distance k from s\n– Base case (k = 0): P (s) is set correctly for s and s is visited\n– Inductive step: Consider vertex v with δ(s, v) = k0 + 1\n– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7579632997512817
+        },
+        {
+          "chunk_id": 39,
+          "text": "lass, we assume all graphs are simple:\n– edges are distinct, e.g., (u, v) only occurs once in E (though (v, u) may appear), and\n– edges are pairs of distinct vertices, e.g., u =6 v for all (u, v) ∈ E\n� \u0001 � \u0001|V | |V |– Simple implies |E| = O(|V |2), since |E|≤ for undirected, ≤ 2 for directed 2 2",
+          "page_number": 1,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.7559089660644531
+        }
+      ]
+    },
+    {
+      "id": "J01",
+      "query": "Some roads have zero cost and others have negative cost. Which of those is allowed by Dijkstra's assumptions?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "page_number": 1,
+          "evidence_anchor": "non-negative edge weights"
+        }
+      ],
+      "first_source_page_rank": 3,
+      "first_anchor_rank": 3,
+      "latency_ms": 83.51419999962673,
+      "hits": [
+        {
+          "chunk_id": 16,
+          "text": "should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)\nGeneral Unweighted BFS |V | + |E|\nDAG Any DAG Relaxation |V | + |E|\nGeneral Non-negative Dijkstra\nBellman-Ford\n|V | log |V | + |E|\n|V | · |E|General Any\n• What about All-Pairs Shortest Paths?\n• Doing a SSSP algorithm |V | times is actually pretty good, since output has size O(|V |2)\n• Can do better than |V |· O(|V |·|E |) for general graphs with negative weights (next time!)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7341298619431352
+        },
+        {
+          "chunk_id": 13,
+          "text": "3 Lecture 13: Dijkstra’s Algorithm\nExample\nDelete\nv from Q\ns\nc\nd\na\nb\nδ(s, v)\ns\n0\n0\nCorrectness\na\n∞\n10\n7\n7\n7\nd(s, v)\nb\n∞\n∞\n11\n10\n9\n9\nc\n∞\n3\n3\nd 2 G ∞ 10\n∞\n1 5s\na b\nc d\n4 75 8\n3\n2\n5\n• Claim: At end of Dijkstra’s algorithm, d(s, v) = δ(s, v) for all v ∈ V\n• Proof:\n– If relaxation sets d(s, v) to δ(s, v), then d(s, v) = δ(s, v) at the end of the algorithm\n∗ Relaxation can only decrease estimates d(s, v)\n∗ Relaxation is safe, i.e., maintains that each d(s, v) is weight of a path to v (or ∞)\n– Sufﬁces to show d(s, v) = δ(s, v) when vertex v is removed from Q\n∗ Proof by induction on ﬁrst k vertices removed from Q\n∗ Base Case (k = 1): s is ﬁrst vertex removed from Q, and d(s, s) = 0 = δ(s, s)\n∗ Inductive Step: Assume true for k <k0, consider k0th vertex v0 removed from Q\n∗ Consider some shortest path π from s to v0, with w(π) = δ(s, v0)\n∗ Let (x, y) be the ﬁrst edge in π where y is not among ﬁrst k0 − 1 (perhaps y = v0)\n∗ When x was removed from Q, d(s, x) = δ(s, x) by induction, so:\nd(s, y) ≤ δ(s, x) + w(x, y) relaxed edge (x, y) when removed x\n= δ(s, y) subpaths of shortest paths are shortest paths\n≤ δ(s, v 0) non-negative edge weights\n0)≤ d(s, v relaxation is safe",
+          "page_number": 3,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7207247351736146
+        },
+        {
+          "chunk_id": 9,
+          "text": "Restrictions SSSP Algorithm\nGraph Weights Name Running Time O(·) Lecture\nGeneral Unweighted BFS |V | + |E| L09\nL11\nL12\nL13 (Today!)\nDAG Any DAG Relaxation |V | + |E|\nGeneral Any Bellman-Ford\nDijkstra\n|V | · |E|\nGeneral Non-negative\nIntroduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 13: Dijkstra’s Algorithm\nLecture 13: Dijkstra’s Algorithm\nReview\n• Single-Source Shortest Paths on weighted graphs\n• Previously: O(|V | + |E|)-time algorithms for small positive weights or DAGs\n• Last time: Bellman-Ford, O(|V ||E|)-time algorithm for general graphs with negative weights\n• Today: faster for general graphs with non-negative edge weights, i.e., for e ∈ E, w(e) ≥ 0\n|V | log |V | + |E|\nNon-negative Edge Weights\n• Idea! Generalize BFS approach to weighted graphs:\n– Grow a sphere centered at source s\n– Repeatedly explore closer vertices before further ones\n– But how to explore closer vertices if you don’t know distances beforehand? :(\n• Observation 1: If weights non-negative, monotonic distance increase along shortest paths\n– i.e., if vertex u appears on a shortest path from s to v, then δ(s, u) ≤ δ(s, v)",
+          "page_number": 1,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7121018767356924
+        },
+        {
+          "chunk_id": 14,
+          "text": "duction, so:\nd(s, y) ≤ δ(s, x) + w(x, y) relaxed edge (x, y) when removed x\n= δ(s, y) subpaths of shortest paths are shortest paths\n≤ δ(s, v 0) non-negative edge weights\n0)≤ d(s, v relaxation is safe\n≤ d(s, y) v 0 is vertex with minimum d(s, v 0) in Q\n∗ So d(s, v0) = δ(s, v0), as desired",
+          "page_number": 3,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6890215463029429
+        },
+        {
+          "chunk_id": 12,
+          "text": "s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)\n• Run Dijkstra on example",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.685920853261898
+        }
+      ]
+    },
+    {
+      "id": "J02",
+      "query": "I found a cheaper route to a vertex still waiting in Dijkstra's queue. What must I change in the queue?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "page_number": 2,
+          "evidence_anchor": "Decrease the key"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 83.89500000339467,
+      "hits": [
+        {
+          "chunk_id": 11,
+          "text": "2 Lecture 13: Dijkstra’s Algorithm\nDijkstra’s Algorithm\n• Named for famous Dutch computer scientist Edsger Dijkstra (actually D¨ykstra!)\n• Idea! Relax edges from each vertex in increasing order of distance from source s\n• Idea! Efﬁciently ﬁnd next vertex in the order using a data structure\n• Changeable Priority Queue Q on items with keys and unique IDs, supporting operations:\nQ.build(X) initialize Q with items in iterator X\nQ.delete min() remove an item with minimum key\nQ.decrease key(id, k) ﬁnd stored item with ID id and change key to k\n• Implement by cross-linking a Priority Queue Q0 and a Dictionary D mapping IDs into Q0\n• Assume vertex IDs are integers from 0 to |V |− 1 so can use a direct access array for D\n• For brevity, say item x is the tuple (x.id, x.key)\n• Set d(s, v) = ∞ for all v ∈ V , then set d(s, s) = 0\n• Build changeable priority queue Q with an item (v, d(s, v)) for each vertex v ∈ V\n• While Q not empty, delete an item (u, d(s, u)) from Q that has minimum d(s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7642733314200255
+        },
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7324947395914483
+        },
+        {
+          "chunk_id": 12,
+          "text": "s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)\n• Run Dijkstra on example",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7096382802509249
+        },
+        {
+          "chunk_id": 3,
+          "text": "– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)\n– Either v is in P , so has already been visited, or v will be visited while visiting u\n– In either case, v will be visited by DFS and will be added correctly to P\nRunning Time\n• Algorithm visits each vertex u at most once and spends O(1) time for each v ∈ Adj(u)\nP • Work upper bounded by O(1) × deg(u) = O(|E|)u∈V\n• Unlike BFS, not returning a distance for each vertex, so DFS runs in O(|E|) time",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6925269778088926
+        },
+        {
+          "chunk_id": 7,
+          "text": "re visiting u\nCycle Detection\n• Full-DFS will ﬁnd a topological order if a graph G = (V, E) is acyclic\n• If reverse ﬁnishing order for Full-DFS is not a topological order, then G must contain a cycle\n• Check if G is acyclic: for each edge (u, v), check if v is before u in reverse ﬁnishing order\n• Can be done in O(|E|) time via a hash table or direct access array\n• To return such a cycle, maintain the set of ancestors along the path back to s in Full-DFS\n• Claim: If G contains a cycle, Full-DFS will traverse an edge from v to an ancestor of v.\n• Proof: Consider a cycle (v0,v 1,...,v k,v 0) in G\n– Without loss of generality, let v0 be the ﬁrst vertex visited by Full-DFS on the cycle\n– For each vi, before visit to vi ﬁnishes, will visit vi+1 and ﬁnish\n– Will consider edge (vi,v i+1), and if vi+1 has not been visited, it will be visited now\n– Thus, before visit to v0 ﬁnishes, will visit vk (for the ﬁrst time, by v0 assumption)\n– So, before visit to vk ﬁnishes, will consider (vk,v 0), where v0 is an ancestor of vk",
+          "page_number": 4,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.6919653828123452
+        }
+      ]
+    },
+    {
+      "id": "J03",
+      "query": "Why is a vertex's distance final when Dijkstra removes it as the current minimum?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "page_number": 3,
+          "evidence_anchor": "when vertex v"
+        }
+      ],
+      "first_source_page_rank": 2,
+      "first_anchor_rank": 2,
+      "latency_ms": 85.10330000717659,
+      "hits": [
+        {
+          "chunk_id": 11,
+          "text": "2 Lecture 13: Dijkstra’s Algorithm\nDijkstra’s Algorithm\n• Named for famous Dutch computer scientist Edsger Dijkstra (actually D¨ykstra!)\n• Idea! Relax edges from each vertex in increasing order of distance from source s\n• Idea! Efﬁciently ﬁnd next vertex in the order using a data structure\n• Changeable Priority Queue Q on items with keys and unique IDs, supporting operations:\nQ.build(X) initialize Q with items in iterator X\nQ.delete min() remove an item with minimum key\nQ.decrease key(id, k) ﬁnd stored item with ID id and change key to k\n• Implement by cross-linking a Priority Queue Q0 and a Dictionary D mapping IDs into Q0\n• Assume vertex IDs are integers from 0 to |V |− 1 so can use a direct access array for D\n• For brevity, say item x is the tuple (x.id, x.key)\n• Set d(s, v) = ∞ for all v ∈ V , then set d(s, s) = 0\n• Build changeable priority queue Q with an item (v, d(s, v)) for each vertex v ∈ V\n• While Q not empty, delete an item (u, d(s, u)) from Q that has minimum d(s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.797537624835968
+        },
+        {
+          "chunk_id": 13,
+          "text": "3 Lecture 13: Dijkstra’s Algorithm\nExample\nDelete\nv from Q\ns\nc\nd\na\nb\nδ(s, v)\ns\n0\n0\nCorrectness\na\n∞\n10\n7\n7\n7\nd(s, v)\nb\n∞\n∞\n11\n10\n9\n9\nc\n∞\n3\n3\nd 2 G ∞ 10\n∞\n1 5s\na b\nc d\n4 75 8\n3\n2\n5\n• Claim: At end of Dijkstra’s algorithm, d(s, v) = δ(s, v) for all v ∈ V\n• Proof:\n– If relaxation sets d(s, v) to δ(s, v), then d(s, v) = δ(s, v) at the end of the algorithm\n∗ Relaxation can only decrease estimates d(s, v)\n∗ Relaxation is safe, i.e., maintains that each d(s, v) is weight of a path to v (or ∞)\n– Sufﬁces to show d(s, v) = δ(s, v) when vertex v is removed from Q\n∗ Proof by induction on ﬁrst k vertices removed from Q\n∗ Base Case (k = 1): s is ﬁrst vertex removed from Q, and d(s, s) = 0 = δ(s, s)\n∗ Inductive Step: Assume true for k <k0, consider k0th vertex v0 removed from Q\n∗ Consider some shortest path π from s to v0, with w(π) = δ(s, v0)\n∗ Let (x, y) be the ﬁrst edge in π where y is not among ﬁrst k0 − 1 (perhaps y = v0)\n∗ When x was removed from Q, d(s, x) = δ(s, x) by induction, so:\nd(s, y) ≤ δ(s, x) + w(x, y) relaxed edge (x, y) when removed x\n= δ(s, y) subpaths of shortest paths are shortest paths\n≤ δ(s, v 0) non-negative edge weights\n0)≤ d(s, v relaxation is safe",
+          "page_number": 3,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7805023920236606
+        },
+        {
+          "chunk_id": 12,
+          "text": "s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)\n• Run Dijkstra on example",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7737576961517334
+        },
+        {
+          "chunk_id": 3,
+          "text": "– Consider vertex u, the second to last vertex on some shortest path from s to v\n– By induction, since δ(s, u) = k0, DFS visits u and sets P (u) correctly\n– While visiting u, DFS considers v ∈ Adj(u)\n– Either v is in P , so has already been visited, or v will be visited while visiting u\n– In either case, v will be visited by DFS and will be added correctly to P\nRunning Time\n• Algorithm visits each vertex u at most once and spends O(1) time for each v ∈ Adj(u)\nP • Work upper bounded by O(1) × deg(u) = O(|E|)u∈V\n• Unlike BFS, not returning a distance for each vertex, so DFS runs in O(|E|) time",
+          "page_number": 2,
+          "document_id": 1,
+          "document_name": "MIT6_006S20_lec10.pdf",
+          "score": 0.7665300369262695
+        },
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7661207178903068
+        }
+      ]
+    },
+    {
+      "id": "J04",
+      "query": "Should I use the same priority queue for a very dense graph and a very sparse one?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "page_number": 4,
+          "evidence_anchor": "graph is dense"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 107.39090001152363,
+      "hits": [
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7287463601302829
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6827579940187336
+        },
+        {
+          "chunk_id": 11,
+          "text": "2 Lecture 13: Dijkstra’s Algorithm\nDijkstra’s Algorithm\n• Named for famous Dutch computer scientist Edsger Dijkstra (actually D¨ykstra!)\n• Idea! Relax edges from each vertex in increasing order of distance from source s\n• Idea! Efﬁciently ﬁnd next vertex in the order using a data structure\n• Changeable Priority Queue Q on items with keys and unique IDs, supporting operations:\nQ.build(X) initialize Q with items in iterator X\nQ.delete min() remove an item with minimum key\nQ.decrease key(id, k) ﬁnd stored item with ID id and change key to k\n• Implement by cross-linking a Priority Queue Q0 and a Dictionary D mapping IDs into Q0\n• Assume vertex IDs are integers from 0 to |V |− 1 so can use a direct access array for D\n• For brevity, say item x is the tuple (x.id, x.key)\n• Set d(s, v) = ∞ for all v ∈ V , then set d(s, s) = 0\n• Build changeable priority queue Q with an item (v, d(s, v)) for each vertex v ∈ V\n• While Q not empty, delete an item (u, d(s, u)) from Q that has minimum d(s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6809442246241639
+        },
+        {
+          "chunk_id": 30,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 4: Hashing\nLecture 4: Hashing\nReview\nData Structure\nOperations O(·)\nContainer Static Dynamic Order\nbuild(X) find(k) insert(x)\ndelete(k)\nfind min()\nfind max()\nfind prev(k)\nfind next(k)\nArray n n n n n\nSorted Array n log n log n n 1 log n\n• Idea! Want faster search and dynamic operations. Can we find(k) faster than Θ(log n)?\n• Answer is no (lower bound)! (But actually, yes...!?)\nComparison Model\n• In this model, assume algorithm can only differentiate items via comparisons\n• Comparable items: black boxes only supporting comparisons between pairs\n• Comparisons are <, ≤, >, ≥, =, =6 , outputs are binary: True or False\n• Goal: Store a set of n comparable items, support find(k) operation\n• Running time is lower bounded by # comparisons performed, so count comparisons!\nDecision Tree\n• Any algorithm can be viewed as a decision tree of operations performed\n• An internal node represents a binary comparison, branching either True or False\n• For a comparison algorithm, the decision tree is binary (draw example)\n• A leaf represents algorithm termination, resulting in an algorithm output",
+          "page_number": 1,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6682437063673475
+        },
+        {
+          "chunk_id": 10,
+          "text": "distances beforehand? :(\n• Observation 1: If weights non-negative, monotonic distance increase along shortest paths\n– i.e., if vertex u appears on a shortest path from s to v, then δ(s, u) ≤ δ(s, v)\n– Let Vx ⊂ V be the subset of vertices reachable within distance ≤ x from s\n– If v ∈ Vx, then any shortest path from s to v only contains vertices from Vx\n– Perhaps grow Vx one vertex at a time! (but growing for every x is slow if weights large)\n• Observation 2: Can solve SSSP fast if given order of vertices in increasing distance from s\n– Remove edges that go against this order (since cannot participate in shortest paths)\n– May still have cycles if zero-weight edges: repeatedly collapse into single vertices\n– Compute δ(s, v) for each v ∈ V using DAG relaxation in O(|V | + |E|) time",
+          "page_number": 1,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6676821907664001
+        }
+      ]
+    },
+    {
+      "id": "J05",
+      "query": "For Dijkstra's running time, how often do we build the queue, remove a minimum, and lower a key?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "page_number": 4,
+          "evidence_anchor": "Occurrences in Dijkstra"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 115.07699999492615,
+      "hits": [
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.8239651918411314
+        },
+        {
+          "chunk_id": 11,
+          "text": "2 Lecture 13: Dijkstra’s Algorithm\nDijkstra’s Algorithm\n• Named for famous Dutch computer scientist Edsger Dijkstra (actually D¨ykstra!)\n• Idea! Relax edges from each vertex in increasing order of distance from source s\n• Idea! Efﬁciently ﬁnd next vertex in the order using a data structure\n• Changeable Priority Queue Q on items with keys and unique IDs, supporting operations:\nQ.build(X) initialize Q with items in iterator X\nQ.delete min() remove an item with minimum key\nQ.decrease key(id, k) ﬁnd stored item with ID id and change key to k\n• Implement by cross-linking a Priority Queue Q0 and a Dictionary D mapping IDs into Q0\n• Assume vertex IDs are integers from 0 to |V |− 1 so can use a direct access array for D\n• For brevity, say item x is the tuple (x.id, x.key)\n• Set d(s, v) = ∞ for all v ∈ V , then set d(s, s) = 0\n• Build changeable priority queue Q with an item (v, d(s, v)) for each vertex v ∈ V\n• While Q not empty, delete an item (u, d(s, u)) from Q that has minimum d(s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7787006629287815
+        },
+        {
+          "chunk_id": 16,
+          "text": "should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)\nGeneral Unweighted BFS |V | + |E|\nDAG Any DAG Relaxation |V | + |E|\nGeneral Non-negative Dijkstra\nBellman-Ford\n|V | log |V | + |E|\n|V | · |E|General Any\n• What about All-Pairs Shortest Paths?\n• Doing a SSSP algorithm |V | times is actually pretty good, since output has size O(|V |2)\n• Can do better than |V |· O(|V |·|E |) for general graphs with negative weights (next time!)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7481351048865865
+        },
+        {
+          "chunk_id": 12,
+          "text": "s, u)\n– For vertex v in outgoing adjacencies Adj+(u):\n∗ If d(s, v) >d (s, u) + w(u, v):\n· Relax edge (u, v), i.e., set d(s, v) = d(s, u) + w(u, v)\n· Decrease the key of v in Q to new estimate d(s, v)\n• Run Dijkstra on example",
+          "page_number": 2,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.7120319776515986
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.7100871974177851
+        }
+      ]
+    },
+    {
+      "id": "P01",
+      "query": "My recursive Fibonacci function has only two short calls, so why does it get slow so quickly?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 2,
+          "evidence_anchor": "computed more than once"
+        }
+      ],
+      "first_source_page_rank": 2,
+      "first_anchor_rank": 2,
+      "latency_ms": 78.89229999273084,
+      "hits": [
+        {
+          "chunk_id": 21,
+          "text": "3 Lecture 15: Recursive Algorithms\nRe-using Subproblem Solutions\n• Draw subproblem dependencies as a DAG\n• To solve, either:\n– Top down: record subproblem solutions in a memo and re-use\n(recursion + memoization)\n– Bottom up: solve subproblems in topological sort order (usually via loops)\n• For Fibonacci, n + 1 subproblems (vertices) and < 2n dependencies (edges)\n• Time to compute is then O(n) additions\n1 # recursive solution (top down)\n2 def fib(n):\n3 memo = {}\n4 def F(i):\n5 if i < 2: return i # base cases\n6 if i not in memo: # check memo\n7 memo[i] = F(i - 1) + F(i - 2) # relation\n8 return memo[i]\n9 return F(n) # original\n1 # iterative solution (bottom up)\n2 def fib(n):\n3 F = {}\n4 F[0], F[1] = 0, 1 # base cases\n5 for i in range(2, n + 1): # topological order\n6 F[i] = F[i - 1] + F[i - 2] # relation\n7 return F[n] # original\n• A subtlety is that Fibonacci numbers grow to Θ(n) bits long, potentially \u001d word size w\n• Each addition costs O(dn/we) time\n• So total cost is O(ndn/we) = O(n + n2/w) time",
+          "page_number": 3,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.745864987373352
+        },
+        {
+          "chunk_id": 20,
+          "text": "2 Lecture 15: Recursive Algorithms\nMerge Sort in SRT BOT Framework\n• Merge sorting an array A of n elements can be expressed in SRT BOT as follows:\n– Subproblems: S(i, j) = sorted array on elements of A[i : j] for 0 ≤ i ≤ j ≤ n\n– Relation: S(i, j) = merge(S(i, m),S (m, j)) where m = b(i + j)/2c\n– Topo. order: Increasing j − i\n– Base cases: S(i, i + 1) = [A[i]]\n– Original: S(0,n )\n– Time: T (n) = 2 T (n/2) + O(n) = O(n lg n)\n• In this case, subproblem DAG is a tree (divide & conquer)\nFibonacci Numbers\n• Suppose we want to compute the nth Fibonacci number Fn\n• Subproblems: F (i) = the ith Fibonacci number Fi for i ∈{ 0, 1,...,n}\n• Relation: F (i) = F (i − 1) + F (i − 2) (deﬁnition of Fibonacci numbers)\n• Topo. order: Increasing i\n• Base cases: F (0) = 0, F (1) = 1\n• Original prob.: F (n)\n1 def fib(n):\n2 if n < 2: return n # base case\n3 return fib(n - 1) + fib(n - 2) # recurrence\n• Divide and conquer implies a tree of recursive calls (draw tree)\n• Time: T (n) = T (n − 1) + T (n − 2) + O(1) > 2T (n − 2), T (n) = Ω(2n/2) exponential... :(\n• Subproblem F (k) computed more than once! (F (n − k) times)\n• Can we avoid this waste?",
+          "page_number": 2,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7382795810699463
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6824771761894226
+        },
+        {
+          "chunk_id": 18,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 15: Recursive Algorithms\nLecture 15: Recursive Algorithms\nHow to Solve an Algorithms Problem (Review)\n• Reduce to a problem you already know (use data structure or algorithm)\nSearch Data Structures Sort Algorithms Graph Algorithms\nArray Insertion Sort Breadth First Search\nLinked List Selection Sort DAG Relaxation (DFS + Topo)\nDynamic Array Merge Sort Dijkstra\nSorted Array Counting Sort Bellman-Ford\nDirect-Access Array Radix Sort Johnson\nHash Table A VL Sort\nA VL Tree Heap Sort\nBinary Heap\n• Design your own recursive algorithm\n– Constant-sized program to solve arbitrary input\n– Need looping or recursion, analyze by induction\n– Recursive function call: vertex in a graph, directed edge from A → B if B calls A\n– Dependency graph of recursive calls must be acyclic (if can terminate)\n– Classify based on shape of graph\nClass Graph\nBrute Force\nDecrease & Conquer\nDivide & Conquer\nDynamic Programming\nStar\nChain\nTree\nDAG\nGreedy/Incremental Subgraph\n– Hard part is thinking inductively to construct recurrence on subproblems\n– How to solve a problem recursively (SRT BOT)",
+          "page_number": 1,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.6783028841018677
+        },
+        {
+          "chunk_id": 15,
+          "text": "4 Lecture 13: Dijkstra’s Algorithm\nRunning Time\n• Count operations on changeable priority queue Q, assuming it contains n items:\nOperation Time Occurrences in Dijkstra\nQ.build(X) (n = |X|)\nQ.delete min()\nQ.decrease key(id, k)\nBn\nMn\nDn\n1\n|V |\n|E|\n• Total running time is O(B|V | + |V |· M|V | + |E|· D|V |)\n• Assume pruned graph to search only vertices reachable from the source, so |V | = O(|E|)\nPriority Queue Q0 Q Operations O(·) Dijkstra O(·)\nn = |V | = O(|E|)on n items build(X) delete min() decrease key(id, k)\nArray n n 1 |V |2\nBinary Heap n log n(a) log n |E| log |V |\nFibonacci Heap n log n(a) 1(a) |E| + |V | log |V |\n• If graph is dense, i.e., |E| = Θ(|V |2), using an Array for Q0 yields O(|V |2) time\n• If graph is sparse, i.e., |E| = Θ(|V |), using a Binary Heap for Q0 yields O(|V | log |V |) time\n• A Fibonacci Heap is theoretically good in all cases, but is not used much in practice\n• We won’t discuss Fibonacci Heaps in 6.006 (see 6.854 or CLRS chapter 19 for details)\n• You should assume Dijkstra runs in O(|E|+|V | log |V |) time when using in theory problems\nSummary: Weighted Single-Source Shortest Paths\nRestrictions SSSP Algorithm\nGraph Weights Name Running Time O(·)",
+          "page_number": 4,
+          "document_id": 2,
+          "document_name": "MIT6_006S20_lec13.pdf",
+          "score": 0.6772447036054566
+        }
+      ]
+    },
+    {
+      "id": "P02",
+      "query": "If I cache recursive answers or fill a table in order, am I solving different Fibonacci subproblems?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 3,
+          "evidence_anchor": "Top down"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 80.3139000054216,
+      "hits": [
+        {
+          "chunk_id": 21,
+          "text": "3 Lecture 15: Recursive Algorithms\nRe-using Subproblem Solutions\n• Draw subproblem dependencies as a DAG\n• To solve, either:\n– Top down: record subproblem solutions in a memo and re-use\n(recursion + memoization)\n– Bottom up: solve subproblems in topological sort order (usually via loops)\n• For Fibonacci, n + 1 subproblems (vertices) and < 2n dependencies (edges)\n• Time to compute is then O(n) additions\n1 # recursive solution (top down)\n2 def fib(n):\n3 memo = {}\n4 def F(i):\n5 if i < 2: return i # base cases\n6 if i not in memo: # check memo\n7 memo[i] = F(i - 1) + F(i - 2) # relation\n8 return memo[i]\n9 return F(n) # original\n1 # iterative solution (bottom up)\n2 def fib(n):\n3 F = {}\n4 F[0], F[1] = 0, 1 # base cases\n5 for i in range(2, n + 1): # topological order\n6 F[i] = F[i - 1] + F[i - 2] # relation\n7 return F[n] # original\n• A subtlety is that Fibonacci numbers grow to Θ(n) bits long, potentially \u001d word size w\n• Each addition costs O(dn/we) time\n• So total cost is O(ndn/we) = O(n + n2/w) time",
+          "page_number": 3,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.8169345855712891
+        },
+        {
+          "chunk_id": 20,
+          "text": "2 Lecture 15: Recursive Algorithms\nMerge Sort in SRT BOT Framework\n• Merge sorting an array A of n elements can be expressed in SRT BOT as follows:\n– Subproblems: S(i, j) = sorted array on elements of A[i : j] for 0 ≤ i ≤ j ≤ n\n– Relation: S(i, j) = merge(S(i, m),S (m, j)) where m = b(i + j)/2c\n– Topo. order: Increasing j − i\n– Base cases: S(i, i + 1) = [A[i]]\n– Original: S(0,n )\n– Time: T (n) = 2 T (n/2) + O(n) = O(n lg n)\n• In this case, subproblem DAG is a tree (divide & conquer)\nFibonacci Numbers\n• Suppose we want to compute the nth Fibonacci number Fn\n• Subproblems: F (i) = the ith Fibonacci number Fi for i ∈{ 0, 1,...,n}\n• Relation: F (i) = F (i − 1) + F (i − 2) (deﬁnition of Fibonacci numbers)\n• Topo. order: Increasing i\n• Base cases: F (0) = 0, F (1) = 1\n• Original prob.: F (n)\n1 def fib(n):\n2 if n < 2: return n # base case\n3 return fib(n - 1) + fib(n - 2) # recurrence\n• Divide and conquer implies a tree of recursive calls (draw tree)\n• Time: T (n) = T (n − 1) + T (n − 2) + O(1) > 2T (n − 2), T (n) = Ω(2n/2) exponential... :(\n• Subproblem F (k) computed more than once! (F (n − k) times)\n• Can we avoid this waste?",
+          "page_number": 2,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7876440286636353
+        },
+        {
+          "chunk_id": 18,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 15: Recursive Algorithms\nLecture 15: Recursive Algorithms\nHow to Solve an Algorithms Problem (Review)\n• Reduce to a problem you already know (use data structure or algorithm)\nSearch Data Structures Sort Algorithms Graph Algorithms\nArray Insertion Sort Breadth First Search\nLinked List Selection Sort DAG Relaxation (DFS + Topo)\nDynamic Array Merge Sort Dijkstra\nSorted Array Counting Sort Bellman-Ford\nDirect-Access Array Radix Sort Johnson\nHash Table A VL Sort\nA VL Tree Heap Sort\nBinary Heap\n• Design your own recursive algorithm\n– Constant-sized program to solve arbitrary input\n– Need looping or recursion, analyze by induction\n– Recursive function call: vertex in a graph, directed edge from A → B if B calls A\n– Dependency graph of recursive calls must be acyclic (if can terminate)\n– Classify based on shape of graph\nClass Graph\nBrute Force\nDecrease & Conquer\nDivide & Conquer\nDynamic Programming\nStar\nChain\nTree\nDAG\nGreedy/Incremental Subgraph\n– Hard part is thinking inductively to construct recurrence on subproblems\n– How to solve a problem recursively (SRT BOT)",
+          "page_number": 1,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.729668140411377
+        },
+        {
+          "chunk_id": 23,
+          "text": "or one or more j <i\n3. Topological order to argue relation is acyclic and subproblems form a DAG\n4. Base cases\n• State solutions for all (reachable) independent subproblems where relation breaks down\n5. Original problem\n• Show how to compute solution to original problem from solutions to subproblem(s)\n• Possibly use parent pointers to recover actual solution, not just objective function\n6. Time analysis\nP • work(x), or if work(x) = O(W ) for all x ∈ X, then |X|· O(W )x∈X\n• work(x) measures nonrecursive work in relation; treat recursions as taking O(1) time\n1This property often called optimal substructure. It is a property of recursion, not just dynamic programming",
+          "page_number": 4,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7289097470694944
+        },
+        {
+          "chunk_id": 22,
+          "text": "4 Lecture 15: Recursive Algorithms\nDynamic Programming\n• Weird name coined by Richard Bellman\n– Wanted government funding, needed cool name to disguise doing mathematics!\n– Updating (dynamic) a plan or schedule (program)\n• Existence of recursive solution implies decomposable subproblems1\n• Recursive algorithm implies a graph of computation\n• Dynamic programming if subproblem dependencies overlap (DAG, in-degree > 1)\n• “Recurse but re-use” (Top down: record and lookup subproblem solutions)\n• “Careful brute force” (Bottom up: do each subproblem in order)\n• Often useful for counting/optimization problems: almost trivially correct recurrences\nHow to Solve a Problem Recursively (SRT BOT)\n1. Subproblem deﬁnition subproblem x ∈ X\n• Describe the meaning of a subproblem in words, in terms of parameters\n• Often subsets of input: preﬁxes, sufﬁxes, contiguous substrings of a sequence\n• Often record partial state: add subproblems by incrementing some auxiliary variables\n2. Relate subproblem solutions recursively x(i) = f(x(j),...) for one or more j <i\n3. Topological order to argue relation is acyclic and subproblems form a DAG\n4. Base cases\n• State solutions for all (reachable) independent subproblems where relation breaks down",
+          "page_number": 4,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7286349534988403
+        }
+      ]
+    },
+    {
+      "id": "P03",
+      "query": "The notes say Fibonacci needs linearly many additions. Is the actual runtime still linear when the integers get huge?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 3,
+          "evidence_anchor": "Each addition costs"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 84.15860000241082,
+      "hits": [
+        {
+          "chunk_id": 21,
+          "text": "3 Lecture 15: Recursive Algorithms\nRe-using Subproblem Solutions\n• Draw subproblem dependencies as a DAG\n• To solve, either:\n– Top down: record subproblem solutions in a memo and re-use\n(recursion + memoization)\n– Bottom up: solve subproblems in topological sort order (usually via loops)\n• For Fibonacci, n + 1 subproblems (vertices) and < 2n dependencies (edges)\n• Time to compute is then O(n) additions\n1 # recursive solution (top down)\n2 def fib(n):\n3 memo = {}\n4 def F(i):\n5 if i < 2: return i # base cases\n6 if i not in memo: # check memo\n7 memo[i] = F(i - 1) + F(i - 2) # relation\n8 return memo[i]\n9 return F(n) # original\n1 # iterative solution (bottom up)\n2 def fib(n):\n3 F = {}\n4 F[0], F[1] = 0, 1 # base cases\n5 for i in range(2, n + 1): # topological order\n6 F[i] = F[i - 1] + F[i - 2] # relation\n7 return F[n] # original\n• A subtlety is that Fibonacci numbers grow to Θ(n) bits long, potentially \u001d word size w\n• Each addition costs O(dn/we) time\n• So total cost is O(ndn/we) = O(n + n2/w) time",
+          "page_number": 3,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7278920032945876
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.6898604837018398
+        },
+        {
+          "chunk_id": 45,
+          "text": "was not set\n• Breadth-ﬁrst search correctly computes all δ(s, v) and P (v) by induction\n• Running time analysis:\n– Store each Li in data structure with Θ(|Li|)-time iteration and O(1)-time insertion\n(i.e., in a dynamic array or linked list)\n– Checking for a vertex v in any Lj for j <i can be done by checking for v in P\n– Maintain δ and P in Set data structures supporting dictionary ops in O(1) time\n(i.e., direct access array or hash table)\n– Algorithm adds each vertex u to ≤ 1 level and spends O(1) time for each v ∈ Adj(u)P – Work upper bounded by O(1) × deg(u) = O(|E|) by handshake lemma u∈V\n– Spend Θ(|V |) at end to assign δ(s, v) for vertices v ∈ V not reachable from s\n– So breadth-ﬁrst search runs in linear time! O(|V | + |E|)\n• Run breadth-ﬁrst search from s in the graph in Example 3",
+          "page_number": 4,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6877073254498045
+        },
+        {
+          "chunk_id": 41,
+          "text": "eg(u))\nP • Since u∈V deg(u) ≤ 2|E| by handshaking lemma, graph storable in Θ(|V | + |E|) space\n• Thus, for algorithms on graphs, linear time will mean Θ(|V | + |E|) (linear in size of graph)\nExamples\n• Examples 1 and 2 assume vertices are labeled {0, 1,..., |V |− 1}, so can use a direct access\narray for Adj, and store Adj(u) in an array. Example 3 uses a hash table for Adj.\nEx 1 (Undirected) | Ex 2 (Directed) | Ex 3 (Undirected)\nG1 = [ | G2 = [ | G3 = {\n[2, 1], # 0 | [2], # 0 | a: [s, b], b: [a],\n[2, 0, 3], # 1 | [2, 0], # 1 | s: [a, c], c: [s, d, e],\n[1, 3, 0], # 2 | [1], # 2 | d: [c, e, f], e: [c, d, f],\n[1, 2], # 3 | ] | f: [d, e], g: [],\n] | | }\n• Note that in an undirected graph, connections are symmetric as every edge is outgoing twice\n1A hash table for each Adj(u) can allow checking for an edge (u, v) ∈ E in O(1)(e) time",
+          "page_number": 2,
+          "document_id": 5,
+          "document_name": "MIT6_006S20_lec9.pdf",
+          "score": 0.6843754257075618
+        },
+        {
+          "chunk_id": 20,
+          "text": "2 Lecture 15: Recursive Algorithms\nMerge Sort in SRT BOT Framework\n• Merge sorting an array A of n elements can be expressed in SRT BOT as follows:\n– Subproblems: S(i, j) = sorted array on elements of A[i : j] for 0 ≤ i ≤ j ≤ n\n– Relation: S(i, j) = merge(S(i, m),S (m, j)) where m = b(i + j)/2c\n– Topo. order: Increasing j − i\n– Base cases: S(i, i + 1) = [A[i]]\n– Original: S(0,n )\n– Time: T (n) = 2 T (n/2) + O(n) = O(n lg n)\n• In this case, subproblem DAG is a tree (divide & conquer)\nFibonacci Numbers\n• Suppose we want to compute the nth Fibonacci number Fn\n• Subproblems: F (i) = the ith Fibonacci number Fi for i ∈{ 0, 1,...,n}\n• Relation: F (i) = F (i − 1) + F (i − 2) (deﬁnition of Fibonacci numbers)\n• Topo. order: Increasing i\n• Base cases: F (0) = 0, F (1) = 1\n• Original prob.: F (n)\n1 def fib(n):\n2 if n < 2: return n # base case\n3 return fib(n - 1) + fib(n - 2) # recurrence\n• Divide and conquer implies a tree of recursive calls (draw tree)\n• Time: T (n) = T (n − 1) + T (n − 2) + O(1) > 2T (n − 2), T (n) = Ω(2n/2) exponential... :(\n• Subproblem F (k) computed more than once! (F (n − k) times)\n• Can we avoid this waste?",
+          "page_number": 2,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.678164859955456
+        }
+      ]
+    },
+    {
+      "id": "P04",
+      "query": "What makes dynamic programming different from just splitting a problem into independent recursive pieces?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 4,
+          "evidence_anchor": "dependencies overlap"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 76.29249998717569,
+      "hits": [
+        {
+          "chunk_id": 22,
+          "text": "4 Lecture 15: Recursive Algorithms\nDynamic Programming\n• Weird name coined by Richard Bellman\n– Wanted government funding, needed cool name to disguise doing mathematics!\n– Updating (dynamic) a plan or schedule (program)\n• Existence of recursive solution implies decomposable subproblems1\n• Recursive algorithm implies a graph of computation\n• Dynamic programming if subproblem dependencies overlap (DAG, in-degree > 1)\n• “Recurse but re-use” (Top down: record and lookup subproblem solutions)\n• “Careful brute force” (Bottom up: do each subproblem in order)\n• Often useful for counting/optimization problems: almost trivially correct recurrences\nHow to Solve a Problem Recursively (SRT BOT)\n1. Subproblem deﬁnition subproblem x ∈ X\n• Describe the meaning of a subproblem in words, in terms of parameters\n• Often subsets of input: preﬁxes, sufﬁxes, contiguous substrings of a sequence\n• Often record partial state: add subproblems by incrementing some auxiliary variables\n2. Relate subproblem solutions recursively x(i) = f(x(j),...) for one or more j <i\n3. Topological order to argue relation is acyclic and subproblems form a DAG\n4. Base cases\n• State solutions for all (reachable) independent subproblems where relation breaks down",
+          "page_number": 4,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.807917594909668
+        },
+        {
+          "chunk_id": 23,
+          "text": "or one or more j <i\n3. Topological order to argue relation is acyclic and subproblems form a DAG\n4. Base cases\n• State solutions for all (reachable) independent subproblems where relation breaks down\n5. Original problem\n• Show how to compute solution to original problem from solutions to subproblem(s)\n• Possibly use parent pointers to recover actual solution, not just objective function\n6. Time analysis\nP • work(x), or if work(x) = O(W ) for all x ∈ X, then |X|· O(W )x∈X\n• work(x) measures nonrecursive work in relation; treat recursions as taking O(1) time\n1This property often called optimal substructure. It is a property of recursion, not just dynamic programming",
+          "page_number": 4,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7826349268773256
+        },
+        {
+          "chunk_id": 19,
+          "text": "& Conquer\nDynamic Programming\nStar\nChain\nTree\nDAG\nGreedy/Incremental Subgraph\n– Hard part is thinking inductively to construct recurrence on subproblems\n– How to solve a problem recursively (SRT BOT)\n1. Subproblem deﬁnition\n2. Relate subproblem solutions recursively\n3. Topological order on subproblems (⇒ subproblem DAG)\n4. Base cases of relation\n5. Original problem solution via subproblem(s)\n6. Time analysis",
+          "page_number": 1,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.726899938172107
+        },
+        {
+          "chunk_id": 18,
+          "text": "Introduction to Algorithms: 6.006\nMassachusetts Institute of Technology\nInstructors: Erik Demaine, Jason Ku, and Justin Solomon Lecture 15: Recursive Algorithms\nLecture 15: Recursive Algorithms\nHow to Solve an Algorithms Problem (Review)\n• Reduce to a problem you already know (use data structure or algorithm)\nSearch Data Structures Sort Algorithms Graph Algorithms\nArray Insertion Sort Breadth First Search\nLinked List Selection Sort DAG Relaxation (DFS + Topo)\nDynamic Array Merge Sort Dijkstra\nSorted Array Counting Sort Bellman-Ford\nDirect-Access Array Radix Sort Johnson\nHash Table A VL Sort\nA VL Tree Heap Sort\nBinary Heap\n• Design your own recursive algorithm\n– Constant-sized program to solve arbitrary input\n– Need looping or recursion, analyze by induction\n– Recursive function call: vertex in a graph, directed edge from A → B if B calls A\n– Dependency graph of recursive calls must be acyclic (if can terminate)\n– Classify based on shape of graph\nClass Graph\nBrute Force\nDecrease & Conquer\nDivide & Conquer\nDynamic Programming\nStar\nChain\nTree\nDAG\nGreedy/Incremental Subgraph\n– Hard part is thinking inductively to construct recurrence on subproblems\n– How to solve a problem recursively (SRT BOT)",
+          "page_number": 1,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7206618785858154
+        },
+        {
+          "chunk_id": 21,
+          "text": "3 Lecture 15: Recursive Algorithms\nRe-using Subproblem Solutions\n• Draw subproblem dependencies as a DAG\n• To solve, either:\n– Top down: record subproblem solutions in a memo and re-use\n(recursion + memoization)\n– Bottom up: solve subproblems in topological sort order (usually via loops)\n• For Fibonacci, n + 1 subproblems (vertices) and < 2n dependencies (edges)\n• Time to compute is then O(n) additions\n1 # recursive solution (top down)\n2 def fib(n):\n3 memo = {}\n4 def F(i):\n5 if i < 2: return i # base cases\n6 if i not in memo: # check memo\n7 memo[i] = F(i - 1) + F(i - 2) # relation\n8 return memo[i]\n9 return F(n) # original\n1 # iterative solution (bottom up)\n2 def fib(n):\n3 F = {}\n4 F[0], F[1] = 0, 1 # base cases\n5 for i in range(2, n + 1): # topological order\n6 F[i] = F[i - 1] + F[i - 2] # relation\n7 return F[n] # original\n• A subtlety is that Fibonacci numbers grow to Θ(n) bits long, potentially \u001d word size w\n• Each addition costs O(dn/we) time\n• So total cost is O(ndn/we) = O(n + n2/w) time",
+          "page_number": 3,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7179156541824341
+        }
+      ]
+    },
+    {
+      "id": "P05",
+      "query": "In the bowling problem, why isn't the best choice always to hit the first pin immediately?",
+      "expected_sources": [
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 6,
+          "evidence_anchor": "skip pin"
+        },
+        {
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "page_number": 7,
+          "evidence_anchor": "skip pin"
+        }
+      ],
+      "first_source_page_rank": 1,
+      "first_anchor_rank": 1,
+      "latency_ms": 94.25139999075327,
+      "hits": [
+        {
+          "chunk_id": 25,
+          "text": "6 Lecture 15: Recursive Algorithms\nBowling Algorithms\n• Let’s start with a more familiar divide-and-conquer algorithm:\n– Subproblems: B(i, j) = maximum score starting with just pins i, i + 1,...,j − 1,\nfor 0 ≤ i ≤ j ≤ n\n– Relation:\n∗ m = b(i + j)/2c\n∗ Either hit m and m + 1 together, or don’t\n∗ B(i, j) = max{vm · vm+1 + B(i, m) + B(m + 2,j ),B (i, m + 1) + B(m + 1,j )}\n– Topo. order: Increasing j − i\n– Base cases: B(i, i) = 0, B(i, i + 1) = max{vi, 0}\n– Original: B(0,n )\n– Time: T (n) = 4 T (n/2) + O(1) = O(n2)\n• This algorithm works but isn’t very fast, and doesn’t generalize well\n(e.g., to allow for a bigger ball that hits three balls at once)\n• Dynamic programming algorithm: use sufﬁxes\n– Subproblems: B(i) = maximum score starting with just pins i, i + 1,...,n − 1,\nfor 0 ≤ i ≤ n\n– Relation:\n∗ Locally brute-force what could happen with ﬁrst pin (original pin i):\nskip pin, hit one pin, hit two pins\n∗ Reduce to smaller sufﬁx and recurse, either B(i + 1) or B(i + 2)\n∗ B(i) = max{B(i + 1),v i + B(i + 1),v i · vi+1 + B(i + 2)}\n– Topo. order: Decreasing i (for i = n, n − 1,..., 0)\n– Base cases: B(n) = B(n + 1) = 0\n– Original: B(0)\n– Time: (assuming memoization)\n∗ Θ(n) subproblems · Θ(1) work in each",
+          "page_number": 6,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7242657162030258
+        },
+        {
+          "chunk_id": 28,
+          "text": "dentify a question about a subproblem solution that, if you knew the answer to, would\nreduce to “smaller” subproblem(s)\n∗ In case of bowling, the question is “how do we bowl the ﬁrst couple of pins?”\n– Then locally brute-force the question by trying all possible answers, and taking the best\n∗ In case of bowling, we take the max because the problem asks to maximize\n– Alternatively, we can think of correctly guessing the answer to the question, and di-\nrectly recursing; but then we actually check all possible guesses, and return the “best”\n• The key for efﬁciency is for the question to have a small (polynomial) number of possible\nanswers, so brute forcing is not too expensive\n• Often (but not always) the nonrecursive work to compute the relation is equal to the number\nof answers we’re trying",
+          "page_number": 7,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.7239110901302762
+        },
+        {
+          "chunk_id": 27,
+          "text": "7 Lecture 15: Recursive Algorithms\nBowling Code\n• Converting a SRT BOT speciﬁcation into code is automatic/straightforward\n• Here’s the result for the Bowling Dynamic Program above:\n1 # recursive solution (top down)\n2 def bowl(v):\n3 memo = {}\n4 def B(i):\n5 if i >= len(v): return 0 # base cases\n6 if i not in memo: # check memo\n7 memo[i] = max(B(i+1), # relation: skip pin i\n8 v[i] + B(i+1), # OR bowl pin i separately\n9 v[i] * v[i+1] + B(i+2)) # OR bowl pins i and i+1 together\n10 return memo[i]\n11 return B(0) # original\n1 # iterative solution (bottom up)\n2 def bowl(v):\n3 B = {}\n4 B[len(v)] = 0 # base cases\n5 B[len(v)+1] = 0\n6 for i in reversed(range(len(v))): # topological order\n7 B[i] = max(B[i+1], # relation: skip pin i\n8 v[i] + B(i+1), # OR bowl pin i separately\n9 v[i] * v[i+1] + B(i+2)) # OR bowl pins i and i+1 together\n10 return B[0] # original\nHow to Relate Subproblem Solutions\n• The general approach we’re following to deﬁne a relation on subproblem solutions:\n– Identify a question about a subproblem solution that, if you knew the answer to, would\nreduce to “smaller” subproblem(s)\n∗ In case of bowling, the question is “how do we bowl the ﬁrst couple of pins?”",
+          "page_number": 7,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.6770583592968693
+        },
+        {
+          "chunk_id": 24,
+          "text": "5 Lecture 15: Recursive Algorithms\nDAG Shortest Paths\n• Recall the DAG SSSP problem: given a DAG G and vertex s, compute δ(s, v) for all v ∈ V\n• Subproblems: δ(s, v) for all v ∈ V\n• Relation: δ(s, v) = min{δ(s, u) + w(u, v) | u ∈ Adj−(v)} ∪ {∞}\n• Topo. order: Topological order of G\n• Base cases: δ(s, s) = 0\n• Original: All subproblems\nP • Time: O(1 + | Adj−(v)|) = O(|V | + |E|)v∈V\n• DAG Relaxation computes the same min values as this dynamic program, just\n– step-by-step (if new value < min, update min via edge relaxation), and\n– from the perspective of u and Adj+(u) instead of v and Adj−(v)\nBowling\n• Given n pins labeled 0, 1,...,n − 1\n• Pin i has value vi\n• Ball of size similar to pin can hit either\n– 1 pin i, in which case we get vi points\n– 2 adjacent pins i and i + 1, in which case we get vi · vi+1 points\n• Once a pin is hit, it can’t be hit again (removed)\n• Problem: Throw zero or more balls to maximize total points\n• Example: [ −1, 1 , 1 , 1 , 9, 9 , 3 , −3, −5 , 2, 2 ]",
+          "page_number": 5,
+          "document_id": 3,
+          "document_name": "MIT6_006S20_lec15.pdf",
+          "score": 0.6107567548751831
+        },
+        {
+          "chunk_id": 32,
+          "text": "2 Lecture 4: Hashing\nComparison Search Lower Bound\n• What is worst-case running time of a comparison search algorithm?\n• running time ≥ # comparisons ≥ max length of any root-to-leaf path ≥ height of tree\n• What is minimum height of any binary tree on ≥ n nodes?\n• Minimum height when binary tree is complete (all rows full except last)\n• Height ≥dlg(n + 1)e− 1 = Ω(log n), so running time of any comparison sort is Ω(log n)\n• Sorted arrays achieve this bound! Yay!\n• More generally, height of tree with Θ(n) leaves and max branching factor b is Ω(logb n)\n• To get faster, need an operation that allows super-constant ω(1) branching factor. How??\nDirect Access Array\n• Exploit Word-RAM O(1) time random access indexing! Linear branching factor!\n• Idea! Give item unique integer key k in {0,...,u − 1}, store item in an array at index k\n• Associate a meaning with each index of array\n• If keys ﬁt in a machine word, i.e. u ≤ 2w , worst-case O(1) ﬁnd/dynamic operations! Yay!\n• 6.006: assume input numbers/strings ﬁt in a word, unless length explicitly parameterized\n• Anything in computer memory is a binary integer, or use (static) 64-bit address in memory\n• But space O(u), so really bad if n \u001c u... :(",
+          "page_number": 2,
+          "document_id": 4,
+          "document_name": "MIT6_006S20_lec4.pdf",
+          "score": 0.5941008925437927
+        }
+      ]
+    }
+  ],
+  "grading_note": "Page and short-anchor checks are diagnostics; manually review answer-bearing passages."
+}

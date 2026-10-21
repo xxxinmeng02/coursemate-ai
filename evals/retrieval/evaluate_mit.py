@@ -240,6 +240,8 @@ def main():
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(value, encoding="utf-8")
+    # PDF text includes ligatures etc. that a GBK/cp1252 Windows console cannot encode.
+    sys.stdout.reconfigure(encoding="utf-8")
     print(value)
     return 2 if record["status"] == "blocked" else 0
 

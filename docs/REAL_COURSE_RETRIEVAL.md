@@ -140,8 +140,61 @@ API 无结果时先检查解析、Content ready、backfill 和 embedding 配置�
   `prepare_mit_course.py --parse-only` 解析为 ready，合计 46 个 chunk，与离线校验一致。
   无 key 时 embedding 步骤按预期失败（退出 1）；`evaluate_mit.py run` 返回
   `status=blocked`（无可检索 chunk），不产生指标。
-- 浏览器实测：Course 详情页展开 Retrieval debug，提交问题后调用 search，
-  在无 embedding 时显示空结果提示。有 embedding 后的结果列表尚待真实 key 复测。
+- 浏览器实测：Course 详情页展开 Retrieval debug，提交问题后调用 search。
+  无 embedding 时显示空结果提示；有本地 embedding 后正确显示排名、PDF 名、页码、
+  score、chunk/document ID 与全文（以 D01 为例，第 2 名即正确页）。
 
 此文档中的新测试仅验证辅助工具和接口调用契约，不替代已有 pgvector SQL 回归，
 也不把测试里的 stub 返回当成真实模型测量。
+
+## 5. 首次实测：本地免费 embedding（2026-10-21）
+
+OpenAI 账户无额度（HTTP 429 `insufficient_quota`），因此先用免费的本地模型
+`BAAI/bge-small-en-v1.5`（fastembed/ONNX，384 维补零到 1536 维，cosine 不变）
+跑完整流程。**这些数字衡量的是该本地模型，不是生产配置的 OpenAI 模型。**
+有额度后用第 2、3 节的原命令重跑即可对比。
+
+[`local_embeddings.py`](../evals/retrieval/local_embeddings.py) 只在本进程替换
+`app.embeddings.embed_text`，并用独立 `EMBEDDING_REVISION=local-bge-small-en-v1.5`
+存储，与 OpenAI 向量互不混用；核心代码未改。fastembed 不在 requirements 中，
+需单独 `pip install fastembed`，首次运行从 Hugging Face 下载约 67 MB 模型。
+
+```powershell
+services/api/.venv/Scripts/python.exe evals/retrieval/local_embeddings.py prepare --course-id 1
+services/api/.venv/Scripts/python.exe evals/retrieval/local_embeddings.py api --port 8000
+services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --course-id 1 --api-url http://127.0.0.1:8000 --output evals/retrieval/results/<new-name>.json
+```
+
+Windows 上请用 `127.0.0.1` 而不是 `localhost`：Python 先尝试 IPv6 `::1`，
+每次请求会多出约 2 秒超时，延迟数据失真。
+
+结果：[`mit-6006-local-bge-small-run1.json`](../evals/retrieval/results/mit-6006-local-bge-small-run1.json)，
+Top K = 5，46 个 chunk，两次运行指标完全一致。
+
+| 指标 | @1 | @3 | @5 |
+| --- | --- | --- | --- |
+| source_page_hit（正确 PDF + 页） | 0.68 | 0.88 | 0.96 |
+| anchor_hit（同页且含证据锚点的 chunk） | 0.56 | 0.80 | 0.88 |
+
+`anchor_mrr_at_5` = 0.693；HTTP 搜索延迟均值 85 ms、中位 81 ms、最大 115 ms
+（含本地 query embedding）。
+
+**锚点未进前 5 或排名靠后的题**（top_k=50 复查真实名次）：
+
+| ID | 锚点名次 | 前几名实际返回 | 判断 |
+| --- | --- | --- | --- |
+| B04 | 18 | Dijkstra 运行时间、DAG 最短路 | 问法差异：题目只说“puzzle / fewest moves”，未出现 graph、BFS、distance；小模型无法把场景映射到 BFS。唯一页也未命中。 |
+| B03 | 9（页第 5） | DFS cycle detection、Full-DFS | 问法差异：“every destination 存完整路线”对应 shortest-path tree / parent，原文术语缺失。 |
+| D04 | 12（页第 1） | lec10 第 4 页 cycle detection chunk | 页正确，第 1 名的 chunk 也讲 reverse finishing order，但 Claim 段被分到相邻 chunk：分块边界 + 锚点较严，需人工复核是否假阴性，不擅自改标签。 |
+| B01 | 4 | DFS cycle detection、lec10 首页 | 问法差异：“one-way road map”→ directed graph / incoming neighbor set。 |
+| H05 | 4 | lec4 第 4 页汇总表 | 页正确第 1；含锚点的 Dynamic 小节 chunk 排在第 4，同页 chunk 竞争。 |
+
+观察（基于本次实际返回，尚需 OpenAI 结果对照）：
+
+- 技术术语明确的题基本第 1；弱项集中在“生活化场景”问法（B 组 3 题）。
+- lec10 第 4 页的 cycle detection chunk 对多道无关题都排第 1（B01、B03、D04、B04 前列），
+  是一个高频“吸附”chunk，值得在 OpenAI 结果中观察是否同样出现。
+- PDF 抽取文本保留连字字符（如 `ﬁnd`、`deﬁnition` 中的 U+FB01），且 chunk 开头
+  常截断在词中（`re visiting u`、`perations`）。这可能影响 embedding 和锚点匹配；
+  如需处理应在解析器做 NFKC 规范化，属于核心代码改动，本次只记录不修改。
+- 未加 score 阈值；正确与错误结果的 score 区间重叠（约 0.6–0.8），score 不能当置信度。

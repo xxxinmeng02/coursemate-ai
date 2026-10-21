@@ -12,6 +12,11 @@ validation, course preparation, HTTP measurement and the Course debug panel.
 The existing `python -m app.retrieval_eval --benchmark` still runs the authored
 parallel-computing fixture; it does not run the new real-PDF dataset.
 
+A first live run used the free local model `BAAI/bge-small-en-v1.5` via
+[`local_embeddings.py`](local_embeddings.py) (page hit@1/3/5 = 0.68/0.88/0.96,
+anchor hit@1/3/5 = 0.56/0.80/0.88). It measures that local model, not the
+production OpenAI model; see section 5 of the runbook for the per-question analysis.
+
 `parallel_computing.json` is an authored test course, not a university lecture
 capture or an independent sample of real student questions. It expands the
 parallel-programming topic already present in `topics.json`. Four documents,
