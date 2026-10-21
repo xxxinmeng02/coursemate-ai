@@ -26,6 +26,7 @@ PDF 解析器、search 路由，也没有合并其他分支或接入 LLM。
 - [25 道题目与中文核对表](../evals/retrieval/MIT_6006_QUESTIONS.md)
 - [机器可读标签](../evals/retrieval/mit_6006.json)
 - [原始 PDF 下载器](../evals/retrieval/download_mit_sources.py)
+- [专用 Course 解析与 embedding 准备](../evals/retrieval/prepare_mit_course.py)
 - [离线校验及 HTTP 批量评估](../evals/retrieval/evaluate_mit.py)
 - [本次 PDF 标签校验记录](../evals/retrieval/results/mit-6006-source-validation-2026-10-21.json)
 
@@ -63,49 +64,21 @@ macOS/Linux 将解释器改为 `services/api/.venv/bin/python`。
 记录 Course ID，避免混入其他材料。
 
 **此分支的上传只保存文件；不会自动解析或生成 embedding。**
-本次没有移植 v1.1 的自动处理代码。可在 `services/api` 目录开启 Python，
-把下面的 `123` 替换为专用 Course ID，调用现有解析函数：
+本次没有移植 v1.1 的自动处理代码，而是提供只作用于专用 Course 的准备脚本。
+从仓库根目录执行（替换 Course ID）：
 
-```python
-import json
-from pathlib import Path
-from sqlalchemy import select
-from app.database import get_session_factory
-from app.models.content import Content
-from app.models.document import Document
-from app.parsing import process_content
-
-course_id = 123
-fixture = json.loads(Path("../../evals/retrieval/mit_6006.json").read_text(encoding="utf-8"))
-expected = {doc["name"]: doc["sha256"] for doc in fixture["documents"]}
-factory = get_session_factory()
-with factory() as db:
-    rows = db.execute(select(Document.name, Content.id, Content.content_hash)
-                      .join(Content, Content.id == Document.content_id)
-                      .where(Document.course_id == course_id)).all()
-
-assert len(rows) == len(expected)
-assert {name for name, _, _ in rows} == set(expected)
-assert all(expected[name] == digest for name, _, digest in rows)
-content_ids = sorted({content_id for _, content_id, _ in rows})
-for content_id in content_ids:
-    with factory() as db:
-        content = db.get(Content, content_id)
-        if content.status != "ready":
-            process_content(db, content)
-
-print("Only these benchmark Content IDs:", content_ids)
+```powershell
+services/api/.venv/Scripts/python.exe evals/retrieval/prepare_mit_course.py --course-id 1
 ```
 
-随后仅针对打印出的每个 ID 执行既有命令：
+脚本先校验该 Course 恰好包含五份基准 PDF 且 SHA-256 一致，然后对未 ready 的
+Content 调用现有 `process_content` 解析，再对每个 Content 调用现有
+`embed_content` 生成 embedding（已有当前配置的有效向量会跳过）。
+它不修改其他 Course 或 Content。只想先检查解析时加 `--parse-only`，不调用
+embedding 服务。退出 2 表示 Course 材料不符；退出 1 表示解析或 embedding 失败
+（例如未设置 `OPENAI_API_KEY`）。正常时每行显示 `status=ready`，五份合计 46 个 chunk。
 
-```bash
-python -m app.embedding_backfill --content-id 123
-```
-
-这里的 `123` 是 **Content ID**，不是 Course ID；逐个替换。
-该步骤会向配置的 embedding 服务发送公开课件文本。已 ready 的 Content 不必重解析；
-成功重解析会替换 chunk，需要重新 backfill。不要对其他课程批量刷新。
+该步骤会向配置的 embedding 服务发送公开课件文本。
 
 ## 3. 批量测量
 
@@ -163,7 +136,12 @@ API 无结果时先检查解析、Content ready、backfill 和 embedding 配置�
 - 默认 Turbopack 在本机 CSS 子进程启动时内部失败；没有为此改项目构建配置。
 - 本机没有 OPENAI_API_KEY、DATABASE_URL、TEST_POSTGRES_URL，Docker daemon 未运行。
   **本次没有真实模型 Top K、准确率或检索质量结论。**
-- Chrome 自动操作未获准，本轮没有完成浏览器交互实测；构建和传输测试不冒充视觉验证。
+- 2026-10-21 补充本地端到端：pgvector 容器 + 迁移；前端新建 Course 并上传五份 PDF；
+  `prepare_mit_course.py --parse-only` 解析为 ready，合计 46 个 chunk，与离线校验一致。
+  无 key 时 embedding 步骤按预期失败（退出 1）；`evaluate_mit.py run` 返回
+  `status=blocked`（无可检索 chunk），不产生指标。
+- 浏览器实测：Course 详情页展开 Retrieval debug，提交问题后调用 search，
+  在无 embedding 时显示空结果提示。有 embedding 后的结果列表尚待真实 key 复测。
 
 此文档中的新测试仅验证辅助工具和接口调用契约，不替代已有 pgvector SQL 回归，
 也不把测试里的 stub 返回当成真实模型测量。
