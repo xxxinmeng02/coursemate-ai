@@ -53,3 +53,20 @@ npm run lint
 npm test
 npm run build
 ```
+
+## Browser interaction tests
+
+With the API Python requirements installed, stop other services using ports
+3000 and 8000, then run:
+
+```bash
+npx playwright install chromium --only-shell
+npm run test:e2e
+```
+
+The pretest builds with Webpack. Playwright then starts the web app and an
+isolated in-memory API fixture, runs a separate headless Chromium, and stops the
+test services. No real embedding requests or production database writes occur.
+The 15 cases cover retrieval results, errors, retries, cancellation and responsive
+layouts. See the [UI QA report](../../docs/RETRIEVAL_UI_QA.md) for screenshots and
+the distinction between UI testing and real retrieval quality.

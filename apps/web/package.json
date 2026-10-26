@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test app/course-api.test.mjs"
+    "test": "node --test app/course-api.test.mjs",
+    "pretest:e2e": "npm run build -- --webpack",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "16.3.0",
@@ -15,6 +17,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

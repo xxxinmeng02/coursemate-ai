@@ -134,8 +134,8 @@ API 无结果时先检查解析、Content ready、backfill 和 embedding 配置�
 - 前端 API 传输测试：6 passed；包含请求参数、空结果、404/422/503 与取消。
 - lint 通过；Next.js Webpack 生产构建通过。
 - 默认 Turbopack 在本机 CSS 子进程启动时内部失败；没有为此改项目构建配置。
-- 本机没有 OPENAI_API_KEY、DATABASE_URL、TEST_POSTGRES_URL，Docker daemon 未运行。
-  **本次没有真实模型 Top K、准确率或检索质量结论。**
+- 初始离线核验时未配置 key、数据库与 Docker，因此当时没有真实模型检索质量结论。
+  后续补充的本地模型测量见第 5 节；生产 OpenAI 模型尚待额度恢复后验证。
 - 2026-10-21 补充本地端到端：pgvector 容器 + 迁移；前端新建 Course 并上传五份 PDF；
   `prepare_mit_course.py --parse-only` 解析为 ready，合计 46 个 chunk，与离线校验一致。
   无 key 时 embedding 步骤按预期失败（退出 1）；`evaluate_mit.py run` 返回
@@ -143,6 +143,11 @@ API 无结果时先检查解析、Content ready、backfill 和 embedding 配置�
 - 浏览器实测：Course 详情页展开 Retrieval debug，提交问题后调用 search。
   无 embedding 时显示空结果提示；有本地 embedding 后正确显示排名、PDF 名、页码、
   score、chunk/document ID 与全文（以 D01 为例，第 2 名即正确页）。
+- 页面交互已补测：独立 Chromium headless 浏览器运行生产构建，
+  **15 passed、0 skipped、0 failed**，没有重试；375/768/1280px 截图已人工检查。
+  使用真实 FastAPI 路由与内存数据库，检索内容/score 是明确标记的 UI fixture。
+  这证明界面交互，不证明 semantic search 模型质量。
+  详见 [页面交互实测报告](RETRIEVAL_UI_QA.md)。
 
 此文档中的新测试仅验证辅助工具和接口调用契约，不替代已有 pgvector SQL 回归，
 也不把测试里的 stub 返回当成真实模型测量。
