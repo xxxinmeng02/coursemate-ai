@@ -4,10 +4,28 @@ import Link from "next/link";
 import RetrievalDebug from "./retrieval-debug";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { ApiError, deleteCourse, getCourse, uploadDocument, type CourseDetail } from "./course-api";
+import {
+  ApiError,
+  deleteCourse,
+  getCourse,
+  processDocument,
+  uploadDocument,
+  type CourseDetail,
+  type DocumentSummary,
+  type ProcessingState,
+} from "./course-api";
 import { BackIcon, BookIcon, CloseIcon, FileIcon, RefreshIcon, TrashIcon, UploadIcon } from "./icons";
 
 type LoadState = "loading" | "ready" | "error";
+
+const POLL_INTERVAL_MS = 2000;
+
+const STATE_LABELS: Record<ProcessingState, string> = {
+  processing: "Processing",
+  indexed: "Searchable",
+  not_indexed: "Not searchable",
+  failed: "Failed",
+};
 
 function formatDate(value: string, includeTime = false) {
   return new Intl.DateTimeFormat("en", {
@@ -16,10 +34,6 @@ function formatDate(value: string, includeTime = false) {
     year: "numeric",
     ...(includeTime ? { hour: "numeric", minute: "2-digit" } : {}),
   }).format(new Date(value));
-}
-
-function statusLabel(status: string) {
-  return status.replaceAll("_", " ").replace(/^./, (letter) => letter.toUpperCase());
 }
 
 function actionError(reason: unknown, fallback: string) {
@@ -42,7 +56,9 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
+  const [retryingId, setRetryingId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasProcessing = course?.documents.some((document) => document.processing_state === "processing") ?? false;
 
   const load = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -72,6 +88,39 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
       });
     return () => controller.abort();
   }, [courseId]);
+
+  // Poll only while the backend is parsing or embedding something.
+  useEffect(() => {
+    if (!hasProcessing) return;
+    const timer = window.setInterval(() => {
+      getCourse(courseId)
+        .then(setCourse)
+        .catch(() => {
+          // Keep the last known state; the next tick tries again.
+        });
+    }, POLL_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, [courseId, hasProcessing]);
+
+  function replaceDocument(updated: DocumentSummary) {
+    setCourse((current) => current ? {
+      ...current,
+      documents: current.documents.map((document) => document.id === updated.id ? updated : document),
+    } : current);
+  }
+
+  async function handleRetryProcessing(documentId: number) {
+    setRetryingId(documentId);
+    setUploadError("");
+    setUploadSuccess("");
+    try {
+      replaceDocument(await processDocument(courseId, documentId));
+    } catch (reason) {
+      setUploadError(actionError(reason, "Unable to retry processing."));
+    } finally {
+      setRetryingId(null);
+    }
+  }
 
   function retryLoad() {
     setLoadState("loading");
@@ -117,7 +166,9 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
         ...current,
         documents: [...current.documents, document],
       } : current);
-      setUploadSuccess(`${document.name} was uploaded successfully.`);
+      setUploadSuccess(document.processing_state === "processing"
+        ? `${document.name} was uploaded and is being prepared for search.`
+        : `${document.name} was uploaded successfully.`);
     } catch (reason) {
       if (reason instanceof ApiError && reason.status === 404) {
         setCourse(null);
@@ -217,7 +268,24 @@ export default function CourseDetailView({ courseId }: { courseId: number }) {
                       {course.documents.map((document) => (
                         <tr key={document.id}>
                           <td><span className="document-name"><span className="file-tile"><FileIcon width={18} height={18} /></span><span><strong>{document.name}</strong><small>Document #{document.id}</small></span></span></td>
-                          <td><span className={`status-chip status-${document.status}`}><span />{statusLabel(document.status)}</span></td>
+                          <td>
+                            <span className="status-cell">
+                              <span className={`status-chip status-${document.processing_state}`}>
+                                {document.processing_state === "processing" && <span className="spinner" />}
+                                {STATE_LABELS[document.processing_state]}
+                              </span>
+                              {(document.processing_state === "failed" || document.processing_state === "not_indexed") && (
+                                <button
+                                  className="text-button"
+                                  type="button"
+                                  disabled={retryingId === document.id}
+                                  onClick={() => void handleRetryProcessing(document.id)}
+                                >
+                                  <RefreshIcon width={14} height={14} /> Retry
+                                </button>
+                              )}
+                            </span>
+                          </td>
                           <td className="date-cell">{formatDate(document.created_at, true)}</td>
                         </tr>
                       ))}

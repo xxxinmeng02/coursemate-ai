@@ -118,8 +118,8 @@ vectors from the query's configuration. `text-embedding-3-large` can also be
 selected with an explicit 1536-dimensional output; changing models/revisions
 requires re-embedding. Changing dimension requires another migration. Model
 aliases are not immutable snapshots: bump the revision for incompatible provider
-or input changes even if the alias stays the same. No automatic LLM generation
-or PDF processing integration is introduced.
+or input changes even if the alias stays the same. Uploads are parsed and
+embedded automatically (see below); no automatic LLM generation is introduced.
 
 PostgreSQL must have pgvector 0.7.0 or later installed for `l2_normalize`.
 Compose uses PostgreSQL 17 with pgvector;
@@ -127,6 +127,30 @@ the additive migration enables the extension (the migration role needs extension
 privileges). Downgrade removes only the Chunk fields/constraint and retains the
 shared extension. Existing SQLite tests use JSON only for persistence; they do
 not substitute for PostgreSQL vector ranking tests.
+
+## Automatic processing after upload
+
+`POST /courses/{course_id}/documents` saves the PDF, responds, and then runs
+parsing followed by embedding as a FastAPI background task in the API process
+(`app/document_processing.py`). Reused Content that is already searchable or
+has failed parsing is not processed again. Each document response includes
+`processing_state`, derived from Content status and the stored vectors:
+
+| `processing_state` | Meaning |
+| --- | --- |
+| `processing` | Queued or running in this API process |
+| `indexed` | Ready, with every chunk embedded for the current configuration |
+| `not_indexed` | Not yet processed, or embedding failed/is from another configuration |
+| `failed` | The PDF could not be parsed |
+
+`POST /courses/{course_id}/documents/{document_id}/process` queues a retry for
+`failed` or `not_indexed` documents (202) and returns 409 for any other state.
+The web course page polls while anything is processing and shows a Retry action.
+Without `OPENAI_API_KEY`, uploads parse but stay `not_indexed`.
+
+The in-flight record lives in process memory: run a single API worker, and
+after a restart retry any document left `not_indexed`. The backfill command
+below remains available for bulk or forced re-embedding.
 
 ## Generate embeddings
 
@@ -149,8 +173,7 @@ previously completed Contents. Retry safely after resolving the failure.
 Generation uses the same Content write lock as PDF processing, held during the
 bounded provider calls. Competing writers wait. Successful PDF refresh replaces
 the canonical chunks and therefore requires another embedding backfill; failed
-refreshes retain existing data. Upload does not automatically parse or embed.
-Never pass a request Session or ORM object to future background work: create a
+refreshes retain existing data. Never pass a request Session or ORM object to future background work: create a
 new Session and pass only Content IDs to `embed_content`.
 
 ## Course semantic search

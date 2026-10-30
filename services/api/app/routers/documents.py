@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import (
+    APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile, status,
+)
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
-from app import storage
-from app.database import get_db
+from app import document_processing, storage
+from app.database import get_db, get_session_factory
 from app.models.content import Content
 from app.models.course import Course
 from app.models.document import Document
@@ -18,10 +20,16 @@ router = APIRouter(
 @router.post("", response_model=DocumentSummary, status_code=status.HTTP_201_CREATED)
 async def upload_document(
     course_id: int,
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    session_factory: sessionmaker[Session] = Depends(get_session_factory),
 ) -> DocumentSummary:
-    """Upload one PDF and attach its deduplicated content to a course."""
+    """Upload one PDF, attach its deduplicated content, and queue processing.
+
+    New content is parsed and embedded after the response is sent. Reused
+    content that is already searchable or failed is not processed again.
+    """
     if db.get(Course, course_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -92,13 +100,6 @@ async def upload_document(
         db.commit()
         committed = True
         db.refresh(document)
-
-        return DocumentSummary(
-            id=document.id,
-            name=document.name,
-            created_at=document.created_at,
-            status=content.status,
-        )
     except HTTPException:
         db.rollback()
         raise
@@ -111,3 +112,66 @@ async def upload_document(
     finally:
         storage.discard_staged_upload(staged_upload)
         storage.cleanup_owned_file(final_path, owns_final_file and not committed)
+
+    # The document is saved; processing problems are reported via its state.
+    state = document_processing.processing_states(db, [content])[content.id]
+    if state == "not_indexed" and document_processing.claim(content.id):
+        background_tasks.add_task(
+            document_processing.run_pipeline, session_factory, content.id,
+        )
+        state = "processing"
+    return _summary(document, content, state)
+
+
+@router.post(
+    "/{document_id}/process",
+    response_model=DocumentSummary,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def retry_document_processing(
+    course_id: int,
+    document_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    session_factory: sessionmaker[Session] = Depends(get_session_factory),
+) -> DocumentSummary:
+    """Queue parsing/embedding again for a failed or unsearchable document."""
+    document = db.get(Document, document_id)
+    if document is None or document.course_id != course_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found",
+        )
+
+    content = document.content
+    state = document_processing.processing_states(db, [content])[content.id]
+    if state not in document_processing.RETRYABLE_STATES:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Document is {state.replace('_', ' ')}",
+        )
+    if content.status == "pending_cleanup":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Document content is being removed",
+        )
+
+    if document_processing.claim(content.id):
+        background_tasks.add_task(
+            document_processing.run_pipeline, session_factory, content.id,
+        )
+    return _summary(document, content, "processing")
+
+
+def _summary(
+    document: Document,
+    content: Content,
+    state: document_processing.ProcessingState,
+) -> DocumentSummary:
+    return DocumentSummary(
+        id=document.id,
+        name=document.name,
+        created_at=document.created_at,
+        status=content.status,
+        processing_state=state,
+    )

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -34,6 +35,8 @@ class DocumentSummary(BaseModel):
     name: str
     created_at: datetime
     status: str
+    # Derived for the UI: parse status plus whether vectors are searchable.
+    processing_state: Literal["processing", "indexed", "not_indexed", "failed"]
 
 
 class CourseDetail(BaseModel):

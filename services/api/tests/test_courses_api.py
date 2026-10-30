@@ -8,7 +8,7 @@ from sqlalchemy.pool import StaticPool
 
 from app import storage
 import app.models  # noqa: F401  # register all models on Base.metadata
-from app.database import Base, get_db
+from app.database import Base, get_db, get_session_factory
 from app.main import app
 from app.models.content import Content
 from app.models.document import Document
@@ -53,6 +53,8 @@ def client(db_session_factory, storage_dir):
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
+    # Background processing opens its own sessions from this factory.
+    app.dependency_overrides[get_session_factory] = lambda: db_session_factory
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()

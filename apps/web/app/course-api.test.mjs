@@ -8,7 +8,7 @@ const source = readFileSync(new URL("./course-api.ts", import.meta.url), "utf8")
 const { outputText } = ts.transpileModule(source, {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
 });
-const { ApiError, searchCourse } = await import(
+const { ApiError, processDocument, searchCourse } = await import(
   "data:text/javascript;base64," + Buffer.from(outputText).toString("base64"));
 
 const originalFetch = globalThis.fetch;
@@ -59,4 +59,21 @@ test("FastAPI validation errors keep their message and 422 status", async () => 
 test("an abort is propagated rather than disguised as an API response", async () => {
   globalThis.fetch = async () => { throw new DOMException("Cancelled", "AbortError"); };
   await assert.rejects(searchCourse(1, "question"), { name: "AbortError" });
+});
+
+test("retrying processing posts to the document's process endpoint", async () => {
+  const queued = { id: 7, name: "lecture.pdf", created_at: "2026-10-30T00:00:00Z",
+    status: "ready", processing_state: "processing" };
+  globalThis.fetch = async (url, options) => {
+    assert.ok(String(url).endsWith("/courses/3/documents/7/process"));
+    assert.equal(options.method, "POST");
+    return Response.json(queued, { status: 202 });
+  };
+  assert.deepEqual(await processDocument(3, 7), queued);
+});
+
+test("a retry rejected by the backend surfaces its 409 detail", async () => {
+  globalThis.fetch = async () => Response.json({ detail: "Document is indexed" }, { status: 409 });
+  await assert.rejects(processDocument(3, 7), (error) =>
+    error instanceof ApiError && error.status === 409 && error.message === "Document is indexed");
 });

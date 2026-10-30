@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
+from app.document_processing import processing_states
 from app.models.course import Course
 from app.models.document import Document
 from app.embeddings import EmbeddingError
@@ -99,6 +100,7 @@ def get_course(course_id: int, db: Session = Depends(get_db)) -> CourseDetail:
         )
 
     documents = sorted(course.documents, key=lambda doc: doc.id)
+    states = processing_states(db, [doc.content for doc in documents])
     return CourseDetail(
         id=course.id,
         name=course.name,
@@ -109,6 +111,7 @@ def get_course(course_id: int, db: Session = Depends(get_db)) -> CourseDetail:
                 name=doc.name,
                 created_at=doc.created_at,
                 status=doc.content.status,
+                processing_state=states[doc.content_id],
             )
             for doc in documents
         ],

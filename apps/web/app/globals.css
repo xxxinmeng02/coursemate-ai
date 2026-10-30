@@ -227,10 +227,15 @@ h1 { margin-bottom: 9px; font-size: clamp(34px, 4.2vw, 52px); line-height: 1.05;
 .file-tile { flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center; color: var(--accent); background: var(--accent-soft); border-radius: 9px; }
 .file-tile svg { width: 17px; height: 17px; }
 .status-chip { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: capitalize; }
-.status-ready, .status-uploaded { color: #16633f; background: #e2f4e9; }
-.status-processing { color: #315d86; background: #e7f0f8; }
+.status-indexed { color: #16633f; background: #e2f4e9; }
+.status-processing { gap: 6px; color: #315d86; background: #e7f0f8; }
+.status-processing .spinner { width: 10px; height: 10px; border-width: 2px; }
 .status-failed { color: #a12f2f; background: #fde9e8; }
-.status-pending_cleanup { color: #815d1e; background: #fbf0d7; }
+.status-not_indexed { color: #815d1e; background: #fbf0d7; }
+.status-cell { display: inline-flex; align-items: center; gap: 10px; }
+.text-button { display: inline-flex; align-items: center; gap: 4px; padding: 0; color: var(--accent); background: none; border: 0; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.text-button:hover { color: var(--accent-dark); }
+.text-button:disabled { opacity: .58; cursor: default; }
 .date-cell { color: var(--muted); white-space: nowrap; }
 .retrieval-debug { margin-top: 30px; background: white; border: 1px solid var(--border); border-radius: 17px; }
 .retrieval-debug summary { padding: 20px; cursor: pointer; font-weight: 750; }

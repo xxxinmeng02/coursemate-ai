@@ -6,11 +6,14 @@ export type CourseSummary = {
   created_at: string;
 };
 
+export type ProcessingState = "processing" | "indexed" | "not_indexed" | "failed";
+
 export type DocumentSummary = {
   id: number;
   name: string;
   created_at: string;
   status: string;
+  processing_state: ProcessingState;
 };
 
 export type CourseDetail = CourseSummary & {
@@ -115,5 +118,11 @@ export function uploadDocument(courseId: number, file: File) {
   return request<DocumentSummary>(`/courses/${courseId}/documents`, {
     method: "POST",
     body: formData,
+  });
+}
+
+export function processDocument(courseId: number, documentId: number) {
+  return request<DocumentSummary>(`/courses/${courseId}/documents/${documentId}/process`, {
+    method: "POST",
   });
 }
