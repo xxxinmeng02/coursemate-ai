@@ -1,0 +1,133 @@
+{
+  "type": "object",
+  "properties": {
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "enum": [
+                  "mit6006-lec9"
+                ]
+              },
+              "page_number": {
+                "type": "integer",
+                "enum": [
+                  3,
+                  4
+                ]
+              },
+              "quote": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_id",
+              "page_number",
+              "quote"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "explanation",
+          "conditions",
+          "aliases",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "enum": [
+                  "mit6006-lec9"
+                ]
+              },
+              "page_number": {
+                "type": "integer",
+                "enum": [
+                  3,
+                  4
+                ]
+              },
+              "quote": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_id",
+              "page_number",
+              "quote"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "question",
+          "answer",
+          "conditions",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "cards",
+    "faq"
+  ],
+  "additionalProperties": false
+}

@@ -1,5 +1,9 @@
 # 真实课程 retrieval 测试交接
 
+2026-10-28 更新：新运行已补齐完整 MRR 的采集与校验，必须提供显式模型记录。
+下列命令已更新；10 月 21 日的历史 Top-5 文件和数字不变。当前未补跑真实模型，
+历史文件缺失的完整排名不能还原，完整 MRR 数值仍待新一次测量。
+
 ## 仓库检查与本次范围
 
 2026-10-21 获取了所有远程分支。工作基线为
@@ -85,7 +89,7 @@ embedding 服务。退出 2 表示 Course 材料不符；退出 1 表示解析�
 保持 API 运行，从仓库根目录执行（替换 Course ID）：
 
 ```powershell
-services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --course-id 123 --top-k 5 --output evals/retrieval/results/mit-6006-live-run1.json
+services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --course-id 123 --top-k 5 --embedding-record evals/retrieval/embedding-configs/openai-small-v1.json --output evals/retrieval/results/mit-6006-openai-full-run1.json
 ```
 
 工具先校验本地 PDF，再用 GET 检查专用 Course 的五个文件名和 ready 状态，
@@ -93,7 +97,16 @@ services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --cour
 后端每题可能调用一次收费的 query embedding。需要使用刚校验的五份 PDF 上传，
 因为 HTTP summary 不暴露文件 hash，单靠返回的文件名不能证明远端内容相同。
 
+新 CLI 用本地原件经现有 parser 生成的文档/页/文本 SHA-256 manifest 校验全部返回内容，
+并在每题间验证 canonical Chunk ID 集合不变。当前 46 个 Chunk 会请求 `top_k=47`，
+多一个探测位置用于发现课程中的额外尾部内容；实际应该仍只返回 46 条。
+少块、额外块、文本/页不符、处理中被重建均 blocked，不输出聚合质量指标。
+现有 API 上限为 50，因此此完整模式最多证明 49 个 Chunk 的语料；达到 50 会拒绝，
+不能靠“返回正好 50 条”推断没有第 51 条。
+
 报告保留原问题、期望页、全部返回原文、score、实际名次和 HTTP 搜索延迟。
+`top_k` 表示诊断截断 K；`retrieval_top_k` 表示实际请求数；
+`ranking_complete=true` 仅在上述所有题目均通过检查后成立。
 已有输出文件不会被覆盖。退出 2 / `status=blocked` 表示配置、服务、材料或请求错误；
 部分成功结果会保留，但聚合指标保持 null。退出 0 表示测量完成，
 **不表示检索质量已经通过验收**。
@@ -102,8 +115,28 @@ services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --cour
 
 - `source_page_hit_at_1/3/5`：结果是否命中一组已标注的文件和页码。
 - `anchor_hit_at_1/3/5`：同一正确来源页的 chunk 是否还包含短证据锚点。
-- `anchor_mrr_at_K`：第一次锚点命中的倒数名次，截断到请求的 K；
-  它不是 full-corpus MRR，也不是答案正确率。
+- `anchor_mrr_at_K`：第一次锚点命中的倒数名次，超过诊断 K 计零。
+- `mrr`：完整课程排序中的首次锚点命中倒数名次平均，无命中为零；这是主 MRR。
+- `source_page_mrr`：完整排序中的首次正确来源页排名倒数平均，作为定位诊断。
+
+完整模式保留第 6 名以后的实际段落和名次。例如第 6 名命中会贡献 `1/6` 到完整 MRR，
+对 MRR@5 则贡献零。内部旧 bounded 调用仍兼容，但标记 `ranking_complete=false`，
+不会输出主 `mrr`。所有指标都不是答案正确率。
+
+`--embedding-record` 只接受不含密钥的 JSON；模板适用于实际配置为
+`text-embedding-3-small`、1536 维、revision `v1` 的服务。更换模型或 revision 时，
+复制并修改模板，确认与 API 和已回填向量的配置一致。报告保存 provider/model、
+revision、模型输出维度（补零前）/存储维度、实际存储 ID、已知上游版本和运行库版本。
+`model_revision=null` 表示未知上游不可变版本，不能把应用 `v1` 当作 provider 快照。
+
+模型记录的 `source=operator_declared` 是人工声明；本地 runner 可生成
+`local_runtime_receipt`。二者均明确写 `verification=not_verified_by_search_api`：
+现有 HTTP API 不回传模型身份，客户端无法独立核验服务端，不将声明伪称为远程证明。
+receipt 也不代表推理已经成功。未知库版本保持 null，不推测旧运行环境。
+
+每题延迟现在覆盖 HTTP、查询 embedding 和完整课程排名，不包含回填。
+不能直接与旧 Top-5 运行的延迟当作同工作量对比。`evaluator_sha256` 记录执行脚本内容，
+包括尚未提交的修改，便于区分评估器版本。
 
 一个问题对应一个证据单元，显式 alternative source 视为等价来源；多个重叠 chunk
 不会增加分母。页码命中不足以证明段落正确，短锚点命中也可能缺乏完整回答上下文。
@@ -166,9 +199,14 @@ OpenAI 账户无额度（HTTP 429 `insufficient_quota`），因此先用免费�
 
 ```powershell
 services/api/.venv/Scripts/python.exe evals/retrieval/local_embeddings.py prepare --course-id 1
-services/api/.venv/Scripts/python.exe evals/retrieval/local_embeddings.py api --port 8000
-services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --course-id 1 --api-url http://127.0.0.1:8000 --output evals/retrieval/results/<new-name>.json
+services/api/.venv/Scripts/python.exe evals/retrieval/local_embeddings.py api --port 8000 --record-output evals/retrieval/results/local-model-record-run2.json
+services/api/.venv/Scripts/python.exe evals/retrieval/evaluate_mit.py run --course-id 1 --api-url http://127.0.0.1:8000 --embedding-record evals/retrieval/results/local-model-record-run2.json --output evals/retrieval/results/mit-6006-local-full-run2.json
 ```
+
+本地 receipt 在应用 `.env` 加载后写出，拒绝覆盖已有文件；生成记录不会加载或下载模型。
+逻辑 provider 明确为 `fastembed`，模型明确为 BGE；`storage_config_id` 保留旧代码实际写入的
+`openai:...:local-bge-small-en-v1.5` 身份，避免伪造已有数据库配置或重写历史向量。
+本地模型仍是可选测试工具，不是使用课程管理/PDF 功能的前提。
 
 Windows 上请用 `127.0.0.1` 而不是 `localhost`：Python 先尝试 IPv6 `::1`，
 每次请求会多出约 2 秒超时，延迟数据失真。

@@ -1,0 +1,38 @@
+{
+  "started_at_utc": "2026-10-28T15:07:29.112815+00:00",
+  "source_commit": "0112c82c7d6ee3df0f5c98767ae9e9fdec0d7323",
+  "worktree_has_local_changes": true,
+  "working_directory": "/Users/yanzhenli/.codex/worktrees/rag-retrieval-foundation/coursemate-ai/services/api",
+  "python_executable": "/Users/yanzhenli/.codex/worktrees/rag-retrieval-foundation/coursemate-ai/.venv/bin/python",
+  "python_version": "3.12.14",
+  "packages": {
+    "pytest": "8.3.4",
+    "SQLAlchemy": "2.0.52",
+    "psycopg": "3.2.13",
+    "pgvector": "0.4.2",
+    "alembic": "1.16.5",
+    "httpx": "0.27.2"
+  },
+  "database": {
+    "server_version": "17.11 (Debian 17.11-1.pgdg12+2)",
+    "pgvector_version": "0.8.7",
+    "database": "retrieval_test"
+  },
+  "test_address": "127.0.0.1:55437/retrieval_test",
+  "api_key_forced_empty": true,
+  "live_eval_switch": "0",
+  "pytest_arguments": [
+    "-vv",
+    "-ra",
+    "--tb=long",
+    "--color=no",
+    "--junitxml=/Users/yanzhenli/.codex/worktrees/rag-retrieval-foundation/coursemate-ai/docs/test-runs/2026-10-29-postgres59/junit.xml",
+    "tests/test_retrieval_postgres.py",
+    "tests/test_embedding_backfill.py",
+    "tests/test_retrieval_api.py",
+    "tests/test_processing_postgres.py",
+    "tests/test_retrieval_migrations.py",
+    "tests/test_retrieval_eval.py",
+    "tests/test_course_retrieval_eval.py"
+  ]
+}

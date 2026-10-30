@@ -1,0 +1,17 @@
+{
+  "validated_at_utc": "2026-10-29T11:10:44.720569+00:00",
+  "status": "passed",
+  "cards": 3,
+  "faq": 1,
+  "exact_evidence_anchors_verified": 4,
+  "pdf_sha256_verified": true,
+  "input_hashes_verified": true,
+  "tool_calls_observed": 0,
+  "result_sha256": "1a58dc534610a82bf6c4967b27f8d54cf0d4a8488b89ab5eb7cd96b65d6152d0",
+  "semantic_quality_independently_validated": false,
+  "limitations": [
+    "Small smoke test, not a course-wide benchmark",
+    "Exact source anchors do not prove every generated claim",
+    "No independent human review or embedding/retrieval quality evaluation"
+  ]
+}

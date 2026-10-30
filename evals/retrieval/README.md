@@ -17,6 +17,24 @@ A first live run used the free local model `BAAI/bge-small-en-v1.5` via
 anchor hit@1/3/5 = 0.56/0.80/0.88). It measures that local model, not the
 production OpenAI model; see section 5 of the runbook for the per-question analysis.
 
+As of 2026-10-28, new MIT CLI runs require `--embedding-record` and verify a
+full-course document/page/text-hash manifest, probing one slot beyond the expected
+chunk count. For 46 chunks, one search requests 47 and must return exactly the
+46 verified chunks. Full `mrr` (anchor-based) and `source_page_mrr` are reported
+alongside Hit@1/3/5 and capped `anchor_mrr_at_K`; all complete rankings are saved.
+The current API cap is 50, so full validation conservatively supports up to 49
+chunks. Partial, different or changing corpora are blocked, not scored.
+
+Use [`embedding-configs/openai-small-v1.json`](embedding-configs/openai-small-v1.json)
+only when it matches the backend configuration. The optional local runner can
+write a receipt with `api --record-output <new-file.json>` after loading app config.
+Provider, model, revision, dimensions, storage ID, unknown upstream version and
+available runtime package versions are explicit. Neither an operator declaration
+nor a local receipt is remotely attested: `verification=not_verified_by_search_api`.
+No credentials belong in these files. Historical Top-5 results remain unchanged;
+they cannot supply missing ranks or an independently verifiable model receipt.
+See the [current Chinese status](../../docs/RETRIEVAL_STATUS_2026-10-28.md).
+
 `parallel_computing.json` is an authored test course, not a university lecture
 capture or an independent sample of real student questions. It expands the
 parallel-programming topic already present in `topics.json`. Four documents,

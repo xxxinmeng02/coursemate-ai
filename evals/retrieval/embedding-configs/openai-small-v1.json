@@ -1,0 +1,11 @@
+{
+  "provider": "openai",
+  "model": "text-embedding-3-small",
+  "revision": "v1",
+  "native_dimensions": 1536,
+  "stored_dimensions": 1536,
+  "storage_config_id": "openai:text-embedding-3-small:1536:v1",
+  "model_revision": null,
+  "source": "operator_declared",
+  "runtime_versions": {}
+}

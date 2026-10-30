@@ -4,6 +4,7 @@ No production writes, embedding calls, database connections or LLM generation.
 The live API itself may make a paid query-embedding request for each question.
 """
 import argparse
+from collections import Counter
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -18,6 +19,8 @@ from urllib.request import Request, urlopen
 
 DATASET = Path(__file__).with_name("mit_6006.json")
 API_ROOT = Path(__file__).resolve().parents[2] / "services" / "api"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from embedding_record import load_embedding_record, validate_embedding_record
 
 
 def normalized(value):
@@ -64,7 +67,7 @@ def validate_sources(fixture, directory):
     from app.parsing import chunk_page, extract_pdf_pages, normalize_text
 
     pages_by_name = {}
-    chunk_count = 0
+    manifest = []
     for doc in fixture["documents"]:
         path = directory / doc["name"]
         if hashlib.sha256(path.read_bytes()).hexdigest() != doc["sha256"]:
@@ -73,7 +76,10 @@ def validate_sources(fixture, directory):
         if len(pages) != doc["pages"]:
             raise ValueError(f"PDF page count mismatch: {doc['name']}")
         pages_by_name[doc["name"]] = pages
-        chunk_count += sum(len(chunk_page(normalize_text(page))) for page in pages)
+        for number, page in enumerate(pages, 1):
+            for passage in chunk_page(normalize_text(page)):
+                manifest.append({"document_name": doc["name"], "page_number": number,
+                                 "text_sha256": hashlib.sha256(passage.encode()).hexdigest()})
     for case in fixture["questions"]:
         for source in golden_sources(case):
             page = pages_by_name[source["document_name"]][source["page_number"] - 1]
@@ -87,7 +93,8 @@ def validate_sources(fixture, directory):
                for pages in pages_by_name.values() for page in pages):
             raise ValueError(f"Question copied verbatim from source: {case['id']}")
     return {"status": "labels_validated", "question_count": len(fixture["questions"]),
-            "document_count": len(fixture["documents"]), "chunk_count": chunk_count,
+            "document_count": len(fixture["documents"]), "chunk_count": len(manifest),
+            "chunk_manifest": manifest,
             "pdf_checksums_verified": True, "search_quality_measured": False}
 
 
@@ -108,9 +115,11 @@ def grade(case, hits):
     return {"first_source_page_rank": page_rank, "first_anchor_rank": anchor_rank}
 
 
-def summarize(rows, top_k):
-    # One source evidence unit per question. These are capped ranks, not full MRR.
-    return {
+def summarize(rows, top_k, *, full_ranking=False):
+    if not rows:
+        raise ValueError("Cannot summarize an empty evaluation")
+    # One evidence unit per question; a hit beyond K contributes only to full MRR.
+    metrics = {
         **{f"source_page_hit_at_{k}": sum(
             row["first_source_page_rank"] is not None
             and row["first_source_page_rank"] <= k for row in rows) / len(rows)
@@ -120,9 +129,17 @@ def summarize(rows, top_k):
             and row["first_anchor_rank"] <= k for row in rows) / len(rows)
            for k in (1, 3, 5)},
         f"anchor_mrr_at_{top_k}": sum(
-            1 / row["first_anchor_rank"] if row["first_anchor_rank"] else 0
+            1 / row["first_anchor_rank"]
+            if row["first_anchor_rank"] and row["first_anchor_rank"] <= top_k else 0
             for row in rows) / len(rows),
     }
+    if full_ranking:
+        metrics["mrr"] = sum(1 / row["first_anchor_rank"] if row["first_anchor_rank"] else 0
+                             for row in rows) / len(rows)
+        metrics["source_page_mrr"] = sum(
+            1 / row["first_source_page_rank"] if row["first_source_page_rank"] else 0
+            for row in rows) / len(rows)
+    return metrics
 
 
 def request_json(url, body=None):
@@ -158,8 +175,19 @@ def check_hits(hits, allowed_documents, top_k):
         raise ValueError("Results are not in descending similarity order")
 
 
-def run(fixture, api_url, course_id, top_k, fetch=request_json):
+def _corpus_signatures(items, *, hits=False):
+    return Counter((item["document_name"], item["page_number"],
+                    hashlib.sha256(item["text"].encode()).hexdigest() if hits
+                    else item["text_sha256"]) for item in items)
+
+
+def run(fixture, api_url, course_id, top_k, fetch=request_json, *,
+        chunk_manifest=None, embedding_record=None):
+    """CLI supplies a verified manifest; no manifest retains the old bounded diagnostic."""
     api_url = api_url.rstrip("/")
+    full = chunk_manifest is not None
+    # Probe one extra slot: asking for exactly N could hide an unexpected tail.
+    retrieval_top_k = max(top_k, len(chunk_manifest) + 1) if full else top_k
     record = {
         "dataset_id": fixture["id"],
         "dataset_sha256": hashlib.sha256(json.dumps(
@@ -167,11 +195,22 @@ def run(fixture, api_url, course_id, top_k, fetch=request_json):
         "source_pdf_sha256": {doc["name"]: doc["sha256"] for doc in fixture["documents"]},
         "run_at_utc": datetime.now(timezone.utc).isoformat(),
         "course_id": course_id, "top_k": top_k,
+        "retrieval_top_k": retrieval_top_k, "ranking_complete": False,
+        "chunk_manifest": chunk_manifest, "embedding": None,
+        "evaluator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "latency_scope": ("HTTP full-course search including query embedding and SQL; excludes backfill"
+                          if full else "HTTP bounded search including query embedding and SQL; excludes backfill"),
         "status": "blocked", "search_quality_measured": False,
         "metrics": None, "results": [],
         "grading_note": "Page and short-anchor checks are diagnostics; manually review answer-bearing passages.",
     }
     try:
+        if full and (not chunk_manifest or not 5 <= top_k <= 50 or retrieval_top_k > 50):
+            raise ValueError("Full ranking requires 1–49 verified chunks plus an extra probe slot (API cap 50)")
+        if full or embedding_record is not None:
+            record["embedding"] = validate_embedding_record(embedding_record)
+        expected_signatures = _corpus_signatures(chunk_manifest) if full else None
+        canonical_ids = None
         course = fetch(f"{api_url}/courses/{course_id}")
         expected = {doc["name"] for doc in fixture["documents"]}
         documents = course["documents"]
@@ -184,12 +223,19 @@ def run(fixture, api_url, course_id, top_k, fetch=request_json):
         for case in fixture["questions"]:
             start = time.perf_counter()
             response = fetch(f"{api_url}/courses/{course_id}/search",
-                             {"query": case["question"], "top_k": top_k})
+                             {"query": case["question"], "top_k": retrieval_top_k})
             latency_ms = (time.perf_counter() - start) * 1000
             hits = response["results"]
-            check_hits(hits, allowed, top_k)
+            check_hits(hits, allowed, retrieval_top_k)
             if not hits:
                 raise ValueError("Search returned no eligible chunks; check embedding backfill/configuration")
+            if full:
+                if _corpus_signatures(hits, hits=True) != expected_signatures:
+                    raise ValueError("Search corpus differs from verified PDFs or embeddings are incomplete")
+                ids = {hit["chunk_id"] for hit in hits}
+                if canonical_ids is not None and ids != canonical_ids:
+                    raise ValueError("Canonical chunks changed during evaluation")
+                canonical_ids = ids
             record["results"].append({
                 "id": case["id"], "query": case["question"],
                 "expected_sources": golden_sources(case), **grade(case, hits),
@@ -202,12 +248,12 @@ def run(fixture, api_url, course_id, top_k, fetch=request_json):
     except (ValueError, KeyError, TypeError) as exc:
         record["blocker"] = str(exc)
     else:
-        record.update(status="completed", search_quality_measured=True,
-                      metrics=summarize(record["results"], top_k))
+        record.update(status="completed", search_quality_measured=True, ranking_complete=full,
+                      metrics=summarize(record["results"], top_k, full_ranking=full))
     return record
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["validate", "run"])
     parser.add_argument("--pdf-dir", type=Path, default=DATASET.with_name("sources"))
@@ -215,19 +261,24 @@ def main():
     parser.add_argument("--course-id", type=int)
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--output", type=Path)
-    args = parser.parse_args()
+    parser.add_argument("--embedding-record", type=Path,
+                        help="Explicit model declaration or local runtime receipt; never an API key")
+    args = parser.parse_args(argv)
     if args.command == "run" and (not args.course_id or args.course_id < 1 or not args.output):
         parser.error("run requires a positive --course-id and --output")
     if not 5 <= args.top_k <= 50:
         parser.error("--top-k must be between 5 and 50 (for Hit@1/3/5)")
+    if args.command == "run" and not args.embedding_record:
+        parser.error("run requires --embedding-record; model identity must not be inferred")
     if args.output and args.output.exists():
         parser.error("Output already exists; choose a new run filename")
     fixture = load_dataset()
     # Check unchanged original PDFs before any endpoint call.
     try:
+        embedding = load_embedding_record(args.embedding_record) if args.command == "run" else None
         validation = validate_sources(fixture, args.pdf_dir)
     except (OSError, ValueError) as exc:
-        print(f"Source validation failed: {exc}", file=sys.stderr)
+        print(f"Evaluation preflight failed: {exc}", file=sys.stderr)
         return 2
     record = {
         **validation, "dataset_id": fixture["id"],
@@ -235,13 +286,17 @@ def main():
             fixture, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
         "validated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_pdf_sha256": {doc["name"]: doc["sha256"] for doc in fixture["documents"]},
-    } if args.command == "validate" else run(fixture, args.api_url, args.course_id, args.top_k)
+    } if args.command == "validate" else run(
+        fixture, args.api_url, args.course_id, args.top_k,
+        chunk_manifest=validation["chunk_manifest"], embedding_record=embedding)
     value = json.dumps(record, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(value, encoding="utf-8")
+        with args.output.open("x", encoding="utf-8") as stream:
+            stream.write(value)
     # PDF text includes ligatures etc. that a GBK/cp1252 Windows console cannot encode.
-    sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     print(value)
     return 2 if record["status"] == "blocked" else 0
 

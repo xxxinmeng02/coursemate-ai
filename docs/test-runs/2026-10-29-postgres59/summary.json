@@ -1,0 +1,12 @@
+{
+  "finished_at_utc": "2026-10-28T15:07:35.308956+00:00",
+  "exit_code": 0,
+  "tests": 59,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "openai_http_attempts_blocked": 0,
+  "real_embeddings_used": false,
+  "duration_seconds": 5.864,
+  "passed": 59
+}

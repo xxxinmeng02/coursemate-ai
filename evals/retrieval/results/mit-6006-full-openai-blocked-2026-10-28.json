@@ -1,0 +1,268 @@
+{
+  "dataset_id": "mit-6006-s2020-v1",
+  "dataset_sha256": "62486be17182efaa8098b2acc9ae2fdad1f342905d4e98f160f4f0c6614470c6",
+  "source_pdf_sha256": {
+    "MIT6_006S20_lec4.pdf": "cbc9a669f00c7554520c667853f4bc95f041348fea7ce76fd8a37246c94dc564",
+    "MIT6_006S20_lec9.pdf": "db45282ccf191109d6725ebaead32ca8c8477abda594f45c1ac83bb78fee17bd",
+    "MIT6_006S20_lec10.pdf": "1130b0c7e033a7232c591b497d8fbafca25840f61492bda9875fdecb39dc2c78",
+    "MIT6_006S20_lec13.pdf": "1ab30bcc723f73f3cedb1c49266cc3bb6d8dbfc53dcf46e1d232df6d5c76a9b5",
+    "MIT6_006S20_lec15.pdf": "4ffd3740ecac3df26f3b03651a9295a44858f3e3e90da1129d605305b1dc4a1c"
+  },
+  "run_at_utc": "2026-10-28T00:54:49.182167+00:00",
+  "course_id": 1,
+  "top_k": 5,
+  "retrieval_top_k": 47,
+  "ranking_complete": false,
+  "chunk_manifest": [
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 1,
+      "text_sha256": "62c0e647d5ee662ba79bf5673a054d9fae594129284129b54793b7b82898b852"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 1,
+      "text_sha256": "92386c4e0ec23e14b586f2fd2644b4c39c6ac226922d53db4feaad82bb6a95b1"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 2,
+      "text_sha256": "99a4f4bc6fb424ba3611cfd18ed3875c236a5d0f1164ca71a6995d62fba6c74e"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 2,
+      "text_sha256": "13fc5827f11c655bc8627955777f4223a10484942a7775bc117fa756aab69877"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 3,
+      "text_sha256": "5ae8f7ec6c9cf95cdc0f8cf98b9f97bbfafd2a867ae96a4f851f5860d699cb20"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 4,
+      "text_sha256": "b2a3bd23b48963ec54093ac8e3a3a4f70b517d476bae814745e9b6d7c5a65530"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 4,
+      "text_sha256": "a21704899923dfc1125d24ca999c1b05c31166ee3cad7a8c1ce011da00d612f3"
+    },
+    {
+      "document_name": "MIT6_006S20_lec4.pdf",
+      "page_number": 5,
+      "text_sha256": "fc8b33cdf6d09e039ca2f90c416c2c4e99338f63a17e5b1e85485831707156f9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 1,
+      "text_sha256": "f58428e1977eec819759536799a46dc1fb2b342c3cf973356f039df2859b6432"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 1,
+      "text_sha256": "2225f1ff8042bf3e7403e83c5b59e51924611535266b0eac640688f8eb2779d9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 2,
+      "text_sha256": "c7b237f5eebda314576e69fc2c9a0b88ee4fb343a4175fc479438e13a488dba9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 2,
+      "text_sha256": "60f7e14bc57f7bbfb4f10801d84508f169060a1c6537197884056587edcf14db"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 3,
+      "text_sha256": "f49b8e98b70216595b4c5598b330a3bd0510e4f35d2fef3fdfa9ecec3546dc84"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 3,
+      "text_sha256": "a01aa4ca969c5f658f41cce2bff0fb42ec05929bf155d237e62567114cb107c2"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 4,
+      "text_sha256": "9cbf3a66892bb19c94e07ce44603f8489eacce556c62a00a7aad4d29a78d1895"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 4,
+      "text_sha256": "f34d79e9f5085a2fa9a97d3b9dcc4263bff266bbce0cacf50d72939df44be21f"
+    },
+    {
+      "document_name": "MIT6_006S20_lec9.pdf",
+      "page_number": 5,
+      "text_sha256": "fc8b33cdf6d09e039ca2f90c416c2c4e99338f63a17e5b1e85485831707156f9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 1,
+      "text_sha256": "d0b5530867fc527c3cd2a0480cf502a2ec259d57bc1a1efbf58dcf56bbc19233"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 2,
+      "text_sha256": "84471cda5fe6838584a579b349270d162f793906eb6c541d5492db2eaf4c3703"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 2,
+      "text_sha256": "375de47a9bff82d5e0dba1e6660e910214865df42be6eb4d77fe440a58bfc391"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 3,
+      "text_sha256": "494b07c0ffa06da76dbb65e8a82411b85e996934ea7d44d11fe88b42ff954e78"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 3,
+      "text_sha256": "9c6cd056805b2e84393cb0adb1cbb829cb381aeddbc6e06bea1b48dd40bff9ae"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 4,
+      "text_sha256": "0ebd56b2fb7994a766b4596a24fdede8183006c0dcf29b9475054e6a87a22158"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 4,
+      "text_sha256": "e6d38521750a5604c0c1669d73d88fd810a04268963d3efe0a6fbfae4b49c3a7"
+    },
+    {
+      "document_name": "MIT6_006S20_lec10.pdf",
+      "page_number": 5,
+      "text_sha256": "fc8b33cdf6d09e039ca2f90c416c2c4e99338f63a17e5b1e85485831707156f9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 1,
+      "text_sha256": "4c48118f0a80803c6a6a368618ea36eb1f04e59a109d38708aa488f5a918cb4f"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 1,
+      "text_sha256": "3958fe1d29d746bc95b7b083ad6e593909e9b770cb7477ec75673434d53059cd"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 2,
+      "text_sha256": "fbb15bc795f53693a48225a8ffbfb50523e539d9f196630fa41bf318faa9dee2"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 2,
+      "text_sha256": "7b77b838fad60334142ce9d35f157c5b84ce13ab4112590488f4eed1e1b8fd84"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 3,
+      "text_sha256": "d262474c0d645b4bc996b68b1292be5d0cb8f7bebc57698708e062c534b48615"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 3,
+      "text_sha256": "bca9b56131be5fbe84bd92229cb5c20e5ec5709d23ef1b530b470d11b749b458"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 4,
+      "text_sha256": "df820b39947bc16fdbf10e15d3fc3fc471494b43a0f933588bd1d5e842f50409"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 4,
+      "text_sha256": "5db886045384615d418b6b9794d5cc69225dfdaf4a82e656ae7557dfea5e4887"
+    },
+    {
+      "document_name": "MIT6_006S20_lec13.pdf",
+      "page_number": 5,
+      "text_sha256": "fc8b33cdf6d09e039ca2f90c416c2c4e99338f63a17e5b1e85485831707156f9"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 1,
+      "text_sha256": "4e54062aaacbb67ee651c8e318be53f1d18d35636c1d650423c974fe306e6857"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 1,
+      "text_sha256": "60f15abbdef26b8058064de6d5b957ad46be5bfada82d5cee2f2bc3fa49fe463"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 2,
+      "text_sha256": "37279b082e91f74fa0842dbfc23a99492e395c3342b1f4299cca16c42eca5b21"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 3,
+      "text_sha256": "efda5629ad2d40583fe0748b87eb4c383e4c34364bb9cdb9bb457545722e054e"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 4,
+      "text_sha256": "a56e3dfb38f03ef96dbc0ada5fb3e90d039e058703bb98be44f44e8c42e7f6a5"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 4,
+      "text_sha256": "08a7ad5b0947e6d92beb6d7c8cfc5a78532208d30e855c79380f57806615d05c"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 5,
+      "text_sha256": "89d166c09521aecc2a56d228d55e1b60e93e8b20152102cd139d0589a90448b5"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 6,
+      "text_sha256": "d8e62e449ebb2e68a5c1d2e1048ce17b1ee2a61ecda7691232fbce1ab686b86e"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 6,
+      "text_sha256": "6f6e2ff252a2a372392622339a934aabc3c7e0aebb1cc3d48681eb69579d5d26"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 7,
+      "text_sha256": "d4c6c4483d6ccdeff590402020d8a7055fe6f2c6c9bc73a997d4e77c4f7f2740"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 7,
+      "text_sha256": "94c83c98a3f95601e81996b356f3d368d55f712e672920d328525fd1e74db332"
+    },
+    {
+      "document_name": "MIT6_006S20_lec15.pdf",
+      "page_number": 8,
+      "text_sha256": "fc8b33cdf6d09e039ca2f90c416c2c4e99338f63a17e5b1e85485831707156f9"
+    }
+  ],
+  "embedding": {
+    "provider": "openai",
+    "model": "text-embedding-3-small",
+    "revision": "v1",
+    "native_dimensions": 1536,
+    "stored_dimensions": 1536,
+    "storage_config_id": "openai:text-embedding-3-small:1536:v1",
+    "model_revision": null,
+    "source": "operator_declared",
+    "runtime_versions": {},
+    "verification": "not_verified_by_search_api"
+  },
+  "evaluator_sha256": "7f8df01e976946232aa37679c12d53f8190d9f8b492e8c5f52c0d15a8789403a",
+  "latency_scope": "HTTP full-course search including query embedding and SQL; excludes backfill",
+  "status": "blocked",
+  "search_quality_measured": false,
+  "metrics": null,
+  "results": [],
+  "grading_note": "Page and short-anchor checks are diagnostics; manually review answer-bearing passages.",
+  "blocker": "API could not be reached or timed out"
+}

@@ -1,0 +1,15 @@
+{
+  "tests": 226,
+  "passed": 224,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 2,
+  "exit_code": 0,
+  "real_embeddings_used": false,
+  "base_commit": "0112c82c7d6ee3df0f5c98767ae9e9fdec0d7323",
+  "worktree_has_local_changes": true,
+  "skipped_tests": [
+    "tests.test_course_retrieval_eval::test_live_course_benchmark",
+    "tests.test_retrieval_eval::test_live_model_topic_quality"
+  ]
+}

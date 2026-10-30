@@ -1,0 +1,23 @@
+name: coursemate-retrieval-test
+
+services:
+  postgres:
+    # Pinned test image; independent from compose.yaml and its application volume.
+    image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
+    environment:
+      POSTGRES_USER: retrieval_test
+      POSTGRES_PASSWORD: retrieval_test_local_only
+      POSTGRES_DB: retrieval_test
+    ports:
+      - "127.0.0.1:55437:5432"
+    volumes:
+      - pgvector_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retrieval_test -d retrieval_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 3s
+
+volumes:
+  pgvector_test_data:

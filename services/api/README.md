@@ -186,6 +186,15 @@ inside retrieval; future answer generation consumes retrieval results.
 
 ## Retrieval evaluation and PostgreSQL verification
 
+An isolated, API-free PostgreSQL/pgvector test environment is available in
+[`compose.test.yaml`](compose.test.yaml), bound to `127.0.0.1:55437` with its own
+Compose project and volume. From the repository root, start it with
+`docker compose -f services/api/compose.test.yaml up -d --wait`.
+The [2026-10-29 run record](../../docs/test-runs/2026-10-29-postgres59/README.md)
+contains 59 passing PostgreSQL cases, the exact selection, full verbose log,
+JUnit, pinned image/runtime versions and reproducible commands. Two live model
+tests are explicitly excluded; no real embeddings are used in that run.
+
 The three-topic fixture is `evals/retrieval/topics.json`: parallel programming,
 TCP/networking, and accounting, each with a related natural-language query.
 Deterministic tests use clearly labeled synthetic vectors and real pgvector to
